@@ -8,28 +8,21 @@ export type FitsTemplate<T extends EPSTemplate> =
   | ( T[1] extends string ? `${T[1]}${string}` : never )
   | ( T[2] extends string ? `${string}${T[2]}` : never );
 
-export const endsWith = <S extends string>(str: string, suffix: S): str is `${string}${S}` =>
-  str.endsWith(suffix);
-
-export const startsWith = <S extends string>(str: string, prefix: S): str is `${S}${string}` =>
-  str.startsWith(prefix);
-
-export const fitsTemplateChecker = <T extends EPSTemplate>(
-  ...[exact, prefix, suffix]: T
-) => 
-  (str: string): str is FitsTemplate<T> =>
-    str === exact || !!prefix && startsWith(str, prefix) || !!suffix && endsWith(str, suffix);
+type TestFitsTemplate = FitsTemplate<['boolean', 'true if ', '(boolean)']> 
+// expected: "boolean" | `true if ${string}` | `${string}(boolean)`
 
 export const specValueTemplates = {
-  number: ['number', null, null],
-  boolean: ['boolean', null, null],
+  number: ['number', null, '(number)'],
+  boolean: ['boolean', 'true if ', '(boolean)'],
   numberArray: [null, 'array of numbers', ' (array of numbers)'],
-  stringArray: [null, 'list of ', ' (array of strings)'],
+  stringArray: ['array', 'list of ', ' (array of strings)'],
   // (We had to use "list of" instead of "array of" because then it would work for "array of numbers" as well, as it's not possible to define a TypeScript type that would allow us to distinguish between the two.)
 } as const;
 
 export const specKeyTemplates = {
   boolean: [null, 'is', null],
+  // Note: This will also be triggered on "normal" words starting with "is", e.g. "island".
+  // TODO: Think of a different way to do this (require an underscore prefix, i.e. "is_paid" instead of "isPaid"?)
   stringArray: [null, null, 'Array'],
 } as const;
 
@@ -49,7 +42,7 @@ export type SpecType = {
 }
 
 export type InferTypeFromKey<K extends string> = {
-  [P in keyof SpecKeyTemplates]: Lowercase<K> extends SpecKeyTemplates[P] ? SpecType[P] : never;
+  [P in keyof SpecKeyTemplates]: K extends FitsTemplate<SpecKeyTemplates[P]> ? SpecType[P] : never;
 }[keyof SpecKeyTemplates];
 
 type TestInferTypeFromKey = InferTypeFromKey<'isPaid'>; // expected: boolean
@@ -57,7 +50,8 @@ type TestInferTypeFromKey2 = InferTypeFromKey<'notesArray'>; // expected: string
 type TestInferTypeFromKey3 = InferTypeFromKey<'groceries'>; // expected: never
 
 export type InferTypeFromValue<V extends string> = {
-  [P in keyof SpecValueTemplates]: Lowercase<V> extends SpecValueTemplates[P] ? SpecType[P] : never;
+  [P in keyof SpecValueTemplates]: Lowercase<V> extends FitsTemplate<SpecValueTemplates[P]> ? SpecType[P] : never;
+  // We do lowercase for values because users will often enter descriptions in their preferred casing, and we want to be able to match them all.
 }[keyof SpecValueTemplates];
 
 type TestInferTypeFromValue = InferTypeFromValue<'number'>; // expected: number
@@ -91,6 +85,18 @@ export type ModelOutput<O extends Specs> =
       [K in keyof O]: InferTypeFromEntry<O, K>;
     } : never;
 
+export const endsWith = <S extends string>(str: string, suffix: S): str is `${string}${S}` =>
+  str.endsWith(suffix);
+
+export const startsWith = <S extends string>(str: string, prefix: S): str is `${S}${string}` =>
+  str.startsWith(prefix);
+
+export const fitsTemplateChecker = <T extends EPSTemplate>(
+  ...[exact, prefix, suffix]: T
+) => 
+  (str: string): str is FitsTemplate<T> =>
+    str === exact || !!prefix && startsWith(str, prefix) || !!suffix && endsWith(str, suffix);  
+
 export const valueRepresentsNumber = fitsTemplateChecker('number', 'number ', ' (number)');
 export const valueRepresentsBoolean = fitsTemplateChecker('boolean', 'true if ', ' (boolean)');
 export const keyRepresentsBoolean = fitsTemplateChecker(undefined, 'is', undefined);
@@ -116,13 +122,29 @@ type TestSpecs = {
 
 type TestOutputs = ModelOutput<TestSpecs>;
 
+const testOutputs: TestOutputs = {
+  groceries: ['apples', 'bananas', 'oranges'],
+  unitPrices: [1.5, 2, 1],
+  total: 4.5,
+  isPaid: true,
+  notes: 'Buy organic if possible',
+};
+
 type TestSpecs2 = ['groceriesArray', 'isPaid', 'notes'];
 
 type TestOutputs2 = ModelOutput<TestSpecs2>;
 
+const testOutputs2: TestOutputs2 = {
+  groceriesArray: ['apples', 'bananas', 'oranges'],
+  isPaid: true,
+  notes: 'Buy organic if possible',
+};
+
 type TestSpec3 = 'List of items to buy';
 
 type TestOutputs3 = ModelOutput<TestSpec3>;
+
+const testOutputs3: TestOutputs3 = ['apples', 'bananas', 'oranges'];
 
 // 
 // type TestOutputs = {
