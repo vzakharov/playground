@@ -1,11 +1,12 @@
 export type Specs = string | string[] | Record<string, string>;
 
-export type FitsTemplate<
-  Exact extends string | undefined, Prefix extends string | undefined, Suffix extends string | undefined
-> =
-  ( Exact extends string ? Exact : never )
-  | ( Prefix extends string ? `${Prefix}${string}` : never )
-  | ( Suffix extends string ? `${string}${Suffix}` : never );
+export type EPSTemplate = readonly [string | null, string | null, string | null];
+// EPS stands for Exact match, Prefix, Suffix
+
+export type FitsTemplate<T extends EPSTemplate> =
+  ( T[0] extends string ? T[0] : never )
+  | ( T[1] extends string ? `${T[1]}${string}` : never )
+  | ( T[2] extends string ? `${string}${T[2]}` : never );
 
 export const endsWith = <S extends string>(str: string, suffix: S): str is `${string}${S}` =>
   str.endsWith(suffix);
@@ -13,26 +14,31 @@ export const endsWith = <S extends string>(str: string, suffix: S): str is `${st
 export const startsWith = <S extends string>(str: string, prefix: S): str is `${S}${string}` =>
   str.startsWith(prefix);
 
-export const fitsTemplateChecker = <
-  Exact extends string | undefined, Prefix extends string | undefined, Suffix extends string | undefined
->(
-  exact: Exact, prefix: Prefix, suffix: Suffix
+export const fitsTemplateChecker = <T extends EPSTemplate>(
+  ...[exact, prefix, suffix]: T
 ) => 
-  (str: string): str is FitsTemplate<Exact, Prefix, Suffix> =>
+  (str: string): str is FitsTemplate<T> =>
     str === exact || !!prefix && startsWith(str, prefix) || !!suffix && endsWith(str, suffix);
 
-export type SpecValue = {
-  number: FitsTemplate<'number', 'number ', ' (number)'>;
-  boolean: FitsTemplate<'boolean', 'true if ', ' (boolean)'>;
-  numberArray: FitsTemplate<undefined, 'array of numbers', ' (array of numbers)'>;
-  stringArray: FitsTemplate<undefined, 'list of ', ' (array of strings)'>
+export const specValueTemplates = {
+  number: ['number', null, null],
+  boolean: ['boolean', null, null],
+  numberArray: [null, 'array of numbers', ' (array of numbers)'],
+  stringArray: [null, 'list of ', ' (array of strings)'],
   // (We had to use "list of" instead of "array of" because then it would work for "array of numbers" as well, as it's not possible to define a TypeScript type that would allow us to distinguish between the two.)
+} as const;
+
+export const specKeyTemplates = {
+  boolean: [null, 'is', null],
+  stringArray: [null, null, 'Array'],
+} as const;
+
+export type EPSTemplates<T extends Record<string, EPSTemplate>> = {
+  [K in keyof T]: T[K];
 };
 
-export type SpecKey = {
-  boolean: FitsTemplate<undefined, `is${Capitalize<string>}`, undefined>;
-  stringArray: FitsTemplate<undefined, `${string}Array`, undefined>;
-};
+export type SpecValueTemplates = EPSTemplates<typeof specValueTemplates>;
+export type SpecKeyTemplates = EPSTemplates<typeof specKeyTemplates>;
 
 export type SpecType = {
   number: number;
@@ -43,16 +49,16 @@ export type SpecType = {
 }
 
 export type InferTypeFromKey<K extends string> = {
-  [P in keyof SpecKey]: K extends SpecKey[P] ? SpecType[P] : never;
-}[keyof SpecKey];
+  [P in keyof SpecKeyTemplates]: K extends SpecKeyTemplates[P] ? SpecType[P] : never;
+}[keyof SpecKeyTemplates];
 
 type TestInferTypeFromKey = InferTypeFromKey<'isPaid'>; // expected: boolean
 type TestInferTypeFromKey2 = InferTypeFromKey<'notesArray'>; // expected: string[]
 type TestInferTypeFromKey3 = InferTypeFromKey<'groceries'>; // expected: never
 
 export type InferTypeFromValue<V extends string> = {
-  [P in keyof SpecValue]: Lowercase<V> extends SpecValue[P] ? SpecType[P] : never;
-}[keyof SpecValue];
+  [P in keyof SpecValueTemplates]: Lowercase<V> extends SpecValueTemplates[P] ? SpecType[P] : never;
+}[keyof SpecValueTemplates];
 
 type TestInferTypeFromValue = InferTypeFromValue<'number'>; // expected: number
 type TestInferTypeFromValue2 = InferTypeFromValue<'true if paid'>; // expected: boolean
