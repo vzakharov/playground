@@ -1,38 +1,25 @@
-// export type Specs<Keys extends string> = Keys | Keys[] | Record<Keys, string>;
 export type Specs = string | string[] | Record<string, string>;
 
-export type ExpectedModelOutput<O extends Specs> = 
+export type ModelOutput<O extends Specs> = 
   O extends string 
-    ? Record<O, string> 
-  : O extends string[] 
-    ? Record<O[number], string>
+    ? InferTypeFromValue<O>
+  : 
+  O extends string[] 
+    ? {
+      [K in O[number]]: InferTypeFromKey<K>;
+    }
   : O extends Record<string, string> 
     ? {
       [K in keyof O]: 
         InferTypeFromSpec<O, K>;
     } : never;
 
-export type InferTypeFromSpec<O extends Record<string, string>, K extends keyof O> =
-  Lowercase<O[K]> extends NumberSpecValue
-    ? number
-  : Lowercase<O[K]> extends BooleanSpecValue
-    ? boolean
-  : K extends BooleanSpecKey
-    ? boolean
-  : Lowercase<O[K]> extends ArrayOfNumbersSpecValue
-    ? number[]
-  : Lowercase<O[K]> extends ArrayOfStringsSpecValue
-    ? string[]
-  : K extends ArrayOfStringsSpecKey
-    ? string[]
-  : string;
-
-export type NumberSpecValue = "number" | `number ${string}` | `${string} (number)`;
-export type BooleanSpecValue = "boolean" | `true if ${string}` | `${string} (boolean)`;
-export type BooleanSpecKey = `is${Capitalize<string>}`;
-export type ArrayOfNumbersSpecValue = `array of numbers${string}` | `${string} (array of numbers)`;
-export type ArrayOfStringsSpecValue = `array of ${string}` | `${string} (array of strings)`;
-export type ArrayOfStringsSpecKey = `${string}Array`;
+export type FitsTemplate<
+Exact extends string | undefined, Prefix extends string | undefined, Suffix extends string | undefined
+> =
+  ( Exact extends string ? Exact : never )
+  | ( Prefix extends string ? `${Prefix}${string}` : never )
+  | ( Suffix extends string ? `${string}${Suffix}` : never );
 
 export const endsWith = <S extends string>(str: string, suffix: S): str is `${string}${S}` =>
   str.endsWith(suffix);
@@ -40,44 +27,70 @@ export const endsWith = <S extends string>(str: string, suffix: S): str is `${st
 export const startsWith = <S extends string>(str: string, prefix: S): str is `${S}${string}` =>
   str.startsWith(prefix);
 
-const fits = <
-  Equals extends string, Prefix extends string, Suffix extends string
+export const fitsTemplateChecker = <
+  Exact extends string | undefined, Prefix extends string | undefined, Suffix extends string | undefined
 >(
-  str: string, equals: Equals | undefined, prefix: Prefix | undefined, suffix: Suffix | undefined
-): str is Equals | `${Prefix}${string}` | `${string}${Suffix}` =>
-  str === equals || !!prefix && startsWith(str, prefix) || !!suffix && endsWith(str, suffix);
+  exact: Exact, prefix: Prefix, suffix: Suffix
+) => 
+  (str: string): str is FitsTemplate<Exact, Prefix, Suffix> =>
+    str === exact || !!prefix && startsWith(str, prefix) || !!suffix && endsWith(str, suffix);
 
-export const valueRepresentsNumber = (value: string): value is NumberSpecValue => 
-  fits(value, 'number', 'number ', ' (number)');
+export type NumberSpecValue = FitsTemplate<'number', 'number ', ' (number)'>;
+export type BooleanSpecValue = FitsTemplate<'boolean', 'true if ', ' (boolean)'>;
+export type BooleanSpecKey = FitsTemplate<undefined, `is${Capitalize<string>}`, undefined>;
+export type ArrayOfNumbersSpecValue = FitsTemplate<undefined, 'array of numbers', ' (array of numbers)'>;
+export type ArrayOfStringsSpecValue = Exclude<
+  FitsTemplate<undefined, 'array of ', ' (array of strings)'>,
+  ArrayOfNumbersSpecValue
+>;
+export type ArrayOfStringsSpecKey = FitsTemplate<undefined, `${string}Array`, undefined>;
 
-export const valueRepresentsBoolean = (value: string): value is BooleanSpecValue =>
-  fits(value, 'boolean', 'true if ', ' (boolean)');
 
-export const keyRepresentsBoolean = (key: string): key is BooleanSpecKey =>
-  startsWith(key, 'is');
+export type InferTypeFromKey<K extends string> =
+  K extends BooleanSpecKey
+    ? boolean
+  : K extends ArrayOfStringsSpecKey
+    ? string[]
+  : never;
 
-export const valueRepresentsNumberArray = (value: string): value is ArrayOfNumbersSpecValue =>
-  fits(value, undefined, 'array of numbers', ' (array of numbers)');
+export type InferTypeFromValue<V extends string> =
+  Lowercase<V> extends NumberSpecValue
+    ? number
+  : Lowercase<V> extends BooleanSpecValue
+    ? boolean
+  : Lowercase<V> extends ArrayOfNumbersSpecValue
+    ? number[]
+  : Lowercase<V> extends ArrayOfStringsSpecValue
+    ? string[]
+  : never;
 
+export type InferTypeFromSpec<O extends Record<string, string>, K extends keyof O> =
+  K extends string
+    ? InferTypeFromKey<K> extends never
+      ? InferTypeFromValue<O[K]> extends never
+        ? string
+        : InferTypeFromValue<O[K]>
+      : InferTypeFromKey<K>
+    : never;
+
+export const valueRepresentsNumber = fitsTemplateChecker('number', 'number ', ' (number)');
+export const valueRepresentsBoolean = fitsTemplateChecker('boolean', 'true if ', ' (boolean)');
+export const keyRepresentsBoolean = fitsTemplateChecker(undefined, 'is', undefined);
+export const valueRepresentsNumberArray = fitsTemplateChecker(undefined, 'array of numbers', ' (array of numbers)');
 export const valueRepresentsStringArray = (value: string): value is ArrayOfStringsSpecValue =>
-  !valueRepresentsNumberArray(value) 
-    && fits(value, undefined, 'array of ', ' (array of strings)');
+  !valueRepresentsNumberArray(value)
+    && fitsTemplateChecker(undefined, 'array of ', ' (array of strings)')(value);
+export const keyRepresentsStringArray = fitsTemplateChecker(undefined, undefined, 'Array');
 
-export const keyRepresentsStringArray = (key: string): key is ArrayOfStringsSpecKey =>
-  endsWith(key, 'Array');
+export type GenerateOutput<O extends Specs> = ModelOutput<O>;
 
-export type GenerateOutput<O extends Specs> =
-  O extends string
-    ? string
-    : ExpectedModelOutput<O>;
-
-export const modelToGenerateOutput = <O extends Specs>(modelOutput: ExpectedModelOutput<O>, specs: O) => (
+export const modelToGenerateOutput = <O extends Specs>(modelOutput: ModelOutput<O>, specs: O) => (
   typeof specs === 'string'
     ? modelOutput[specs]
     : modelOutput 
 ) as GenerateOutput<O>;
 
-type TestOutputs = ExpectedModelOutput<{
+type TestOutputs = ModelOutput<{
   groceries: 'list of items to buy';
   unitPrices: 'unit prices for all items (array of numbers)';
   total: 'amount to pay (number)';

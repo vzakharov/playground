@@ -5,18 +5,18 @@ import { $throw, mutate } from "vovas-utils";
 import { GenerateMeta } from "./GenerateMeta";
 import { GenerateOptions } from "./GenerateOptions";
 import { GenerateOutput, Specs, modelToGenerateOutput } from "./types/Specs";
-import { composeChatPrompt } from "./composeChatPrompt";
+import { composeChatPrompt, serialize } from "./composeChatPrompt";
 import { matchesSpecs } from "./matchesSpecs";
 import { Inputs } from "./types/Inputs";
 
 export const defaultMeta = new GenerateMeta();
 
-export const generate = async < O extends Specs, I extends Inputs >(
+export async function generate<O extends Specs, I extends Inputs>(
   outputSpecs: O,
   inputs?: I,
   options?: GenerateOptions<O, I>
-): Promise<GenerateOutput<O> | undefined> => {
-  
+) {
+
   const { openaiApiKey, examples, description, meta = defaultMeta, ...openaiOptions } = options ?? {};
 
   const openai = new OpenAIApi(new Configuration({ apiKey:

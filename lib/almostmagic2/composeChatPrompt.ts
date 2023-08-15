@@ -7,7 +7,7 @@ import { GenerateOptions } from "./GenerateOptions";
 
 const sentenceCase = (str: string) => _.upperFirst(_.toLower(_.startCase(str)));
 
-const serialize = (obj: any, sentencify: boolean ) => yaml.dump(
+export const serialize = (obj: any, sentencify: boolean ) => yaml.dump(
   sentencify
     ? Array.isArray(obj)
       ? obj.map(sentenceCase)
@@ -21,7 +21,7 @@ const envelope = (char: string) => (str: string) => `${char}${str}${char}`;
 
 export const composeChatPrompt = < O extends Specs, I extends Inputs >(
   outputs: O,
-  inputs?: I | undefined,
+  inputs?: I,
   { description, examples }: GenerateOptions<O, I> = {}
 ) => {
 

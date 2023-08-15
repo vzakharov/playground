@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { Specs, ExpectedModelOutput, valueRepresentsNumber, valueRepresentsBoolean, keyRepresentsBoolean, valueRepresentsNumberArray, valueRepresentsStringArray, keyRepresentsStringArray } from "./types/Specs";
+import { Specs, ModelOutput, valueRepresentsNumber, valueRepresentsBoolean, keyRepresentsBoolean, valueRepresentsNumberArray, valueRepresentsStringArray, keyRepresentsStringArray } from "./types/Specs";
 
 
-export function matchesSpecs<S extends Specs>(obj: any, specs: S): obj is ExpectedModelOutput<S> {
+export function matchesSpecs<S extends Specs>(obj: any, specs: S): obj is ModelOutput<S> {
 
   if (typeof specs === 'string') {
     return typeof obj[specs] === 'string';
