@@ -49,7 +49,7 @@ export type SpecType = {
 }
 
 export type InferTypeFromKey<K extends string> = {
-  [P in keyof SpecKeyTemplates]: K extends SpecKeyTemplates[P] ? SpecType[P] : never;
+  [P in keyof SpecKeyTemplates]: Lowercase<K> extends SpecKeyTemplates[P] ? SpecType[P] : never;
 }[keyof SpecKeyTemplates];
 
 type TestInferTypeFromKey = InferTypeFromKey<'isPaid'>; // expected: boolean
@@ -65,6 +65,14 @@ type TestInferTypeFromValue2 = InferTypeFromValue<'true if paid'>; // expected: 
 type TestInferTypeFromValue3 = InferTypeFromValue<'array of numbers'>; // expected: number[]
 type TestInferTypeFromValue4 = InferTypeFromValue<'list of items to buy'>; // expected: string[]
 
+export type InferTypeFromEntry<O extends Record<string, string>, K extends keyof O> =
+  K extends string
+    ? InferTypeFromKey<K> extends never
+      ? InferTypeFromValue<O[K]> extends never
+        ? string
+        : InferTypeFromValue<O[K]>
+      : InferTypeFromKey<K>
+    : never;
 
 export type ModelOutput<O extends Specs> = 
   O extends string 
@@ -80,14 +88,7 @@ export type ModelOutput<O extends Specs> =
     }
   : O extends Record<string, string> 
     ? {
-      [K in keyof O]: 
-        K extends string
-          ? InferTypeFromKey<K> extends never
-            ? InferTypeFromValue<O[K]> extends never
-              ? string
-              : InferTypeFromValue<O[K]>
-            : InferTypeFromKey<K>
-          : never;
+      [K in keyof O]: InferTypeFromEntry<O, K>;
     } : never;
 
 export const valueRepresentsNumber = fitsTemplateChecker('number', 'number ', ' (number)');
