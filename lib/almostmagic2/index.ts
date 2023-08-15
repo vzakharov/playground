@@ -1,3 +1,4 @@
+export * from './GenerateException';
 export * from './GenerateMeta';
 export * from './GenerateOptions';
 export * from './chatMessage';

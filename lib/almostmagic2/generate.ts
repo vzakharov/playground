@@ -7,6 +7,7 @@ import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
 import { matchesSpecs } from "./specs/matchesSpecs";
+import { GenerateException } from "./GenerateException";
 
 export const defaultMeta = new GenerateMeta();
 
@@ -52,19 +53,10 @@ export async function generate<O extends Specs, I extends Inputs>(
     console.log(content);
     console.error(error);
     return error instanceof YAMLException
-      ? error
+      ? new GenerateException('yamlError', error)
       : Promise.reject(error);
   };
 
-};
-
-export class GenerateException extends Error {
-  constructor(
-    public readonly code: 'specMismatch',
-    public readonly meta: any
-  ) {
-    super(code);
-  };
 };
 
 export const generateOrThrow = < O extends Specs, I extends Inputs >(
