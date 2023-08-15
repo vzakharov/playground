@@ -1,13 +1,12 @@
 import yaml, { YAMLException } from "js-yaml";
-import _ from "lodash";
 import { Configuration, OpenAIApi } from "openai";
 import { $throw, mutate } from "vovas-utils";
 import { GenerateMeta } from "./GenerateMeta";
 import { GenerateOptions } from "./GenerateOptions";
-import { GenerateOutput, Specs, modelToGenerateOutput } from "./types/Specs";
-import { composeChatPrompt, serialize } from "./composeChatPrompt";
-import { matchesSpecs } from "./matchesSpecs";
-import { Inputs } from "./types/Inputs";
+import { composeChatPrompt } from "./composeChatPrompt";
+import { Inputs } from "./specs/Inputs";
+import { Specs } from "./specs/Specs";
+import { matchesSpecs } from "./specs/matchesSpecs";
 
 export const defaultMeta = new GenerateMeta();
 
@@ -46,20 +45,32 @@ export async function generate<O extends Specs, I extends Inputs>(
   try {
     const result = yaml.load(content ?? '');
     if ( matchesSpecs(result, outputSpecs) ) {
-      return modelToGenerateOutput(result, outputSpecs);
-    }
+      return result
+    };
+    return new GenerateException('specMismatch', { result, outputSpecs });
   } catch ( error ) {
     console.log(content);
     console.error(error);
     return error instanceof YAMLException
-      ? undefined
+      ? error
       : Promise.reject(error);
   };
 
 };
 
+export class GenerateException extends Error {
+  constructor(
+    public readonly code: 'specMismatch',
+    public readonly meta: any
+  ) {
+    super(code);
+  };
+};
+
 export const generateOrThrow = < O extends Specs, I extends Inputs >(
   ...args: Parameters<typeof generate<O, I>>
 ) => generate<O, I>(...args).then(result =>
-  result ?? $throw('Failed to generate output')
+  result instanceof Error
+    ? $throw(result)
+    : result
 );

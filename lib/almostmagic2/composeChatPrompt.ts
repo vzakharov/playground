@@ -1,8 +1,8 @@
 import yaml from "js-yaml";
 import _ from "lodash";
 import { chat } from "./chatMessage";
-import { Inputs } from "./types/Inputs";
-import { Specs } from "./types/Specs";
+import { Inputs } from "./specs/Inputs";
+import { Specs } from "./specs/Specs";
 import { GenerateOptions } from "./GenerateOptions";
 
 const sentenceCase = (str: string) => _.upperFirst(_.toLower(_.startCase(str)));

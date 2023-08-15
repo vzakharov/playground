@@ -1,7 +1,7 @@
 import { CreateChatCompletionRequest } from "openai";
-import { Inputs } from "./types/Inputs";
+import { Inputs } from "./specs/Inputs";
 import { GenerateMeta } from "./GenerateMeta";
-import { Specs, ModelOutput } from "./types/Specs";
+import { Specs, MatchingOutput } from "./specs/Specs";
 
 export type GenerateOptions<
   O extends Specs,
@@ -13,7 +13,7 @@ export type GenerateOptions<
   meta?: GenerateMeta;
   description?: string;
   examples?: (
-    ModelOutput<O> & (
+    MatchingOutput<O> & (
       I extends string
         ? { input: I }
         : I

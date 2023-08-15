@@ -5,5 +5,4 @@ export * from './composeChatPrompt';
 export * from './examples';
 export * from './generate';
 export * from './generator';
-export * from './matchesSpecs';
-export * from './types';
+export * from './specs';
