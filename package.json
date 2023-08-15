@@ -12,5 +12,14 @@
     "@nuxt/devtools": "latest",
     "@types/node": "^18.17.3",
     "nuxt": "^3.6.5"
+  },
+  "dependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/lodash": "^4.14.197",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "openai": "^3.3.0",
+    "use-vova": "^0.0.5",
+    "vovas-utils": "^0.3.10"
   }
 }
