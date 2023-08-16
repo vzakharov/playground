@@ -1,6 +1,4 @@
-import _ from "lodash";
-import { type } from "os";
-import { Jsonable, is } from "vovas-utils";
+import { MatchingOutput } from ".";
 
 export type Specs = string | string[] | Record<string, string>;
 
@@ -73,23 +71,6 @@ export type InferTypeFromSpecEntry<O extends Record<string, string>, K extends k
         : MatchesSpecValue<O[K]>
       : MatchesSpecKey<K>
     : never;
-
-export type MatchingOutput<O extends Specs> = 
-  O extends string 
-    ? MatchesSpecValue<O> extends never
-      ? string
-      : MatchesSpecValue<O>
-  : 
-  O extends string[] 
-    ? {
-      [K in O[number]]: MatchesSpecKey<K> extends never
-        ? string
-        : MatchesSpecKey<K>;
-    }
-  : O extends Record<string, string> 
-    ? {
-      [K in keyof O]: InferTypeFromSpecEntry<O, K>;
-    } : never;
 
 type TestSpecs = {
   groceries: 'list of items to buy';

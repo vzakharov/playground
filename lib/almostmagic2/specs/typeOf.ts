@@ -1,4 +1,4 @@
-import { SpecType } from "./Specs";
+import { SpecType } from ".";
 
 const join = <S1 extends string, S2 extends string>(s1: S1, s2: S2): `${S1}${S2}` => `${s1}${s2}`;
 

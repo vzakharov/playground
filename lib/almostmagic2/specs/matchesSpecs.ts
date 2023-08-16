@@ -1,7 +1,5 @@
-import { Jsonable, is } from "vovas-utils";
-import { MatchingOutput, Specs } from ".";
-import { typeOf } from "./typeOf";
-import { typeBasedOnSpecValue, typeBasedOnSpecKey, typeBasedOnSpecEntry } from "./utils";
+import { is } from "vovas-utils";
+import { MatchingOutput, Specs, typeBasedOnSpecEntry, typeBasedOnSpecKey, typeBasedOnSpecValue, typeOf } from ".";
 
 export const outputMatchesSpecs = <S extends Specs>(output: any, specs: S): output is MatchingOutput<S> => {
   if (!is.jsonable(output)) return false;
