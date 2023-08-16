@@ -6,7 +6,7 @@ import { GenerateOptions } from "./GenerateOptions";
 import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
-import { outputMatchesSpecs } from "./specs/matchesSpecs";
+import { outputMatchesSpecs } from "./specs/outputMatchesSpecs";
 import { GenerateException } from "./GenerateException";
 
 export const defaultMeta = new GenerateMeta();
