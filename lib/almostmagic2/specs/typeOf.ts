@@ -1,6 +1,8 @@
+import { SpecType } from "./Specs";
+
 const join = <S1 extends string, S2 extends string>(s1: S1, s2: S2): `${S1}${S2}` => `${s1}${s2}`;
 
-export const typeOf = (value: any) => {
+export const typeOf = (value: any): keyof SpecType | undefined => {
   const type = typeof value;
   switch (type) {
     case 'number':
@@ -19,7 +21,7 @@ export const typeOf = (value: any) => {
           }
         };
         if (detectedType === 'string' || detectedType === 'number') {
-          return join(detectedType, 'Array');
+          return join(detectedType, '[]');
         };
       };
   };

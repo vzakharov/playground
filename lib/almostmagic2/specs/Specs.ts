@@ -18,8 +18,8 @@ type TestMatchesTemplate = MatchesTemplate<['boolean', 'true if ', '(boolean)']>
 export const specValueTemplates = {
   number: ['number', null, '(number)'],
   boolean: ['boolean', 'true if ', '(boolean)'],
-  numberArray: [null, 'array of numbers', ' (array of numbers)'],
-  stringArray: ['array', 'list of ', ' (array of strings)'],
+  'number[]': [null, 'array of numbers', ' (array of numbers)'],
+  'string[]': ['array', 'list of ', ' (array of strings)'],
   // (We had to use "list of" instead of "array of" because then it would work for "array of numbers" as well, as it's not possible to define a TypeScript type that would allow us to distinguish between the two.)
   string: [null, 'string', '(string)'],
 } as const;
@@ -28,7 +28,7 @@ export const specKeyTemplates = {
   boolean: [null, 'is', null],
   // Note: This will also be triggered on "normal" words starting with "is", e.g. "island".
   // TODO: Think of a different way to do this (require an underscore prefix, i.e. "is_paid" instead of "isPaid"?)
-  stringArray: [null, null, 'Array'],
+  'string[]': [null, null, 'Array'],
   string: [null, null, 'String'],
 } as const;
 
@@ -42,8 +42,8 @@ export type SpecKeyTemplates = EPSTemplates<typeof specKeyTemplates>;
 export type SpecType = {
   number: number;
   boolean: boolean;
-  numberArray: number[];
-  stringArray: string[];
+  'number[]': number[];
+  'string[]': string[];
   string: string;
 }
 
