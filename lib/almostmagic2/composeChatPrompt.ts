@@ -29,7 +29,7 @@ export const composeChatPrompt = < O extends Specs, I extends Inputs >(
     Array.isArray(outputs)
       ? outputs
       : typeof outputs === "string"
-        ? [outputs]
+        ? ['output']
         : Object.keys(outputs)
   );
 
@@ -54,7 +54,12 @@ export const composeChatPrompt = < O extends Specs, I extends Inputs >(
             chat.user(serialize(inputs ?? randomSeed(), false)),
           ]
         : [
-          chat.user(`What the user provides:\n${serialize(inputs ?? randomSeed(), true)}`),
+          chat.user(`What the user provides:\n${serialize(
+            inputs 
+              ? typeof inputs === "string"
+                ? { input: inputs }
+                : inputs
+              : randomSeed(), true)}`),
           chat.system(`Come up with an output based on the input provided by the user as a YAML object with the following keys: ${
             outputKeys.map(envelope('`')).join(', ')
           }. Provide just the YAML object, without any enclosing text or formatting. Do NOT separate the keys with double newlines.`)

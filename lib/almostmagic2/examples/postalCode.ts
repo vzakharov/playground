@@ -1,4 +1,4 @@
-import { generate } from "../generate";
+import { generate, generateOrThrow } from "../generate";
 
-export const getPostalCode = ( city: string ) =>
-  generate( 'postalCode', { city } );
+export const getPostalCode = ( location: string ) =>
+  generateOrThrow( 'postalCode', location );

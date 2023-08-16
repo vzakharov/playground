@@ -6,7 +6,7 @@ import { GenerateOptions } from "./GenerateOptions";
 import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
-import { matchesSpecs } from "./specs/matchesSpecs";
+import { outputMatchesSpecs } from "./specs/matchesSpecs";
 import { GenerateException } from "./GenerateException";
 
 export const defaultMeta = new GenerateMeta();
@@ -25,9 +25,13 @@ export async function generate<O extends Specs, I extends Inputs>(
     $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
   }));
 
-  const messages = composeChatPrompt(outputSpecs, inputs, { examples, description });
+  const messages = composeChatPrompt(
+    outputSpecs, 
+    inputs, 
+    { examples, description }
+  );
 
-  console.log({ messages });
+  console.log(yaml.dump({ messages }));
 
   const requestData = {
     model: 'gpt-3.5-turbo',
@@ -44,8 +48,10 @@ export async function generate<O extends Specs, I extends Inputs>(
   mutate(meta, { api: { requestData, response } });
 
   try {
-    const result = yaml.load(content ?? '');
-    if ( matchesSpecs(result, outputSpecs) ) {
+    let result = yaml.load(content ?? '') as any;
+    if ( typeof outputSpecs === 'string' ) 
+      result = result['output'];
+    if ( outputMatchesSpecs(result, outputSpecs) ) {
       return result
     };
     return new GenerateException('specMismatch', { result, outputSpecs });
@@ -53,7 +59,7 @@ export async function generate<O extends Specs, I extends Inputs>(
     console.log(content);
     console.error(error);
     return error instanceof YAMLException
-      ? new GenerateException('yamlError', error)
+      ? new GenerateException('yamlError', { content, ...error })
       : Promise.reject(error);
   };
 
