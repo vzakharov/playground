@@ -8,7 +8,7 @@ export type SpecTypes = {
 
 export type SpecType = SpecTypes[keyof SpecTypes];
 
-export type SpecTypeKey<T extends SpecType> = {
+export type SpecTypeKey<T extends SpecType = SpecType> = {
   [P in keyof SpecTypes]: SpecTypes[P] extends T ? P : never;
 }[keyof SpecTypes];
 
@@ -37,7 +37,7 @@ export type SpecTypeKeys<T extends SpecType | Record<string, SpecType>> =
   SpecTypeKeysObject<T> | SpecTypeKeysSingle<T>;
 
 export const specTypeKeysIsObject = <T extends SpecType | Record<string, SpecType>>(value: SpecTypeKeysObject<T> | SpecTypeKeysSingle<T>): value is SpecTypeKeysObject<T> =>
-  typeof value === 'object';
+  typeof value === 'object';  
 
 type TestTypeKeys = SpecTypeKeys<{ a: string[], b: number }>; // expected: { a: 'string[]', b: 'number' }
 type TestTypeKeys2 = SpecTypeKeys<string[]>; // expected: 'string[]'

@@ -1,15 +1,12 @@
-import { is } from "vovas-utils";
-import { MatchingOutput, Specs, matchingOutputTypeKeys, specTypeKeysIsObject, typeOf } from ".";
-import { GenerateException, SpecMismatchException } from "../GenerateException";
+import { Jsonable, is } from "vovas-utils";
+import { MatchingOutput, SpecTypeKey, SpecTypes, Specs, matchingOutputTypeKeys, specTypeKeysIsObject, tryConvert, typeOf } from ".";
+import { GenerateException, SpecMismatchException } from "..";
 
-// export const outputMatchesSpecs = <S extends Specs>(output: any, specs: S): output is MatchingOutput<S> => 
-//   !is.jsonableObject(output)
-//     ? false
-//   : typeof specs === 'string'
-//     ? matchingOutputTypeKeys(specs) === typeOf(output)
-//   : _.isEqual(matchingOutputTypeKeys(specs), _.mapValues(output, typeOf));
+export const isNotSameType = <T extends SpecTypeKey>(value: Jsonable, type: T): value is Exclude<Jsonable, SpecTypes[T]> =>
+  typeOf(value) !== type;
 
-export function assertOutputMatchesSpecs<S extends Specs>(output: any, specs: S): asserts output is MatchingOutput<S> {
+
+export function makeOutputMatchSpecs<S extends Specs>(output: any, specs: S) {
 
   if ( !is.jsonable(output) )
     throw new GenerateException('outputNotJsonable', { output });
@@ -24,24 +21,25 @@ export function assertOutputMatchesSpecs<S extends Specs>(output: any, specs: S)
     for ( const key in expectedTypes ) {
       const expectedType = expectedTypes[key];
       const actualValue = output[key];
-      if ( expectedType !== typeOf(actualValue) )
-        throw new SpecMismatchException(specs, key, expectedType, actualValue)
+      if ( isNotSameType(actualValue, expectedType) ) {
+        const convertedValue = tryConvert(actualValue, expectedType);
+        if ( typeof convertedValue === undefined )
+          throw new SpecMismatchException(specs, key, expectedType, actualValue);
+        output[key] = convertedValue;
+      }
     };
 
   } else {
 
-    if ( expectedTypes !== typeOf(output) )
-      throw new SpecMismatchException(specs, undefined, expectedTypes,  output)
+    if ( isNotSameType(output, expectedTypes) ) {
+      const convertedValue = tryConvert(output, expectedTypes);
+      if ( typeof convertedValue === undefined )
+        throw new SpecMismatchException(specs, undefined, expectedTypes,  output)
+      output = convertedValue;
+    };
 
   };
+
+  return output as MatchingOutput<S>;
 
 };
-
-export const outputMatchesSpecs = <S extends Specs>(output: any, specs: S): output is MatchingOutput<S> => {
-  try {
-    assertOutputMatchesSpecs(output, specs);
-    return true;
-  } catch (e) {
-    return false;
-  };
-}

@@ -6,7 +6,7 @@ import { GenerateOptions } from "./GenerateOptions";
 import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
-import { assertOutputMatchesSpecs, outputMatchesSpecs } from "./specs/outputMatchesSpecs";
+import { assertOutputMatchesSpecs, makeOutputMatchSpecs, outputMatchesSpecs } from "./specs/outputMatchesSpecs";
 import { GenerateException } from "./GenerateException";
 
 export const defaultMeta = new GenerateMeta();
@@ -51,7 +51,7 @@ export async function generateOrThrow<O extends Specs, I extends Inputs>(
     let result = yaml.load(content ?? '') as any;
     if ( typeof outputSpecs === 'string' ) 
       result = result['output'];
-    assertOutputMatchesSpecs(result, outputSpecs);
+    result = makeOutputMatchSpecs(result, outputSpecs);
     return result;
   } catch ( error ) {
     if ( error instanceof YAMLException )
