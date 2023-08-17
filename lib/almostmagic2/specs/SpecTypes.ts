@@ -21,12 +21,23 @@ export type SpecTypeOrKey<T extends SpecType, What extends 'type' | 'key'> = Wha
 type TestSpecTypeOrKey = SpecTypeOrKey<string[], 'type'>; // expected: string[]
 type TestSpecTypeOrKey2 = SpecTypeOrKey<number[], 'key'>; // expected: 'number[]'
 
-export type SpecTypeKeys<T extends SpecType | Record<string, SpecType>> =
+export type SpecTypeKeysObject<T extends SpecType | Record<string, SpecType>> =
+  T extends Record<string, SpecType>
+    ? {
+      [K in keyof T]: SpecTypeKey<T[K]>;
+    }
+  : never;
+
+export type SpecTypeKeysSingle<T extends SpecType | Record<string, SpecType>> =
   T extends SpecType
     ? SpecTypeKey<T>
-  : {
-    [K in keyof T]: SpecTypeKey<T[K]>;
-  };
+  : never;
+
+export type SpecTypeKeys<T extends SpecType | Record<string, SpecType>> =
+  SpecTypeKeysObject<T> | SpecTypeKeysSingle<T>;
+
+export const specTypeKeysIsObject = <T extends SpecType | Record<string, SpecType>>(value: SpecTypeKeysObject<T> | SpecTypeKeysSingle<T>): value is SpecTypeKeysObject<T> =>
+  typeof value === 'object';
 
 type TestTypeKeys = SpecTypeKeys<{ a: string[], b: number }>; // expected: { a: 'string[]', b: 'number' }
 type TestTypeKeys2 = SpecTypeKeys<string[]>; // expected: 'string[]'

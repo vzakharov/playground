@@ -14,6 +14,7 @@
 import * as Magic from '~/lib/almostmagic2';
 import { addProperties } from 'vovas-utils';
 import { useLocalRef } from 'use-vova';
+import yaml from 'js-yaml';
 
 const openaiApiKey = useLocalRef('openaiApiKey', '');
 
@@ -27,6 +28,6 @@ watch( openaiApiKey, (value) => {
   });
 }, { immediate: true });
 
-addProperties(window, Magic);
+addProperties(window, { ...Magic, ...yaml });
 
 </script>

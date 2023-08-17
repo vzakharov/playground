@@ -6,12 +6,12 @@ import { GenerateOptions } from "./GenerateOptions";
 import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
-import { outputMatchesSpecs } from "./specs/outputMatchesSpecs";
+import { assertOutputMatchesSpecs, outputMatchesSpecs } from "./specs/outputMatchesSpecs";
 import { GenerateException } from "./GenerateException";
 
 export const defaultMeta = new GenerateMeta();
 
-export async function generate<O extends Specs, I extends Inputs>(
+export async function generateOrThrow<O extends Specs, I extends Inputs>(
   outputSpecs: O,
   inputs?: I,
   options?: GenerateOptions<O, I>
@@ -51,24 +51,24 @@ export async function generate<O extends Specs, I extends Inputs>(
     let result = yaml.load(content ?? '') as any;
     if ( typeof outputSpecs === 'string' ) 
       result = result['output'];
-    if ( outputMatchesSpecs(result, outputSpecs) ) {
-      return result
-    };
-    return new GenerateException('specMismatch', { result, outputSpecs });
+    assertOutputMatchesSpecs(result, outputSpecs);
+    return result;
   } catch ( error ) {
-    console.log(content);
-    console.error(error);
-    return error instanceof YAMLException
-      ? new GenerateException('yamlError', { content, ...error })
-      : Promise.reject(error);
+    if ( error instanceof YAMLException )
+      throw new GenerateException('yamlError', { content, ...error });
+    throw error;
   };
 
 };
 
-export const generateOrThrow = < O extends Specs, I extends Inputs >(
-  ...args: Parameters<typeof generate<O, I>>
-) => generate<O, I>(...args).then(result =>
-  result instanceof Error
-    ? $throw(result)
-    : result
-);
+export const generate = async < O extends Specs, I extends Inputs >(
+  ...args: Parameters<typeof generateOrThrow<O, I>>
+) => {
+  try {
+    return await generateOrThrow<O, I>(...args);
+  } catch ( error ) {
+    if ( error instanceof GenerateException )
+      return error;
+    throw error;
+  };
+}
