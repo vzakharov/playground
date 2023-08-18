@@ -60,9 +60,12 @@ export const composeChatPrompt = < O extends Specs, I extends Inputs >(
                 ? { input: inputs }
                 : inputs
               : randomSeed(), true)}`),
-          chat.system(`Come up with an output based on the input provided by the user as a YAML object with the following keys: ${
+          // chat.system(`Come up with an output based on the input provided by the user as a YAML object with the following keys: ${
+          //   outputKeys.map(envelope('`')).join(', ')
+          // }. Provide just the YAML object, without any enclosing text or formatting. Do not forget to enclose any strings containing colons in quotes (per YAML syntax).`),
+          chat.system(`Come up with an output based on the input provided by the user as a JSON object with the following keys: ${
             outputKeys.map(envelope('`')).join(', ')
-          }. Provide just the YAML object, without any enclosing text or formatting. Do not forget to enclose any strings containing colons in quotes (per YAML syntax).`),
+          }. Provide just the JSON object, without any indents, enclosing text or formatting.`),
         ]
     )
   ];

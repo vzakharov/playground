@@ -56,7 +56,8 @@ export async function generate<O extends Specs, I extends Inputs>(
   mutate(meta, { api: { requestData, response } });
 
   try {
-    let result = yaml.load(content ?? '') as any;
+    // let result = yaml.load(content ?? '') as any;
+    let result = JSON.parse(content ?? $throw(new GenerateException('noOutput')));
     if ( typeof outputSpecs === 'string' ) 
       result = result['output'];
     let matchingResult = makeOutputMatchSpecs(result, outputSpecs);
@@ -64,8 +65,10 @@ export async function generate<O extends Specs, I extends Inputs>(
       matchingResult = postProcess(matchingResult);
     return matchingResult;
   } catch ( error ) {
-    if ( error instanceof YAMLException )
-      error = new GenerateException('yamlError', { content, ...error });
+    // if ( error instanceof YAMLException )
+    if ( error instanceof SyntaxError )
+      // error = new GenerateException('yamlError', { content, ...error });
+      error = new GenerateException('outputNotJsonable', { content, ...error });
     if ( error instanceof GenerateException && !throwOnFailure )
       return;
     throw error;
