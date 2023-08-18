@@ -14,10 +14,18 @@ export type GenerateOptions<
   meta?: GenerateMeta;
   description?: string;
   examples?: (
-    MatchingOutput<O> & (
+    (
       I extends string
         ? { input: I }
         : I
     )
+    &
+    (
+      MatchingOutput<O> extends string
+        ? { output: MatchingOutput<O> }
+        : MatchingOutput<O>
+    )
   )[];
+  throwOnFailure?: boolean;
+  postProcess?: ( output: MatchingOutput<O> ) => MatchingOutput<O>;
 };

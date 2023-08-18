@@ -7,7 +7,7 @@ export type MatchingOutput<S extends Specs> =
     ? MatchesSpecValue<S> extends never
       ? string
       : MatchesSpecValue<S>
-  : S extends string[] 
+  : S extends readonly string[] 
     ? {
       [K in S[number]]: MatchesSpecKey<K> extends never
         ? string

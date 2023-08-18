@@ -28,6 +28,6 @@ watch( openaiApiKey, (value) => {
   });
 }, { immediate: true });
 
-addProperties(window, { ...Magic, ...yaml });
+addProperties(window, { ...Magic, yaml });
 
 </script>

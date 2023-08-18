@@ -2,9 +2,9 @@ import { dump } from "js-yaml";
 import { Jsonable } from "vovas-utils";
 import { MatchingOutput, SpecTypeKeys, SpecTypeKeysObject, SpecTypeKeysSingle, Specs, matchingOutputTypeKeys } from "./specs";
 
-export class GenerateException<
-  T extends 'outputNotJsonable' | 'outputNotJsonableObject' | 'specMismatch' | 'yamlError'
-> extends Error {
+export type GenerateExceptionType = 'outputNotJsonable' | 'outputNotJsonableObject' | 'specMismatch' | 'yamlError';
+
+export class GenerateException<T extends GenerateExceptionType> extends Error {
   constructor(
     public readonly code: T,
     public readonly meta: any

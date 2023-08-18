@@ -1,7 +1,7 @@
 import { MatchingOutput } from ".";
 import { SpecTypes } from "./SpecTypes";
 
-export type Specs = string | string[] | Record<string, string>;
+export type Specs = string | readonly string[] | Record<string, string>;
 
 export type EPSTemplate = readonly [string | null, string | null, string | null];
 // EPS stands for Exact match, Prefix, Suffix
@@ -18,13 +18,13 @@ export const specValueTemplates = {
   number: ['number', null, '(number)'],
   boolean: ['boolean', 'true if ', '(boolean)'],
   'number[]': [null, 'array of numbers', ' (array of numbers)'],
-  'string[]': ['array', 'list of ', ' (array of strings)'],
+  'string[]': [null, 'array of strings', ' (array of strings)'],
   // (We had to use "list of" instead of "array of" because then it would work for "array of numbers" as well, as it's not possible to define a TypeScript type that would allow us to distinguish between the two.)
   string: [null, 'string', '(string)'],
 } as const;
 
 export const specKeyTemplates = {
-  boolean: [null, 'is', null],
+  boolean: [null, 'is', 'Boolean'],
   // Note: This will also be triggered on "normal" words starting with "is", e.g. "island".
   // TODO: Think of a different way to do this (require an underscore prefix, i.e. "is_paid" instead of "isPaid"?)
   'string[]': [null, null, 'Array'],
