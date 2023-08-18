@@ -6,4 +6,5 @@ export * from './composeChatPrompt';
 export * from './examples';
 export * from './generate';
 export * from './generator';
+export * from './improve';
 export * from './specs';

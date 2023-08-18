@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { is } from "vovas-utils";
-import { Specs, MatchesSpecValue, MatchesSpecKey, InferTypeFromSpecEntry, SpecType, SpecTypeKey, SpecTypeKeys, typeBasedOnSpecEntry, typeBasedOnSpecKey, typeBasedOnSpecValue } from ".";
+import { Specs, MatchesSpecValue, MatchesSpecKey, InferTypeFromSpecEntry, SpecTypeKeys, typeBasedOnSpecEntry, typeBasedOnSpecKey, typeBasedOnSpecValue, specValueTemplates } from ".";
 
 export type MatchingOutput<S extends Specs> = 
   S extends string 
@@ -33,7 +33,7 @@ export const matchingOutputTypeKeys = <S extends Specs>(specs: S) => (
 // Tests / examples
 
 type TestSpecs = {
-  groceries: 'list of items to buy',
+  groceries: 'items to buy (array of strings)',
   unitPrices: 'unit prices for all items (array of numbers)',
   total: 'amount to pay (number)',
   isPaid: 'true if paid',
@@ -62,7 +62,7 @@ const testOutputs2: TestOutputs2 = {
   notes: 'Buy organic if possible',
 };
 
-type TestSpec3 = 'List of items to buy';
+type TestSpec3 = 'List of items to buy (array of strings)';
 
 type TestOutputs3 = MatchingOutput<TestSpec3>;
 type TestOutputsTypeKeys3 = MatchingOutputTypeKeys<TestSpec3>;

@@ -62,7 +62,7 @@ export const composeChatPrompt = < O extends Specs, I extends Inputs >(
               : randomSeed(), true)}`),
           chat.system(`Come up with an output based on the input provided by the user as a YAML object with the following keys: ${
             outputKeys.map(envelope('`')).join(', ')
-          }. Provide just the YAML object, without any enclosing text or formatting. Do NOT separate the keys with double newlines.`)
+          }. Provide just the YAML object, without any enclosing text or formatting. Do not forget to enclose any strings containing colons in quotes (per YAML syntax).`),
         ]
     )
   ];

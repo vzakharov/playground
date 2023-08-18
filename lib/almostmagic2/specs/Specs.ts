@@ -1,5 +1,4 @@
-import { MatchingOutput } from ".";
-import { SpecTypes } from "./SpecTypes";
+import { SpecType, SpecTypeKey, SpecTypes, specTypeKey } from ".";
 
 export type Specs = string | readonly string[] | Record<string, string>;
 
@@ -17,11 +16,28 @@ type TestMatchesTemplate = MatchesTemplate<['boolean', 'true if ', '(boolean)']>
 export const specValueTemplates = {
   number: ['number', null, '(number)'],
   boolean: ['boolean', 'true if ', '(boolean)'],
-  'number[]': [null, 'array of numbers', ' (array of numbers)'],
-  'string[]': [null, 'array of strings', ' (array of strings)'],
+  'number[]': [null, 'array of numbers', '(array of numbers)'],
+  'string[]': [null, 'array of strings', '(array of strings)'],
   // (We had to use "list of" instead of "array of" because then it would work for "array of numbers" as well, as it's not possible to define a TypeScript type that would allow us to distinguish between the two.)
   string: [null, 'string', '(string)'],
 } as const;
+
+export type TemplateFor<T extends SpecType> = SpecValueTemplates[SpecTypeKey<T>];
+
+type TestTemplateFor = TemplateFor<number[]>; // expected: [null, "array of numbers", "(array of numbers)"]
+
+export type TemplateExactMatch<T extends SpecType> = SpecValueTemplates[SpecTypeKey<T>][0];
+export type TemplatePrefix<T extends SpecType> = SpecValueTemplates[SpecTypeKey<T>][1];
+export type TemplateSuffix<T extends SpecType> = SpecValueTemplates[SpecTypeKey<T>][2];
+
+export const templateFor = <T extends SpecType>(value: T) => specValueTemplates[specTypeKey(value)] as TemplateFor<T>;
+export const templateExactMatch = <T extends SpecType>(value: T) => templateFor(value)[0] as TemplateExactMatch<T>;
+export const templatePrefix = <T extends SpecType>(value: T) => templateFor(value)[1] as TemplatePrefix<T>;
+export const templateSuffix = <T extends SpecType>(value: T) => templateFor(value)[2] as TemplateSuffix<T>;
+
+type TestTemplateExactMatch = TemplateExactMatch<number[]>; // expected: null
+type TestTemplatePrefix = TemplatePrefix<boolean>; // expected: "true if "
+type TestTemplateSuffix = TemplateSuffix<string[]>; // expected: "(array of strings)"
 
 export const specKeyTemplates = {
   boolean: [null, 'is', 'Boolean'],

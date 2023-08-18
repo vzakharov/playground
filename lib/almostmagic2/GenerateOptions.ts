@@ -13,6 +13,7 @@ export type GenerateOptions<
   openaiApiKey?: string;
   meta?: GenerateMeta;
   description?: string;
+  debug?: boolean;
   examples?: (
     (
       I extends string

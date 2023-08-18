@@ -1,5 +1,5 @@
-import yaml from 'js-yaml';
-import { MatchingOutput, generate } from "..";
+import { MatchingOutput, Specs, generate } from "..";
+import { JsonableObject, is } from 'vovas-utils';
 
 const prelimSpecs = {
   title: 'string',
@@ -11,6 +11,3 @@ export type Prelims = MatchingOutput<typeof prelimSpecs>;
 
 export const generatePrelims = ( topic: string ) =>
   generate(prelimSpecs, { topic });
-
-export const improvePrelims = ( prelims: Prelims, requestToImprove: string ) =>
-  generate(prelimSpecs, { current: yaml.dump(prelims), requestToImprove });

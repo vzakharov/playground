@@ -1,3 +1,5 @@
+import { $throw, Jsonable, check, give, is, shouldNotBe } from "vovas-utils";
+
 export type SpecTypes = {
   number: number;
   boolean: boolean;
@@ -15,6 +17,20 @@ export type SpecTypeKey<T extends SpecType = SpecType> = {
 type TestSpecTypeKey = SpecTypeKey<string[]>; // expected: 'string[]'
 type TestSpecTypeKey2 = SpecTypeKey<number>; // expected: 'number'
 // type TestSpecTypeKey3 = SpecTypeKey<boolean[]>; // expected: Type 'boolean[]' does not satisfy the constraint 'SpecType'.
+
+export const specTypeKey = (value: SpecType) =>
+  check(value) 
+    .if(is.number, () => 'number')
+    .if(is.boolean, () => 'boolean')
+    .if(is.string, () => 'string')
+    .if(is.array, items =>
+      items.every(is.number) 
+        ? 'number[]'
+      : items.every(is.string)
+        ? 'string[]'
+      : $throw('Array items must be either all numbers or all strings')
+    )
+    .else(shouldNotBe) as SpecTypeKey;
 
 export type SpecTypeOrKey<T extends SpecType, What extends 'type' | 'key'> = What extends 'type' ? T : SpecTypeKey<T>;
 

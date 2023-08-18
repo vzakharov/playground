@@ -19,7 +19,8 @@ export async function generate<O extends Specs, I extends Inputs>(
 ): Promise<MatchingOutput<O> | undefined> {
 
   const { 
-    openaiApiKey, examples, description, meta = defaultMeta, throwOnFailure, postProcess, ...openaiOptions 
+    openaiApiKey, examples, debug, description, meta = defaultMeta, throwOnFailure, 
+    postProcess, ...openaiOptions 
   } = options ?? {};
 
   const openai = new OpenAIApi(new Configuration({ apiKey:
@@ -34,7 +35,8 @@ export async function generate<O extends Specs, I extends Inputs>(
     { examples, description }
   );
 
-  console.log(yaml.dump({ messages }));
+  if ( debug )
+    console.log(yaml.dump({ messages }));
 
   const requestData = {
     model: 'gpt-3.5-turbo',
@@ -48,7 +50,8 @@ export async function generate<O extends Specs, I extends Inputs>(
 
   const { content } = message ?? {};
 
-  console.log(content);
+  if ( debug )
+    console.log(content);
 
   mutate(meta, { api: { requestData, response } });
 
