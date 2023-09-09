@@ -9,6 +9,12 @@ else
     duplicateFolder=$2
 fi
 
+# If -toMjsImports, set a flag
+if [ "$3" == "-toMjsImports" ]; then
+    toMjsImports=true
+fi
+
+
 # Check if directories are provided
 if [ -z "$originalFolder" ] || [ -z "$duplicateFolder" ]; then
     echo "Usage: ./sync.sh <original_folder> <duplicate_folder>"
@@ -30,6 +36,12 @@ fi
 # Function to sync directories
 function syncFolders {
     rsync -av --delete $originalFolder/ $duplicateFolder/
+
+    # If -toMjsImports, convert all `import * as x from 'y'`, if followed by `//@sync-convert`, to `import x from 'y'`, in all .ts files in all nested folders
+    if [ "$toMjsImports" = true ]; then
+        find $duplicateFolder -type f -name '*.ts' -exec sed -i '' -e 's/import \* as \(.*\) from \(.*\); \/\/@sync-convert/import \1 from \2;/g' {} \;
+    fi
+
 }
 
 # Initial sync
