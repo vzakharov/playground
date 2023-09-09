@@ -8,19 +8,14 @@
       <p class="text-gray-600 pt-3 text-xs italic">We’ll use your name to create your personalized description to help you craft your dream job.</p>
     </div>
     <div class="flex items-center justify-between">
-      <button
-        :disabled="!username"
-        :class="{ 'primary-btn': username, 'disabled-btn': !username }" 
-        type="button" 
-        @click="startChat"
-      >
-        Start Crafting
-      </button>
+      <Button :disabled="!username" @click="startChat" caption="Start Crafting" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  
+  import Button from './Button.vue'
 
   const username = ref('')
 
@@ -31,17 +26,5 @@
       emit('nameEntered', username.value)
     }
   }
-
+  
 </script>
-
-<style scoped lang="postcss">
-
-  .primary-btn {
-    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-  }
-
-  .disabled-btn {
-    @apply bg-gray-500 text-white font-bold py-2 px-4 rounded cursor-not-allowed;
-  }
-
-</style>
