@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="(message, index) in messages" :key="index" class="mb-2">
+    <div v-for="(message, index) in messages" :key="index" class="mb-2 message-container">
       <div v-if="message.role === 'user'" class="msg msg-user">
         {{ message.content }}
       </div>
@@ -8,8 +8,8 @@
         {{ message.content }}
       </div>
     </div>
-    <div v-if="messages[messages.length - 1]?.role === 'user'" class="msg-assistant animate-pulse">
-      <p class="text-white">...</p>
+    <div v-if="messages[messages.length - 1]?.role === 'user'" class="msg msg-assistant animate-pulse">
+      ...
     </div>
   </div>
 </template>
@@ -29,16 +29,21 @@ import { ChatCompletionRequestMessage } from 'openai';
 
 <style scoped lang="postcss">
 
+  .message-container {
+    @apply flex flex-col w-full;
+  }
+
   .msg {
-    @apply p-4 rounded-lg text-white;
+    @apply text-white p-2 rounded mb-2;
+    max-width: 60%;
   }
 
   .msg-user {
-    @apply bg-blue-500 float-right;
+    @apply bg-blue-500 self-end;
   }
 
   .msg-assistant {
-    @apply bg-gray-500 float-left;
+    @apply bg-gray-500 self-start;
   }
 
 </style>
