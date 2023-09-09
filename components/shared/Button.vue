@@ -2,7 +2,7 @@
   <button
     :disabled="disabled"
     :class="['btn', disabled ? 'btn-disabled' : 'btn-primary']"
-    type="button" 
+    :="{ type }"
     @click="onClick"
   >
     <slot>{{ caption }}</slot>
@@ -10,10 +10,16 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from 'nuxt/dist/app/compat/capi';
+
   
   const props = defineProps({
     disabled: Boolean,
-    caption: String
+    caption: String,
+    type: {
+      type: String as PropType<'button' | 'submit' | 'reset'>,
+      default: 'button'
+    }
   })
 
   const emit = defineEmits(['click'])
