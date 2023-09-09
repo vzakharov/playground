@@ -1,10 +1,7 @@
 <template>
   <div>
-    <div v-for="(message, index) in messages" :key="index" class="mb-2 message-container">
-      <div v-if="message.role === 'user'" class="msg msg-user">
-        {{ message.content }}
-      </div>
-      <div v-else class="msg msg-assistant">
+    <div v-for="(message, index) in messages" :key="index" class="mb-2 msg-container">
+      <div :class="message.role === 'user' ? 'msg msg-user' : 'msg msg-assistant'">
         {{ message.content }}
       </div>
     </div>
@@ -29,7 +26,7 @@ import { ChatCompletionRequestMessage } from 'openai';
 
 <style scoped lang="postcss">
 
-  .message-container {
+  .msg-container {
     @apply flex flex-col w-full;
   }
 
