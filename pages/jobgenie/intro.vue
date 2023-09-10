@@ -12,14 +12,16 @@
 <script setup lang="ts">
 
 import _ from 'lodash';
-import { ChatCompletionRequestMessage } from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { ref, watch } from 'vue';
 import Chat from '~/components/jobgenie/Chat.vue';
 import EnterName from '~/components/jobgenie/EnterName.vue';
 
   const username = ref('');
-  const messages = ref<ChatCompletionRequestMessage[]>([]);
-  const openaiApiKey = useProcessEnv('OPENAI_API_KEY');
+  const messages = ref<ChatCompletionMessageParam[]>([]);
+  useWindowProcess();
+
+  window
 
   watch(username, (newUsername, oldUsername) => {
     if (newUsername && newUsername !== oldUsername) {
@@ -30,7 +32,7 @@ import EnterName from '~/components/jobgenie/EnterName.vue';
   watch(messages, () => {
     const lastMessage = _.last(messages.value);
     if (lastMessage && lastMessage.role !== 'user') {
-      generateResponse('intro', messages, { openaiApiKey });
+      generateResponse('intro', messages);
     }
   });
 
