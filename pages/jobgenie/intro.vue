@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 
+import { generateResponse } from '~/lib/jobgenie';
 import _ from 'lodash';
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { ref, watch } from 'vue';
@@ -18,21 +19,20 @@ import Chat from '~/components/jobgenie/Chat.vue';
 import EnterName from '~/components/jobgenie/EnterName.vue';
 
   const username = ref('');
-  const messages = ref<ChatCompletionMessageParam[]>([]);
+  const messages = reactive<ChatCompletionMessageParam[]>([]);
   useWindowProcess();
-
-  window
 
   watch(username, (newUsername, oldUsername) => {
     if (newUsername && newUsername !== oldUsername) {
-      messages.value.push({ role: 'user', content: `Hi, I’m ${newUsername}` });
+      messages.push({ role: 'user', content: `Hi, I’m ${newUsername}` });
     }
   });
 
-  watch(messages, () => {
-    const lastMessage = _.last(messages.value);
-    if (lastMessage && lastMessage.role !== 'user') {
-      generateResponse('intro', messages);
+  watch(messages, async () => {
+    const lastMessage = _.last(messages);
+    if (lastMessage && lastMessage.role === 'user') {
+      const response = await generateResponse('interview', messages);
+      messages.push({ role: 'assistant', content: response });
     }
   });
 

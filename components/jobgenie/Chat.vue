@@ -13,11 +13,11 @@
 
 <script setup lang="ts">
 
-import { ChatCompletionRequestMessage } from 'openai';
+import { ChatMessage } from '~/lib/vovas-openai';
 
   const props = defineProps({
     messages: {
-      type: Array as () => ChatCompletionRequestMessage[],
+      type: Array as () => ChatMessage[],
       required: true
     }
   });

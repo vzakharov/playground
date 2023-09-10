@@ -1,16 +1,10 @@
 import _ from 'lodash';
-import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { $throw } from 'vovas-utils';
 import { Model, UsageContainer } from '.';
+import { openai } from './openai';
 
 const { log } = console;
-
-export const openai = () =>
-  new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-      ?? $throw('No OpenAI API key found'),
-  });
 
 export type Conversation = [query: string, response: string][];
 
