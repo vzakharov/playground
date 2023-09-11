@@ -1,7 +1,7 @@
 <template>
   <div class="container mx-auto px-4">
     <div class="flex flex-col items-center justify-center min-h-screen">
-      <div class="w-full max-w-md">
+      <div class="w-full max-w-3xl">
         <Login v-if="!username || !process.env.OPENAI_API_KEY" @="{ login }" />
         <Chat v-else :="{ messages }" @="{ sendMessage }" />
       </div>
