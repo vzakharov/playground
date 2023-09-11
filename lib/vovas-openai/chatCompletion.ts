@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
+import { ChatCompletionCreateParams, ChatCompletionMessageParam } from 'openai/resources/chat';
 import { $throw } from 'vovas-utils';
 import { Model, UsageContainer } from '.';
 import { openai } from './openai';
@@ -17,6 +17,7 @@ export type ChatCompletionOptions = {
   pickFrom?: number;
   apiKey?: string;
   usageContainer?: UsageContainer;
+  functions?: ChatCompletionCreateParams.Function[];
 };
 
 export async function chatCompletion(
@@ -26,20 +27,23 @@ export async function chatCompletion(
 
   // log.cyan({ messages, options });
 
-  const { model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, pickFrom = 1, apiKey, usageContainer } = options ?? {};
+  const { 
+    model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, pickFrom = 1, apiKey, usageContainer, functions
+  } = options ?? {};
 
   const {
     choices, usage,
   } = await openai().chat.completions.create({
     model,
     messages,
+    functions,
     ..._.pickBy(
       {
         temperature,
         max_tokens: maxTokens,
         top_p: topP,
         stop,
-        n: pickFrom, 
+        n: pickFrom,
       },
       _.identity,
     ),
