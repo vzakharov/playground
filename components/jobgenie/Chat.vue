@@ -109,7 +109,7 @@ watch(messages, async () => {
 }
 
 .input-container {
-  @apply flex justify-end items-center mt-2;
+  @apply flex justify-end items-center mt-4;
 }
 
 .input-box {
