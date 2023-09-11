@@ -8,6 +8,7 @@ export async function generateResponse(type: PromptType, messages: ChatCompletio
     buildPrompt(type, messages), {
       pickFrom: 3,
       ...shortestFirst,
+      throwIfNone: true,
     }
   );
   

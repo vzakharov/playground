@@ -22,7 +22,7 @@ import { useLocalReactive } from 'use-vova';
 
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { generateResponse } from '~/lib/jobgenie';
-import { says } from '~/lib/vovas-openai';
+import { GenerateException, says } from '~/lib/vovas-openai';
 import { username } from './username';
 
   const { type } = defineProps<{
@@ -55,8 +55,16 @@ import { username } from './username';
   watch(messages, async () => {
     const lastMessage = _.last(messages);
     if (lastMessage && lastMessage.role === 'user') {
-      const response = await generateResponse(type, messages);
-      messages.push(says.assistant( response ));
+      try {
+        const response = await generateResponse(type, messages);
+        messages.push(says.assistant( response ));
+      } catch (e: any) {
+        if ( e instanceof GenerateException ) {
+          // Remove last message and give an alert
+          messages.pop();
+          alert(e.message);
+        }
+      }
     }
   }, { immediate: true });
 
