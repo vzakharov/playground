@@ -8,11 +8,11 @@
       <div :class="message.role === 'user' ? 'msg msg-user' : 'msg msg-assistant'">
         {{ message.content }}
       </div>
-      <Button v-if="message.role === 'assistant'" small rounded outline class="ml-2 self-start" 
+      <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
         caption="↺"
         @click="c.regenerate(message)"
       />
-      <Button v-if="index && message.role === 'user'" small rounded outline class="ml-2 self-end" 
+      <Button v-if="index && isBy.user(message)" small rounded outline class="ml-2 self-end" 
         caption="✎"
         @click="c.editMessage(message)"
       />
@@ -39,6 +39,7 @@
 
   import Button from '~/components/shared/Button.vue';
   import { ChatController } from './controller';
+  import { isBy } from '~/lib/vovas-openai';
 
   const { type } = defineProps<{
     type: 'interview'

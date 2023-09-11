@@ -1,8 +1,7 @@
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
-import { generate, shortestFirst } from '~/lib/vovas-openai';
+import { ChatMessage, generate, shortestFirst } from '~/lib/vovas-openai';
 import { PromptType, systemMessages } from './systemMessages';
 
-export async function generateResponse(type: PromptType, messages: ChatCompletionMessageParam[]) {
+export async function generateResponse(type: PromptType, messages: ChatMessage[]) {
 
   const { result } = await generate(
     buildPrompt(type, messages), {
@@ -17,7 +16,7 @@ export async function generateResponse(type: PromptType, messages: ChatCompletio
 
 }
 
-export function buildPrompt(type: PromptType, messages: ChatCompletionMessageParam[]) {
+export function buildPrompt(type: PromptType, messages: ChatMessage[]) {
   return [
     { role: 'system', content: systemMessages[type] } as const,
     ...messages

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
-import { GenerateException, says } from '~/lib/vovas-openai';
+import { GenerateException, isBy, says } from '~/lib/vovas-openai';
 import { ChatController } from './controller';
 
 export function monitor({
@@ -18,7 +18,7 @@ export function monitor({
         m => messages.push(m)
       );
 
-    if (lastMessage.role === 'user') {
+    if ( isBy.user(lastMessage) ) {
       try {
         generating.start();
         const response = await generateResponse(type, messages);

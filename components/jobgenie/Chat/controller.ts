@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable } from 'vovas-utils';
-import { ChatMessage, says } from '~/lib/vovas-openai';
+import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
 import { ChatType } from './types';
 import { monitor } from './monitor';
 import { useLocalReactive } from 'use-vova';
@@ -10,13 +10,9 @@ import { username } from '../username';
 export class ChatController {
 
   messages: UnwrapRef<ChatMessage[]>;
-
   userMessage = ref('');
-
   generating = reactive(new Resolvable({ startResolved: true }));
-
   userInput = ref<HTMLInputElement | null>(null);
-
   username = username;
 
   constructor(
@@ -33,7 +29,7 @@ export class ChatController {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));
   }
 
-  editMessage(message: ChatMessage) {
+  editMessage(message: ChatMessage<'user'>) {
     this.userMessage.value = message.content ?? '';
     this.removeMessagesFrom(message);
     nextTick(() => {
@@ -43,10 +39,10 @@ export class ChatController {
 
   get lastMessageIsFromUser() {
     const lastMessage = _.last(this.messages);
-    return lastMessage && lastMessage.role === 'user';
+    return lastMessage && isBy.user(lastMessage);
   }
 
-  regenerate(message: ChatMessage) {
+  regenerate(message: ChatMessage<'assistant'>) {
     this.removeMessagesFrom(message);
   }
 
