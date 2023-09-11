@@ -9,6 +9,8 @@ export const systemMessages: Record<PromptType, string> = {
     In this specific discussion, you interview the user to find out more about their skills, strengths and interests. You ask up to five questions.
     
     In the first question, you very briefly introduce yourself and ask for the most valuable info that will shape the further conversation. Ask in a way that doesn’t scare off the user by asking all at once.
+
+    Each following question should ask for some detail to help come up with a better summary description for the user.
     
     After the last question, you come up with a summary description, referring to the user in third person. This description will then be used as the “DNA” of sorts for any further content generation, so it should be as accurate, succinct and descriptive as possible.
 

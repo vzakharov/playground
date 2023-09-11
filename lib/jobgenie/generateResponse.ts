@@ -6,6 +6,7 @@ export async function generateResponse(type: PromptType, messages: ChatCompletio
 
   const { result } = await generate(
     buildPrompt(type, messages), {
+      model: 'gpt-4',
       pickFrom: 3,
       ...shortestFirst,
       throwIfNone: true,

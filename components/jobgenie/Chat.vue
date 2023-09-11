@@ -8,14 +8,14 @@
       <div :class="message.role === 'user' ? 'msg msg-user' : 'msg msg-assistant'">
         {{ message.content }}
       </div>
-      <Button v-if="message.role === 'assistant'" small rounded outline class="ml-2" 
-          caption="↺"
-          @click="regenerate(message)"
-        />
-        <Button v-if="index && message.role === 'user'" small rounded outline class="ml-2" 
-          caption="✎"
-          @click="editMessage(message)"
-        />
+      <Button v-if="message.role === 'assistant'" small rounded outline class="ml-2 self-start" 
+        caption="↺"
+        @click="regenerate(message)"
+      />
+      <Button v-if="index && message.role === 'user'" small rounded outline class="ml-2 self-end" 
+        caption="✎"
+        @click="editMessage(message)"
+      />
     </div>
     <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse">
       ...
@@ -134,7 +134,7 @@ import { username } from './username';
 
 .msg {
   @apply text-white p-2 px-4 rounded mb-2;
-  max-width: 60%;
+  max-width: 90%;
 }
 
 .msg-user {
