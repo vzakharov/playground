@@ -38,7 +38,7 @@
 <script setup lang="ts">
 
   import Button from '~/components/shared/Button.vue';
-  import { createChatController } from './controller';
+  import { createChatController } from './controller/controller';
 
   const { type } = defineProps<{
     type: 'interview'

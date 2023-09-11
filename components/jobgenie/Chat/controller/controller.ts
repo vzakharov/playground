@@ -2,10 +2,10 @@ import _ from 'lodash';
 import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable } from 'vovas-utils';
 import { ChatMessage, ChatRole, says } from '~/lib/vovas-openai';
-import { ChatType } from './types';
-import { monitor } from './monitor';
+import { ChatType } from '../types';
+import { monitor } from '../monitor';
 import { useLocalReactive } from 'use-vova';
-import { username } from '../username';
+import { username } from '../../username';
 
 export type ChatController = ReturnType<typeof createChatController>;
 
