@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Resolvable, also } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
 import { ChatMessage, GenerateException, says } from '~/lib/vovas-openai';
-import { ChatController } from './controller/controller';
+import { ChatController } from './controller';
 import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { ChatType } from './types';
 
