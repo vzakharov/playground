@@ -8,10 +8,10 @@
     <div v-if="messages[messages.length - 1]?.role === 'user'" class="msg msg-assistant animate-pulse">
       ...
     </div>
-    <div v-else class="input-container">
-      <input v-model="userMessage" @keyup.enter="sendMessage" type="text" placeholder="Type your message here..." class="input-box">
-      <button @click="sendMessage" class="send-btn">↑</button>
-    </div>
+    <form @submit.prevent="sendMessage" class="input-container">
+      <input v-model="userMessage" type="text" placeholder="Type your message here..." class="input-box">
+      <button v-if="!!userMessage" type="submit" class="send-btn">↑</button>
+    </form>
   </div>
 </template>
 
@@ -26,12 +26,13 @@ import { ChatMessage } from '~/lib/vovas-openai';
     }
   });
 
-  let userMessage = '';
+  const userMessage = ref('')
 
   function sendMessage() {
-    if (userMessage.trim() !== '') {
-      props.messages.push({ content: userMessage, role: 'user' });
-      userMessage = '';
+    const content = userMessage.value;
+    if (content.trim() !== '') {
+      props.messages.push({ content: content, role: 'user' });
+      userMessage.value = '';
     }
   }
   
