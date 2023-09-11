@@ -2,7 +2,8 @@
   <div class="container mx-auto px-4">
     <div class="flex flex-col items-center justify-center min-h-screen">
       <div class="w-full max-w-md">
-        <Login v-if="!username || !process.env.apiKey" @="{ login }" />
+        {{  username }}
+        <Login v-if="!username || !process.env.OPENAI_API_KEY" @="{ login }" />
         <Chat v-else :="{ messages }" />
       </div>
     </div>
@@ -12,6 +13,7 @@
 <script setup lang="ts">
 
 import _ from 'lodash';
+import { useLocalRef } from 'use-vova';
 
 import { Credentials } from 'components/jobgenie/Credentials';
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
@@ -19,7 +21,7 @@ import Chat from '~/components/jobgenie/Chat.vue';
 import Login from '~/components/jobgenie/Login.vue';
 import { generateResponse } from '~/lib/jobgenie';
 
-  const username = ref('');
+  const username = useLocalRef('username', '');
 
   const messages = reactive<ChatCompletionMessageParam[]>([]);
 
@@ -34,7 +36,7 @@ import { generateResponse } from '~/lib/jobgenie';
     if (newUsername && newUsername !== oldUsername) {
       messages.splice(0, messages.length, { role: 'user', content: `Hi, I’m ${newUsername}` });
     }
-  });
+  }, { immediate: true });
 
   watch(messages, async () => {
     const lastMessage = _.last(messages);
@@ -42,6 +44,6 @@ import { generateResponse } from '~/lib/jobgenie';
       const response = await generateResponse('interview', messages);
       messages.push({ role: 'assistant', content: response });
     }
-  });
+  }, { immediate: true });
 
 </script>
