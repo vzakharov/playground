@@ -2,32 +2,32 @@
   <div>
     <Button rounded small outline class="fixed top-0 mt-2 ml-2" 
       caption="↺ Start over"
-      @click="startOver" 
+      @click="m.startOver" 
     />
-    <div v-for="(message, index) in messages" :key="index" class="mb-2 msg-container">
+    <div v-for="(message, index) in m.messages" :key="index" class="mb-2 msg-container">
       <div :class="message.role === 'user' ? 'msg msg-user' : 'msg msg-assistant'">
         {{ message.content }}
       </div>
       <Button v-if="message.role === 'assistant'" small rounded outline class="ml-2 self-start" 
         caption="↺"
-        @click="regenerate(message)"
+        @click="m.regenerate(message)"
       />
       <Button v-if="index && message.role === 'user'" small rounded outline class="ml-2 self-end" 
         caption="✎"
-        @click="editMessage(message)"
+        @click="m.editMessage(message)"
       />
     </div>
     <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse">
       ...
     </div>
-    <form v-if="!lastMessageIsFromUser" @submit.prevent="sendMessage" class="input-container">
+    <form v-if="!m.lastMessageIsFromUser" @submit.prevent="m.sendMessage" class="input-container">
       <input type="text" class="input-box"
-        v-model="userMessage"
+        v-model="m.config.userMessage.value"
         placeholder="Type your message here..."
         ref="userInput"
       >
       <Button rounded small
-        v-if="!!userMessage" 
+        v-if="!!m.config.userMessage.value" 
         type="submit" 
         caption="↑"
       />
@@ -43,7 +43,7 @@ import { username } from '~/components/jobgenie/username';
 import Button from '~/components/shared/Button.vue';
 import { ChatMessage, says } from '~/lib/vovas-openai';
 import { watchMessages } from './watchMessages';
-import { messageManipulations } from './manipulations';
+import { MessageManipulator } from './manipulations';
 
   const { type } = defineProps<{
     type: 'interview'
@@ -64,13 +64,7 @@ import { messageManipulations } from './manipulations';
 
   const userInput = ref<HTMLInputElement | null>(null);
 
-  const { 
-    regenerate, 
-    editMessage, 
-    lastMessageIsFromUser,
-    sendMessage, 
-    startOver 
-  } = messageManipulations(messages, {
+  const m = new MessageManipulator(messages, {
     userMessage,
     userInput,
   });
