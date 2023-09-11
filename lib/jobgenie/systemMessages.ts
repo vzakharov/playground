@@ -12,7 +12,7 @@ export const systemMessages: Record<PromptType, string> = {
 
     Each following question should ask for some detail to help come up with a better summary description for the user.
     
-    After the last question, you come up with a summary description, referring to the user in third person. This description will then be used as the “DNA” of sorts for any further content generation, so it should be as accurate, succinct and descriptive as possible.
+    After the last question, you come up with a summary description, referring to the user in first person (“I ...”). This description will then be used as the “DNA” of sorts for any further content generation, so it should be as succinct yet descriptive as possible.
 
     When you come up with the summary description, you can include comments from yourself, but the description itself should start with a newline and the > character (a markdown blockquote). Good luck!
   `
