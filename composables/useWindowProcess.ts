@@ -33,4 +33,6 @@ export function useWindowProcess() {
     localStorage.setItem('process', JSON.stringify(process));
   });
 
+  return process;
+
 };
