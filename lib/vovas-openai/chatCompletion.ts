@@ -14,7 +14,7 @@ export type ChatCompletionOptions = {
   maxTokens?: number;
   topP?: number;
   stop?: string | string[];
-  count?: number;
+  pickFrom?: number;
   apiKey?: string;
   usageContainer?: UsageContainer;
 };
@@ -26,9 +26,7 @@ export async function chatCompletion(
 
   // log.cyan({ messages, options });
 
-  const { model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, count = 3, apiKey, usageContainer } = options ?? {};
-
-  log({ count, messages });
+  const { model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, pickFrom = 1, apiKey, usageContainer } = options ?? {};
 
   const {
     choices, usage,
@@ -41,7 +39,7 @@ export async function chatCompletion(
         max_tokens: maxTokens,
         top_p: topP,
         stop,
-        n: count, 
+        n: pickFrom, 
       },
       _.identity,
     ),

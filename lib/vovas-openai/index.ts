@@ -1,4 +1,3 @@
-export * from './asIs';
 export * from './chatCompletion';
 export * from './chatMessage';
 export * from './generate';

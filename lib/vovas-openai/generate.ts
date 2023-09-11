@@ -1,3 +1,4 @@
+import { FunctionThatReturns, give, ifGeneric } from "vovas-utils";
 import { ChatCompletionOptions, ChatMessage, Model, Usage, UsageContainer, UsageCost, chatCompletion } from ".";
 
 const { log } = console;
@@ -5,16 +6,13 @@ const { log } = console;
 export type GenerateConfig<
   Result,
   Evaluation
-> = {
-  count?: number;
-  model?: Model;
+> = ChatCompletionOptions & {
   maxAttempts?: number;
-  debug?: boolean;
-  postProcess: (output: string) => Result | null;
+  postProcess?: (output: string) => Result | null;
   evaluate: (result: Result) => Evaluation | null;
   betterIf: (current: Evaluation, best: Evaluation) => boolean;
   qualifiesIf?: (best: Evaluation) => boolean;
-}
+};
 
 export type DebugData<E> = {
   evaluation: E | null;
@@ -31,14 +29,15 @@ export type GenerateResult<R, E> = {
 
 export async function generate<Result, Evaluation>(
   promptMessages: ChatMessage[], {
-    postProcess,
+    postProcess = give.itself as FunctionThatReturns<Result extends string ? Result : never>,
+    // I.e., we need to warn (via returning never) if the user wants to generate a non-string result without using any post-processing.
     evaluate, 
     betterIf, 
     qualifiesIf = () => true,
-    ...config
+    usageContainer = new UsageContainer(),
+    maxAttempts = 3,
+    ...chatCompletionOptions
   }: GenerateConfig<Result, Evaluation>): Promise<GenerateResult<Result, Evaluation>> {
-
-  const { maxAttempts = 3, ...generateConfig } = config;
 
   let best: undefined | {
     result: Result;
@@ -46,7 +45,6 @@ export async function generate<Result, Evaluation>(
   };
 
   const allEvaluations: (Evaluation | null)[] = [];
-  const usageContainer = new UsageContainer();
 
   let attempts = 1;
 
@@ -56,7 +54,7 @@ export async function generate<Result, Evaluation>(
     const results = await chatCompletion(
       promptMessages,
       {
-        ...generateConfig,
+        ...chatCompletionOptions,
         usageContainer
       }
     );
