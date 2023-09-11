@@ -20,7 +20,7 @@
     <div v-if="c.generating.inProgress" class="msg msg-assistant animate-pulse">
       ...
     </div>
-    <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
+    <form v-if="!c.lastMessageIsFrom('user')" @submit.prevent="c.sendMessage" class="input-container">
       <input type="text" class="input-box"
         v-model="c.userMessage.value"
         placeholder="Type your message here..."
@@ -38,14 +38,14 @@
 <script setup lang="ts">
 
   import Button from '~/components/shared/Button.vue';
-  import { ChatController } from './controller';
+  import { createChatController } from './controller/controller';
 
   const { type } = defineProps<{
     type: 'interview'
   }>();
 
   
-  const c = new ChatController(type);
+  const c = createChatController(type);
 
 </script>
 

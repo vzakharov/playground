@@ -1,12 +1,21 @@
 import _ from 'lodash';
-import { also } from 'vovas-utils';
+import { Resolvable, also } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
-import { GenerateException, says } from '~/lib/vovas-openai';
-import { ChatController } from './controller';
+import { ChatMessage, GenerateException, says } from '~/lib/vovas-openai';
+import { ChatController } from './controller/controller';
+import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
+import { ChatType } from './types';
+
+export type MonitorParams = {
+  messages: UnwrapRef<ChatMessage[]>;
+  generating: UnwrapRef<Resolvable<void>>;
+  type: ChatType,
+  username: Ref<string>;
+};
 
 export function monitor({
   messages, generating, type, username
-}: ChatController) {
+}: MonitorParams) {
 
   watch(messages, async () => {
 
