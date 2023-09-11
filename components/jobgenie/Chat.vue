@@ -5,10 +5,10 @@
         {{ message.content }}
       </div>
     </div>
-    <div v-if="messages[messages.length - 1]?.role === 'user'" class="msg msg-assistant animate-pulse">
+    <div v-if="lastMessageIsFromUser" class="msg msg-assistant animate-pulse">
       ...
     </div>
-    <form @submit.prevent="sendMessage" class="input-container">
+    <form v-if="!lastMessageIsFromUser" @submit.prevent="sendMessage" class="input-container">
       <input v-model="userMessage" type="text" placeholder="Type your message here..." class="input-box">
       <button v-if="!!userMessage" type="submit" class="send-btn">↑</button>
     </form>
@@ -30,6 +30,11 @@ import { username } from './username';
   }>();
 
   const messages = useLocalReactive<ChatCompletionMessageParam[]>(`${type}Messages`, []);
+
+  const lastMessageIsFromUser = computed(() => {
+    const lastMessage = _.last(messages);
+    return lastMessage && lastMessage.role === 'user';
+  });
 
   const userMessage = ref('')
 
