@@ -33,13 +33,12 @@
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { useLocalReactive } from 'use-vova';
 import { Resolvable, also } from 'vovas-utils';
+import { username } from '~/components/jobgenie/username';
 import Button from '~/components/shared/Button.vue';
 import { generateResponse } from '~/lib/jobgenie';
 import { ChatMessage, GenerateException, says } from '~/lib/vovas-openai';
-import { username } from './username';
 
   const { type } = defineProps<{
     type: 'interview'
