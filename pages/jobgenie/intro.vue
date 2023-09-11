@@ -2,9 +2,8 @@
   <div class="container mx-auto px-4">
     <div class="flex flex-col items-center justify-center min-h-screen">
       <div class="w-full max-w-md">
-        {{  username }}
         <Login v-if="!username || !process.env.OPENAI_API_KEY" @="{ login }" />
-        <Chat v-else :="{ messages }" />
+        <Chat v-else :="{ messages }" @="{ sendMessage }" />
       </div>
     </div>
   </div>
@@ -13,17 +12,18 @@
 <script setup lang="ts">
 
 import _ from 'lodash';
-import { useLocalRef } from 'use-vova';
+import { useLocalReactive, useLocalRef } from 'use-vova';
 
 import { Credentials } from 'components/jobgenie/Credentials';
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import Chat from '~/components/jobgenie/Chat.vue';
 import Login from '~/components/jobgenie/Login.vue';
 import { generateResponse } from '~/lib/jobgenie';
+import { says } from '~/lib/vovas-openai';
 
   const username = useLocalRef('username', '');
 
-  const messages = reactive<ChatCompletionMessageParam[]>([]);
+  const messages = useLocalReactive<ChatCompletionMessageParam[]>('messages', []);
 
   const process = useWindowProcess();
 
@@ -32,17 +32,21 @@ import { generateResponse } from '~/lib/jobgenie';
     process.env.OPENAI_API_KEY = c.apiKey;
   }
 
-  watch(username, (newUsername, oldUsername) => {
-    if (newUsername && newUsername !== oldUsername) {
-      messages.splice(0, messages.length, { role: 'user', content: `Hi, I’m ${newUsername}` });
-    }
-  }, { immediate: true });
+  function sendMessage(content: string) {
+    messages.push(says.user(content));
+  }
 
   watch(messages, async () => {
     const lastMessage = _.last(messages);
     if (lastMessage && lastMessage.role === 'user') {
       const response = await generateResponse('interview', messages);
-      messages.push({ role: 'assistant', content: response });
+      messages.push(says.assistant( response ));
+    }
+  }, { immediate: true });
+
+  watch(username, (newUsername, oldUsername) => {
+    if (!messages.length && newUsername && newUsername !== oldUsername) {
+      messages.splice(0, messages.length, says.user(`Hi, I’m ${newUsername}`) );
     }
   }, { immediate: true });
 

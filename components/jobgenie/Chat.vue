@@ -28,10 +28,14 @@ import { ChatMessage } from '~/lib/vovas-openai';
 
   const userMessage = ref('')
 
+  const emit = defineEmits<{
+    sendMessage: [string]
+  }>();
+
   function sendMessage() {
     const content = userMessage.value;
     if (content.trim() !== '') {
-      props.messages.push({ content: content, role: 'user' });
+      emit('sendMessage', content);
       userMessage.value = '';
     }
   }
