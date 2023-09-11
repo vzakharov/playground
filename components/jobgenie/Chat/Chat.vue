@@ -5,9 +5,9 @@
       @click="c.startOver" 
     />
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
-      <div :class="message.role === 'user' ? 'msg msg-user' : 'msg msg-assistant'">
-        {{ message.content }}
-      </div>
+      <div :class="isBy.user(message) ? 'msg msg-user' : 'msg msg-assistant'"
+        v-html="Marked.parse(message.content ?? '')"
+      />
       <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
         caption="↺"
         @click="c.regenerate(message)"
@@ -40,6 +40,7 @@
   import Button from '~/components/shared/Button.vue';
   import { ChatController } from './controller';
   import { isBy } from '~/lib/vovas-openai';
+  import { Marked } from '@ts-stack/markdown';
 
   const { type } = defineProps<{
     type: 'interview'
@@ -76,4 +77,10 @@
   @apply border border-gray-300 rounded p-2 flex-grow mr-2;
 }
 
+</style>
+
+<style lang="postcss">
+.msg blockquote {
+  @apply border-l-4 border-gray-500 bg-gray-100 text-gray-700 p-3 px-5 my-4 italic;
+}
 </style>
