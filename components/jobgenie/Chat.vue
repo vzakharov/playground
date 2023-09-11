@@ -16,29 +16,44 @@
 </template>
 
 <script setup lang="ts">
+import _ from 'lodash';
+import { useLocalReactive, useLocalRef } from 'use-vova';
 
-import { ChatMessage } from '~/lib/vovas-openai';
 
-  const props = defineProps({
-    messages: {
-      type: Array as () => ChatMessage[],
-      required: true
-    }
-  });
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
+import { generateResponse } from '~/lib/jobgenie';
+import { says } from '~/lib/vovas-openai';
+import { username } from './username';
+
+  const { type } = defineProps<{
+    type: 'interview'
+  }>();
+
+  const messages = useLocalReactive<ChatCompletionMessageParam[]>(`${type}Messages`, []);
 
   const userMessage = ref('')
-
-  const emit = defineEmits<{
-    sendMessage: [string]
-  }>();
 
   function sendMessage() {
     const content = userMessage.value;
     if (content.trim() !== '') {
-      emit('sendMessage', content);
-      userMessage.value = '';
+      messages.push(says.user(content));
     }
   }
+
+  watch(username, (newUsername, oldUsername) => {
+    if (!messages.length && newUsername && newUsername !== oldUsername) {
+      messages.splice(0, messages.length, says.user(`Hi, I’m ${newUsername}`) );
+    }
+  }, { immediate: true });
+
+  watch(messages, async () => {
+    const lastMessage = _.last(messages);
+    if (lastMessage && lastMessage.role === 'user') {
+      const response = await generateResponse(type, messages);
+      messages.push(says.assistant( response ));
+    }
+  }, { immediate: true });
+
   
 </script>
 
