@@ -13,7 +13,7 @@
 
 import { Credentials } from '~/components/jobgenie/Credentials';
 import { username } from '~/components/jobgenie/username';
-import Chat from '~/components/jobgenie/Chat/Chat.vue';
+import Chat from '~/components/jobgenie/Chat/index.vue';
 import Login from '~/components/jobgenie/Login.vue';
 
   const process = useWindowProcess();
