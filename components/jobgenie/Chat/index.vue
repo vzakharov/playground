@@ -21,7 +21,11 @@
       ...
     </div>
     <form v-if="!lastMessageIsFromUser" @submit.prevent="sendMessage" class="input-container">
-      <input v-model="userMessage" type="text" placeholder="Type your message here..." class="input-box" ref="userInput">
+      <input type="text" class="input-box"
+        v-model="userMessage"
+        placeholder="Type your message here..."
+        ref="userInput"
+      >
       <Button rounded small
         v-if="!!userMessage" 
         type="submit" 
@@ -39,6 +43,7 @@ import { username } from '~/components/jobgenie/username';
 import Button from '~/components/shared/Button.vue';
 import { ChatMessage, says } from '~/lib/vovas-openai';
 import { watchMessages } from './watchMessages';
+import { messageManipulations } from './manipulations';
 
   const { type } = defineProps<{
     type: 'interview'
@@ -46,26 +51,7 @@ import { watchMessages } from './watchMessages';
 
   const messages = useLocalReactive<ChatMessage[]>(`${type}Messages`, []);
 
-  const lastMessageIsFromUser = computed(() => {
-    const lastMessage = _.last(messages);
-    return lastMessage && lastMessage.role === 'user';
-  });
-
   const userMessage = ref('');
-
-  function sendMessage() {
-    const content = userMessage.value;
-    if (content.trim() !== '') {
-      messages.push(says.user(content));
-      userMessage.value = '';
-    }
-  }
-
-  function startOver() {
-    if (window.confirm("Are you sure you want to start over? All current messages will be lost.")) {
-      messages.splice(0, messages.length);
-    }
-  }
 
   const generating = reactive(new Resolvable({ startResolved: true }));
 
@@ -78,31 +64,16 @@ import { watchMessages } from './watchMessages';
 
   const userInput = ref<HTMLInputElement | null>(null);
 
-  // function regenerate(index: number) {
-  //   messages.splice(index, messages.length - index);
-  // }
-  function regenerate(message: ChatMessage) {
-    // messages.splice(messages.indexOf(message), messages.length - messages.indexOf(message));
-    removeMessagesFrom(message);
-  };
-
-  function editMessage(message: ChatMessage) {
-    // userMessage.value = messages[index].content;
-    // messages.splice(index, messages.length - index);
-    // nextTick(() => {
-    //   userInput.value.select();
-    // });
-    userMessage.value = message.content ?? '';
-    // messages.splice(messages.indexOf(message), messages.length - messages.indexOf(message));
-    removeMessagesFrom(message);
-    nextTick(() => {
-      userInput.value?.select();
-    });
-  }
-
-  function removeMessagesFrom(message: ChatMessage) {
-    messages.splice(messages.indexOf(message), messages.length - messages.indexOf(message));
-  };
+  const { 
+    regenerate, 
+    editMessage, 
+    lastMessageIsFromUser,
+    sendMessage, 
+    startOver 
+  } = messageManipulations(messages, {
+    userMessage,
+    userInput,
+  });
 
 </script>
 
