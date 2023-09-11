@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import _ from 'lodash';
-import { useLocalReactive, useLocalRef } from 'use-vova';
+import { useLocalReactive } from 'use-vova';
 
 
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
@@ -36,12 +36,13 @@ import { username } from './username';
     return lastMessage && lastMessage.role === 'user';
   });
 
-  const userMessage = ref('')
+  const userMessage = ref('');
 
   function sendMessage() {
     const content = userMessage.value;
     if (content.trim() !== '') {
       messages.push(says.user(content));
+      userMessage.value = '';
     }
   }
 

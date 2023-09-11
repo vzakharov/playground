@@ -12,7 +12,7 @@
         <label class="form-label" for="apikey">
           What’s your OpenAI API Key?
         </label>
-        <input class="form-input" id="apikey" type="text" placeholder="sk-..." v-model="apiKey">
+        <input class="form-input" id="apikey" type="password" placeholder="sk-..." v-model="apiKey">
         <p class="form-hint">We need your API key to make requests to OpenAI. We don’t store your API key anywhere, it’s only saved in your local storage. The app doesn’t have a server, so your API key is safe with you.</p>
       </div>
       <div class="flex items-center justify-between">
