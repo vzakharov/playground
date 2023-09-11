@@ -3,7 +3,7 @@ import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable } from 'vovas-utils';
 import { ChatMessage, says } from '~/lib/vovas-openai';
 import { ChatType } from './types';
-import { watchMessages } from './watchMessages';
+import { monitor } from './monitor';
 import { useLocalReactive } from 'use-vova';
 import { username } from '../username';
 
@@ -25,7 +25,7 @@ export class ChatController {
 
     this.messages = useLocalReactive<ChatMessage[]>(`${type}Messages`, []);
 
-    watchMessages(this);
+    monitor(this);
 
   }
 
@@ -63,5 +63,5 @@ export class ChatController {
       this.messages.splice(0, this.messages.length);
     }
   }
-  
+
 }
