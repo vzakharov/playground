@@ -78,7 +78,7 @@ import { username } from './username';
   }
 
   .msg {
-    @apply text-white p-2 rounded mb-2;
+    @apply text-white p-2 px-4 rounded mb-2;
     max-width: 60%;
   }
 
