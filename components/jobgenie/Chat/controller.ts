@@ -6,6 +6,7 @@ import { ChatType } from './types';
 import { monitor } from './monitor';
 import { useLocalReactive } from 'use-vova';
 import { username } from '../username';
+import { getQuotes, hasQuotes } from './quotes';
 
 export class ChatController {
 
@@ -30,12 +31,15 @@ export class ChatController {
   }
 
   editMessage(message: ChatMessage<'user'>) {
-    this.userMessage.value = message.content ?? '';
+    this.userMessage.value = message.content;
     this.removeMessagesFrom(message);
     nextTick(() => {
       this.userInput.value?.select();
     });
   }
+
+  getQuotes = getQuotes;
+  hasQuotes = hasQuotes;
 
   get lastMessageIsFromUser() {
     const lastMessage = _.last(this.messages);

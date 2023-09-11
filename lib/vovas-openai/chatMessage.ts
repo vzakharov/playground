@@ -8,7 +8,8 @@ export type ChatRole = typeof chatRoles[number];
 // export type ChatMessage = ChatCompletionMessageParam;
 export type ChatMessage<R extends ChatRole = ChatRole> = {
   role: R;
-} & Omit<ChatCompletionMessageParam, 'role'>;
+  content: string;
+} & Omit<ChatCompletionMessageParam, 'role' | 'content'>;
 
 export function chatMessage<R extends ChatRole>(role: R, content: string): ChatMessage<R> {
   return {
