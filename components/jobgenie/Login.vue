@@ -5,14 +5,15 @@
         <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
           Hi there! What’s your name?
         </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Your name" v-model="username">
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Just the first name pls" v-model="username">
         <p class="text-gray-600 pt-3 text-xs italic">We’ll use your name to create your personalized description to help you craft your dream job.</p>
       </div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="apikey">
-          Please enter your OpenAI API Key
+          What’s your OpenAI API Key?
         </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="apikey" type="text" placeholder="Your OpenAI API Key" v-model="apiKey">
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="apikey" type="text" placeholder="sk-..." v-model="apiKey">
+        <p class="text-gray-600 pt-3 text-xs italic">We need your API key to make requests to OpenAI. We don’t store your API key anywhere, it’s only saved in your local storage. The app doesn’t have a server, so your API key is safe with you.</p>
       </div>
       <div class="flex items-center justify-between">
         <Button :disabled="!username || !apiKey" type="submit" @click="startChat" caption="Start Crafting" />
