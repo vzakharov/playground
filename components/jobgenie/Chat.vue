@@ -10,7 +10,7 @@
     </div>
     <div v-else class="input-container">
       <input v-model="userMessage" @keyup.enter="sendMessage" type="text" placeholder="Type your message here..." class="input-box">
-      <button @click="sendMessage" class="send-btn">Send</button>
+      <button @click="sendMessage" class="send-btn">↑</button>
     </div>
   </div>
 </template>
@@ -65,7 +65,7 @@ import { ChatMessage } from '~/lib/vovas-openai';
   }
 
   .send-btn {
-    @apply bg-green-600 text-white px-4 py-2 rounded cursor-pointer;
+    @apply bg-blue-600 text-white px-4 py-2 rounded-full cursor-pointer;
   }
 
 </style>
