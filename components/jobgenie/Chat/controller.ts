@@ -1,26 +1,43 @@
 import _ from 'lodash';
+import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
+import { Resolvable } from 'vovas-utils';
 import { ChatMessage, says } from '~/lib/vovas-openai';
+import { ChatType } from './types';
+import { watchMessages } from './watchMessages';
+import { useLocalReactive } from 'use-vova';
+import { username } from '../username';
 
-export type MessageManipulationsParams = {
-  userMessage: Ref<string>;
-  userInput: Ref<HTMLInputElement | null>;
-};
+export class ChatController {
 
-export class MessageManipulator {
+  messages: UnwrapRef<ChatMessage[]>;
+
+  userMessage = ref('');
+
+  generating = reactive(new Resolvable({ startResolved: true }));
+
+  userInput = ref<HTMLInputElement | null>(null);
+
+  username = username;
+
   constructor(
-    public messages: ChatMessage[], 
-    public config: MessageManipulationsParams
-  ) {}
+    public type: ChatType,
+  ) {
+
+    this.messages = useLocalReactive<ChatMessage[]>(`${type}Messages`, []);
+
+    watchMessages(this);
+
+  }
 
   private removeMessagesFrom(message: ChatMessage) {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));
   }
 
   editMessage(message: ChatMessage) {
-    this.config.userMessage.value = message.content ?? '';
+    this.userMessage.value = message.content ?? '';
     this.removeMessagesFrom(message);
     nextTick(() => {
-      this.config.userInput.value?.select();
+      this.userInput.value?.select();
     });
   }
 
@@ -34,10 +51,10 @@ export class MessageManipulator {
   }
 
   sendMessage() {
-    const content = this.config.userMessage.value;
+    const content = this.userMessage.value;
     if (content.trim() !== '') {
       this.messages.push(says.user(content));
-      this.config.userMessage.value = '';
+      this.userMessage.value = '';
     }
   }
 
@@ -46,4 +63,5 @@ export class MessageManipulator {
       this.messages.splice(0, this.messages.length);
     }
   }
+  
 }
