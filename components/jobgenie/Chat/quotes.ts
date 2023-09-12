@@ -32,6 +32,6 @@ export function getQuotes(message: ChatMessage) {
   return quotes;
 }
 
-export function hasQuotes(this: ChatController, message: ChatMessage) {
+export function hasQuotes(message: ChatMessage) {
   return quoteRegex.test(message.content);
 };
