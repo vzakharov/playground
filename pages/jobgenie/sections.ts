@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { data } from '~/components/jobgenie/data';
-import { dnaSet } from '~/components/jobgenie/dna';
+import { dnaJustSet } from '~/components/jobgenie/dna';
 
 export type Section = {
   id: string;
@@ -13,7 +13,7 @@ export type Section = {
 // Add your sections here
 export const sections = computed<Section[]>(() => {
 
-  const disableAllButInterview = !data.dna && 'Please complete the interview first to unlock this section';
+  const disableAllButInterview = !data.dna && 'Please complete the interview and pick a DNA first to unlock this section';
 
   return [
     {
@@ -23,7 +23,7 @@ export const sections = computed<Section[]>(() => {
     },
     {
       id: 'dna',
-      caption: 'DNA' + (dnaSet.value ? ' 👈' : ''),
+      caption: 'DNA' + (dnaJustSet.value ? ' 👈' : ''),
       emoji: '🧬',
       disabled: disableAllButInterview,
     },

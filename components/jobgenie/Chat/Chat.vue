@@ -8,8 +8,9 @@
           <template v-if="quote">
             <blockquote v-html="Marked.parse(quote)" />
             <!-- Button to set as DNA -->
-            <Button small rounded outline class="ml-2 self-start" 
-              :caption="dnaSet === quote ? '✓' : 'Set as DNA'"
+            <Button small rounded class="ml-2 self-start" 
+              :outline="!!data.dna"
+              :caption="dnaJustSet === quote ? '✓' : 'Set as DNA'"
               @click="setDna(quote)"
             />
           </template>
@@ -69,7 +70,7 @@
   import { ChatController } from './controller';
   import { exportData, importData } from '../exportImport';
   import { data } from '../data';
-  import { dnaSet, setDna } from '../dna'
+  import { dnaJustSet, setDna } from '../dna'
 
   const { type } = defineProps<{
     type: 'interview'
