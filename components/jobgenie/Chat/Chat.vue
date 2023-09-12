@@ -38,10 +38,15 @@
         caption="↺ Start over"
         @click="c.startOver" 
       />
-      <!-- Download data -->
-      <Button rounded small outline gray
+      <!-- Export data -->
+      <Button rounded small outline gray class="me-2"
         caption="⤓ Download data"
-        @click="downloadData"
+        @click="exportData"
+      />
+      <!-- Import data -->
+      <Button rounded small outline gray
+        caption="⤒ Upload data"
+        @click="importData"
       />
     </div>
   </div>
@@ -55,7 +60,7 @@
   import Button from '~/components/shared/Button.vue';
   import { isBy } from '~/lib/vovas-openai';
   import { ChatController } from './controller';
-  import { downloadData } from '../downloadData';
+  import { exportData, importData } from '../exportImport';
 
   const { type } = defineProps<{
     type: 'interview'
