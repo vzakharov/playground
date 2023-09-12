@@ -9,18 +9,14 @@ import { ChatType } from './types';
 
 export class BaseChatController {
 
-  messages: UnwrapRef<ChatMessage[]>;
   userMessage = ref('');
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
 
   constructor(
     public type: ChatType,
-  ) {
-
-    this.messages = findChat(type).messages;
-
-  }
+    public messages = findChat(type).messages
+  ) {}
 
   private removeMessagesFrom(message: ChatMessage) {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));
