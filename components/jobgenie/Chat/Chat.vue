@@ -46,14 +46,14 @@
   import { addProperties } from 'vovas-utils';
   import Button from '~/components/shared/Button.vue';
   import { isBy } from '~/lib/vovas-openai';
-  import { ChatController } from './controller';
+  import { createChatController } from './controller';
 
   const { type } = defineProps<{
     type: 'interview'
   }>();
 
   
-  const c = new ChatController(type);
+  const c = createChatController(type);
   addProperties(window, { _, c});
 
 </script>

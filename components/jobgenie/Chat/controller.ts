@@ -3,12 +3,14 @@ import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable } from 'vovas-utils';
 import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
 import { ChatType } from './types';
-import { monitor } from './monitor';
 import { useLocalReactive } from 'use-vova';
 import { username } from '../username';
+import { Monitorable } from './monitor';
 import { QuoteHandler } from './quotes';
 
-export class ChatController {
+export type Class<T> = new (...args: any[]) => T;
+
+export class BaseChatController {
 
   messages: UnwrapRef<ChatMessage[]>;
   userMessage = ref('');
@@ -21,8 +23,6 @@ export class ChatController {
   ) {
 
     this.messages = useLocalReactive<ChatMessage[]>(`${type}Messages`, []);
-
-    monitor(this);
 
   }
 
@@ -61,16 +61,15 @@ export class ChatController {
     }
   }
 
-}
+};
 
-export interface ChatController extends QuoteHandler {}
+export type ChatController = InstanceType<typeof BaseChatController> & InstanceType<ReturnType<typeof QuoteHandler>> & InstanceType<ReturnType<typeof Monitorable>>;
 
-applyMixins(ChatController, [ QuoteHandler ]);
-
-export function applyMixins(derivedCtor: any, baseCtors: any[]) {
-  baseCtors.forEach(baseCtor => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
-      Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!);
-    });
-  });
+export function createChatController(...args: ConstructorParameters<typeof BaseChatController>) {
+  const Class = Monitorable(
+    QuoteHandler(
+      BaseChatController
+    )
+  );
+  return new Class(...args) as ChatController;
 }
