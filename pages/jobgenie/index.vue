@@ -72,11 +72,11 @@
   }
 
   .menu-item.disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply opacity-50 cursor-default;
   }
 
   .menu-item:hover {
-    @apply bg-gray-200;
+    @apply bg-gray-100;
   }
 
   .content {
