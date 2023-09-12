@@ -13,7 +13,6 @@ export class BaseChatController {
   userMessage = ref('');
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
-  data = appData;
 
   constructor(
     public type: ChatType,

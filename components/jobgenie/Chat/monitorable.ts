@@ -3,6 +3,7 @@ import { Class, also } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
 import { GenerateException, isBy, says } from '~/lib/vovas-openai';
 import { BaseChatController } from './controller';
+import { appData } from '../data';
 
 
 export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
@@ -17,7 +18,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
     monitor() {
 
       const {
-        messages, generating, type, data: { username },
+        messages, generating, type,
       } = this;
 
       watch(messages, async () => {
@@ -26,7 +27,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
 
         const lastMessage = _.last(messages)
           ?? also(
-            says.user(`Hi, I’m ${username}`),
+            says.user(`Hi, I’m ${appData.username ?? 'looking for some assistance'}.`),
             m => messages.push(m)
           );
 
