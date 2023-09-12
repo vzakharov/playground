@@ -17,27 +17,28 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'nuxt/dist/app/compat/capi';
 
-const props = defineProps({
-  disabled: Boolean,
-  caption: String,
-  type: {
-    type: String as PropType<'button' | 'submit' | 'reset'>,
-    default: 'button'
-  },
-  rounded: Boolean,
-  small: Boolean,
-  outline: Boolean
-})
+  const props = defineProps({
+    disabled: Boolean,
+    caption: String,
+    type: {
+      type: String as PropType<'button' | 'submit' | 'reset'>,
+      default: 'button'
+    },
+    rounded: Boolean,
+    small: Boolean,
+    outline: Boolean,
+    checkmarkAfterCallback: Boolean
+  })
 
-const emit = defineEmits(['click'])
+  const emit = defineEmits(['click'])
 
-const onClick = () => {
-  if (!props.disabled) {
-    emit('click')
+  const onClick = () => {
+    if ( !props.disabled ) {
+      emit('click')
+    }
   }
-}
+  
 </script>
 
 <style scoped lang="postcss">
