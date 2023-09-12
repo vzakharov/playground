@@ -5,20 +5,47 @@ import { dnaSet } from '~/components/jobgenie/dna';
 export type Section = {
   id: string;
   caption: string;
+  emoji: string;
   include?: boolean;
+  disabled?: string | false;
 };
 
 // Add your sections here
-export const sections = computed<Section[]>(() => [
-  {
-    id: 'interview',
-    caption: 'Interview'
-  },
-  {
-    id: 'dna',
-    caption: dnaSet.value ? 'DNA ☜' : 'DNA',
-    include: !!data.dna
-  }
-]);
+export const sections = computed<Section[]>(() => {
+
+  const disableAllButInterview = !data.dna && 'Please complete the interview first to unlock this section';
+
+  return [
+    {
+      id: 'interview',
+      caption: 'Interview',
+      emoji: '🤝',
+    },
+    {
+      id: 'dna',
+      caption: 'DNA' + (dnaSet.value ? ' 👈' : ''),
+      emoji: '🧬',
+      disabled: disableAllButInterview,
+    },
+    {
+      id: 'linkedin',
+      caption: 'LinkedIn profile',
+      emoji: '👔',
+      disabled: disableAllButInterview,
+    },
+    {
+      id: 'job',
+      caption: 'Craft-a-job',
+      emoji: '🧪',
+      disabled: disableAllButInterview,
+    },
+    {
+      id: 'company',
+      caption: 'Pitch-a-company',
+      emoji: '🏢',
+      disabled: disableAllButInterview,
+    }
+  ];
+});
 
 export const selectedSection = ref<Section>(sections.value[0]);

@@ -2,12 +2,17 @@
   <div class="container">
     <div class="flex-container">
       <div class="sidebar">
-        <ul class="list">
+        <ul class="menu">
           <li v-for="section in sections.filter(s => s.include !== false)"
-            :key="section.id" class="list-item"   
-            @click="selectedSection = section"
+            :key="section.id" :class="`
+              menu-item
+              ${section.id === selectedSection.id && 'selected'}
+              ${section.disabled && 'disabled'}
+            `"
+            @click="!section.disabled && ( selectedSection = section )"
+            :title="section.disabled ? section.disabled : ''"
           >
-            <span v-text="section.caption" />
+            <span v-text="`${section.emoji} ${section.caption}`" />
           </li>
         </ul>
       </div>
@@ -52,12 +57,26 @@
     @apply w-full p-2 md:w-1/6 md:mr-6 fixed top-0 left-0 h-screen overflow-auto;
   }
 
-  .list {
-    @apply space-y-2;
+  /* .menu {
+    @apply space-y-1;
+  } */
+
+  .menu-item {
+    @apply cursor-pointer p-2 rounded text-gray-700 hover:text-gray-900;
+    filter: grayscale(100%)
   }
 
-  .list-item {
-    @apply cursor-pointer hover:bg-gray-200 p-2 rounded;
+  .menu-item.selected {
+    @apply bg-gray-200;
+    filter: grayscale(0%);
+  }
+
+  .menu-item.disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .menu-item:hover {
+    @apply bg-gray-200;
   }
 
   .content {
