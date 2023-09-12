@@ -3,35 +3,39 @@ import { ChatController } from "./controller";
 
 const quoteRegex = /\n>(.*?)\n/g;
 
-export function getQuotes(message: ChatMessage) {
-  const lines = message.content.split('\n\n');
-  const quotes = [];
-  let leadIn = null;
+export class QuoteHandler {
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  getQuotes(message: ChatMessage) {
+    const lines = message.content.split('\n\n');
+    const quotes = [];
+    let leadIn = null;
 
-    if (line.startsWith('>')) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      if (line.startsWith('>')) {
+        quotes.push({
+          leadIn: leadIn,
+          quote: line.substring(1).trim(),
+        });
+        leadIn = null;
+      } else if (line !== '') {
+        leadIn = line;
+      }
+    }
+
+    if (leadIn !== null) {
       quotes.push({
         leadIn: leadIn,
-        quote: line.substring(1).trim(),
+        quote: null,
       });
-      leadIn = null;
-    } else if (line !== '') {
-      leadIn = line;
     }
+
+    return quotes;
   }
 
-  if (leadIn !== null) {
-    quotes.push({
-      leadIn: leadIn,
-      quote: null,
-    });
+  hasQuotes(message: ChatMessage) {
+    return quoteRegex.test(message.content);
   }
 
-  return quotes;
 }
-
-export function hasQuotes(message: ChatMessage) {
-  return quoteRegex.test(message.content);
-};

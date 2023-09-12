@@ -6,7 +6,7 @@ import { ChatType } from './types';
 import { monitor } from './monitor';
 import { useLocalReactive } from 'use-vova';
 import { username } from '../username';
-import { getQuotes, hasQuotes } from './quotes';
+import { QuoteHandler } from './quotes';
 
 export class ChatController {
 
@@ -38,9 +38,6 @@ export class ChatController {
     });
   }
 
-  getQuotes = getQuotes;
-  hasQuotes = hasQuotes;
-
   get lastMessageIsFromUser() {
     const lastMessage = _.last(this.messages);
     return lastMessage && isBy.user(lastMessage);
@@ -64,4 +61,16 @@ export class ChatController {
     }
   }
 
+}
+
+export interface ChatController extends QuoteHandler {}
+
+applyMixins(ChatController, [ QuoteHandler ]);
+
+export function applyMixins(derivedCtor: any, baseCtors: any[]) {
+  baseCtors.forEach(baseCtor => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
+      Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!);
+    });
+  });
 }
