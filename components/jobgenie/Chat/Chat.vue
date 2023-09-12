@@ -1,9 +1,5 @@
 <template>
   <div>
-    <Button rounded small outline class="fixed top-0 mt-2 ml-2" 
-      caption="↺ Start over"
-      @click="c.startOver" 
-    />
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
       <div :class="isBy.user(message) ? 'msg msg-user' : 'msg msg-assistant'">
         <span v-if="!c.hasQuotes(message)" v-html="Marked.parse(message.content)" />
@@ -36,6 +32,18 @@
         caption="↑"
       />
     </form>
+    <div class="p-2 mt-4 fixed bottom-5 right-5 bg-white shadow rounded">
+      <!-- Start over -->
+      <Button rounded small outline gray class="me-2"
+        caption="↺ Start over"
+        @click="c.startOver" 
+      />
+      <!-- Download data -->
+      <Button rounded small outline gray
+        caption="⤓ Download data"
+        @click="downloadData"
+      />
+    </div>
   </div>
 </template>
 
@@ -47,12 +55,12 @@
   import Button from '~/components/shared/Button.vue';
   import { isBy } from '~/lib/vovas-openai';
   import { ChatController } from './controller';
+  import { downloadData } from '../downloadData';
 
   const { type } = defineProps<{
     type: 'interview'
   }>();
 
-  
   const c = ChatController.create(type);
   addProperties(window, { _, c});
 

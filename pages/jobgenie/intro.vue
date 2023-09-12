@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 pb-12">
+  <div class="container mx-auto px-4 pb-20">
     <div class="flex flex-col items-center justify-center min-h-screen p-5">
       <div class="w-full max-w-3xl">
         <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />

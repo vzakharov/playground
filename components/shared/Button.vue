@@ -1,15 +1,14 @@
 <template>
   <button
     :disabled="disabled"
-    :class="{
-      btn: true,
-      'btn-disabled': disabled,
-      'btn-primary': !disabled && !outline,
-      'btn-outline': !disabled && outline,
-      'btn-rounded': rounded,
-      'px-2 py-1': small,
-      'px-4 py-2': !small
-    }"
+    :class="`
+      btn 
+      ${disabled && 'btn-disabled'}
+      ${!disabled && !outline && 'btn-primary'}
+      ${!disabled && outline && 'btn-outline'}
+      ${rounded && 'btn-rounded'}
+      ${small ? 'px-2 py-1' : 'px-4 py-2'}
+    `"
     :type="type"
     @click="onClick"
   >
@@ -55,7 +54,7 @@ const onClick = () => {
 }
 
 .btn-outline {
-  @apply border border-gray-500 text-gray-500 font-medium;
+  @apply border border-gray-400 text-gray-400 font-medium;
   @apply hover:bg-gray-500 hover:text-white;
   @apply focus:outline-none;
 }
