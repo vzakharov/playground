@@ -2,7 +2,7 @@ import { ChatMessage } from "lib/vovas-openai";
 import { BaseChatController } from "./controller";
 import { Class } from "vovas-utils";
 
-const quoteRegex = /\n>(.*?)\n/g;
+const quoteRegex = /(?<=\n|^)>/g;
 
 export function QuoteHandler<C extends Class<BaseChatController>>(BaseClass: C) {
 

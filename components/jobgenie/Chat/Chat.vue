@@ -5,7 +5,14 @@
         <span v-if="!c.hasQuotes(message)" v-html="Marked.parse(message.content)" />
         <div v-else v-for="({ leadIn, quote}, index) in c.getQuotes(message)" :key="index">
           <p v-if="leadIn" v-html="Marked.parse(leadIn)" />
-          <blockquote v-if="quote" v-html="Marked.parse(quote)" />
+          <template v-if="quote">
+            <blockquote v-html="Marked.parse(quote)" />
+            <!-- Button to set as DNA -->
+            <Button small rounded outline class="ml-2 self-start" 
+              caption="Set as DNA"
+              @click="data.dna = quote"
+            />
+          </template>
         </div>
       </div>
       <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
@@ -40,12 +47,12 @@
       />
       <!-- Export data -->
       <Button rounded small outline gray class="me-2"
-        caption="⤓ Download data"
+        caption="⤓ Export data"
         @click="exportData"
       />
       <!-- Import data -->
       <Button rounded small outline gray
-        caption="⤒ Upload data"
+        caption="⤒ Import data"
         @click="importData"
       />
     </div>
@@ -61,13 +68,14 @@
   import { isBy } from '~/lib/vovas-openai';
   import { ChatController } from './controller';
   import { exportData, importData } from '../exportImport';
+  import { data } from '../data';
 
   const { type } = defineProps<{
     type: 'interview'
   }>();
 
   const c = ChatController.create(type);
-  addProperties(window, { _, c});
+  addProperties(window, { _, c, data});
 
 </script>
 

@@ -1,12 +1,12 @@
-import { appData } from './data';
+import { data } from './data';
 
 export function exportData() {
-  const dataStr = JSON.stringify(appData, null, 2);
+  const dataStr = JSON.stringify(data, null, 2);
   const dataBlob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `jobgenie-${appData.username}.json`; // replace with actual username
+  link.download = `jobgenie-${data.username}.json`; // replace with actual username
   link.click();
   URL.revokeObjectURL(url);
 };
@@ -17,10 +17,10 @@ export function importData() {
   if ( jsonStr ) {
     try {
       const data = JSON.parse(jsonStr);
-      for ( const key in appData ) {
-        appData[key as keyof typeof appData] = undefined;
+      for ( const key in data ) {
+        data[key as keyof typeof data] = undefined;
       };
-      Object.assign(appData, data);
+      Object.assign(data, data);
     } catch (e: any) {
       alert(e.message);
     }

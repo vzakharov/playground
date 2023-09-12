@@ -12,7 +12,7 @@
 <script setup lang="ts">
 
 import { Credentials } from '~/components/jobgenie/Credentials';
-import { appData as data } from '~/components/jobgenie/data';
+import { data } from '~/components/jobgenie/data';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import Login from '~/components/jobgenie/Login.vue';
 
