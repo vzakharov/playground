@@ -2,11 +2,10 @@ import _ from 'lodash';
 import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable, mixinable } from 'vovas-utils';
 import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
-import { ChatType } from './types';
-import { useLocalReactive } from 'use-vova';
-import { username } from '../username';
+import { appData, findChat } from '../data';
 import { Monitorable } from './monitorable';
 import { QuoteHandler } from './quoteHandler';
+import { ChatType } from './types';
 
 export class BaseChatController {
 
@@ -14,13 +13,13 @@ export class BaseChatController {
   userMessage = ref('');
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
-  username = username;
+  data = appData;
 
   constructor(
     public type: ChatType,
   ) {
 
-    this.messages = useLocalReactive<ChatMessage[]>(`${type}Messages`, []);
+    this.messages = findChat(type).messages;
 
   }
 

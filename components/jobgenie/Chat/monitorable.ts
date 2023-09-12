@@ -17,7 +17,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
     monitor() {
 
       const {
-        messages, generating, type, username
+        messages, generating, type, data: { username },
       } = this;
 
       watch(messages, async () => {
@@ -26,7 +26,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
 
         const lastMessage = _.last(messages)
           ?? also(
-            says.user(`Hi, I’m ${username.value}`),
+            says.user(`Hi, I’m ${username}`),
             m => messages.push(m)
           );
 
