@@ -1,14 +1,12 @@
 import _ from 'lodash';
 import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
-import { Resolvable } from 'vovas-utils';
+import { Resolvable, mixinable } from 'vovas-utils';
 import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
 import { ChatType } from './types';
 import { useLocalReactive } from 'use-vova';
 import { username } from '../username';
-import { Monitorable } from './monitor';
-import { QuoteHandler } from './quotes';
-
-export type Class<T> = new (...args: any[]) => T;
+import { Monitorable } from './monitorable';
+import { QuoteHandler } from './quoteHandler';
 
 export class BaseChatController {
 
@@ -63,13 +61,7 @@ export class BaseChatController {
 
 };
 
-export type ChatController = InstanceType<typeof BaseChatController> & InstanceType<ReturnType<typeof QuoteHandler>> & InstanceType<ReturnType<typeof Monitorable>>;
-
-export function createChatController(...args: ConstructorParameters<typeof BaseChatController>) {
-  const Class = Monitorable(
-    QuoteHandler(
-      BaseChatController
-    )
-  );
-  return new Class(...args) as ChatController;
-}
+export const ChatController =
+  mixinable(BaseChatController)
+    .mixin(Monitorable)
+    .mixin(QuoteHandler);

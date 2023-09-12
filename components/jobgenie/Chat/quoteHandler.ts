@@ -1,12 +1,12 @@
 import { ChatMessage } from "lib/vovas-openai";
-import { BaseChatController, Class } from "./controller";
+import { BaseChatController } from "./controller";
+import { Class } from "vovas-utils";
 
 const quoteRegex = /\n>(.*?)\n/g;
 
-// export class QuoteHandler {
 export function QuoteHandler<C extends Class<BaseChatController>>(BaseClass: C) {
 
-  return class QuoteHandler extends BaseClass {
+  return class C extends BaseClass {
     
     getQuotes(message: ChatMessage) {
       const lines = message.content.split('\n\n');

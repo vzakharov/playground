@@ -1,13 +1,13 @@
 import _ from 'lodash';
-import { also } from 'vovas-utils';
+import { Class, also } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
 import { GenerateException, isBy, says } from '~/lib/vovas-openai';
-import { BaseChatController, Class } from './controller';
+import { BaseChatController } from './controller';
 
 
 export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
 
-  return class Monitorable extends Base {
+  return class C extends Base {
 
     constructor(...args: any[]) {
       super(...args);

@@ -23,6 +23,6 @@
     "lodash": "^4.17.21",
     "openai": "^4.6.0",
     "use-vova": "^0.0.5",
-    "vovas-utils": "^0.5.4"
+    "vovas-utils": "^0.5.9"
   }
 }
