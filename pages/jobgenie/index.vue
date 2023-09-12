@@ -1,17 +1,17 @@
 <template>
-  <div class="container mx-auto px-4 pb-20">
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-center min-h-screen p-5">
-      <div class="w-full p-2 md:w-1/6 md:mr-6 fixed top-0 left-0 h-screen overflow-auto">
-        <ul class="space-y-2">
+  <div class="container">
+    <div class="flex-container">
+      <div class="sidebar">
+        <ul class="list">
           <li v-for="section in sections.filter(s => s.include !== false)"
-            :key="section.id" class="cursor-pointer hover:bg-gray-200 p-2 rounded"   
+            :key="section.id" class="list-item"   
             @click="selectedSection = section"
           >
             <span v-text="section.caption" />
           </li>
         </ul>
       </div>
-      <div class="w-full md:w-5/6 md:ml-64">
+      <div class="content">
         <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
         <template v-else>
           <Chat v-if="selectedSection.id === 'interview'" type="interview" />
@@ -38,3 +38,29 @@
   }
 
 </script>
+
+<style scoped lang="postcss">
+  .container {
+    @apply mx-auto px-4 pb-20;
+  }
+
+  .flex-container {
+    @apply flex flex-col md:flex-row items-start md:items-center justify-center min-h-screen p-5;
+  }
+
+  .sidebar {
+    @apply w-full p-2 md:w-1/6 md:mr-6 fixed top-0 left-0 h-screen overflow-auto;
+  }
+
+  .list {
+    @apply space-y-2;
+  }
+
+  .list-item {
+    @apply cursor-pointer hover:bg-gray-200 p-2 rounded;
+  }
+
+  .content {
+    @apply w-full md:w-5/6 md:ml-64;
+  }
+</style>
