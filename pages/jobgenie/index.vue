@@ -3,9 +3,9 @@
     <div class="flex flex-col md:flex-row items-start md:items-center justify-center min-h-screen p-5">
       <div class="w-full p-2 md:w-1/6 md:mr-6 fixed top-0 left-0 h-screen overflow-auto">
         <ul class="space-y-2">
-          <li v-for="section in sections.filter(s => s.include)"
+          <li v-for="section in sections.filter(s => s.include !== false)"
             :key="section.id" class="cursor-pointer hover:bg-gray-200 p-2 rounded"   
-            @click="selectedSection = section.id"
+            @click="selectedSection = section"
           >
             <span v-text="section.caption" />
           </li>
@@ -14,7 +14,7 @@
       <div class="w-full md:w-5/6 md:ml-64">
         <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
         <template v-else>
-          <Chat v-if="selectedSection === 'interview'" type="interview" />
+          <Chat v-if="selectedSection.id === 'interview'" type="interview" />
           <!-- Add more sections here -->
         </template>
       </div>
@@ -24,13 +24,11 @@
 
 <script setup lang="ts">
 
-  import _ from 'lodash';
-  import { ref, computed } from 'vue';
-  import { Credentials } from '~/components/jobgenie/Credentials';
-  import { data } from '~/components/jobgenie/data';
   import Chat from '~/components/jobgenie/Chat/Chat.vue';
+  import { Credentials } from '~/components/jobgenie/Credentials';
   import Login from '~/components/jobgenie/Login.vue';
-  import { dnaSet } from '~/components/jobgenie/dna';
+  import { data } from '~/components/jobgenie/data';
+  import { sections, selectedSection } from './sections';
 
   const process = useWindowProcess();
 
@@ -38,22 +36,5 @@
     data.username = c.username;
     process.env.OPENAI_API_KEY = c.apiKey;
   }
-
-  // Add your sections here
-  const sections = computed(() => [
-    {
-      id: 'interview',
-      caption: 'Interview',
-      include: true
-    },
-    {
-      id: 'dna',
-      caption: dnaSet.value ? 'DNA ☜': 'DNA',
-      include: !!data.dna
-    }
-  ]);
-
-  // Selected section
-  const selectedSection = ref(sections.value[0].id);
 
 </script>
