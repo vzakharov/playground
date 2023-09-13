@@ -15,34 +15,39 @@ function login(c: Credentials) {
   process.env.OPENAI_API_KEY = c.apiKey;
 }
 
+const isSidebarVisible = ref(false);
+
 </script>
 
 <template>
   <div class="container">
-    <div class="flex-container">
-      <div class="sidebar">
-        <ul class="menu">
-          <li v-for="section in sections.filter(s => s.include !== false)" :key="section.id" :class="`
+    <button class="hamburger" @click="isSidebarVisible = !isSidebarVisible">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    <div class="sidebar" :class="{'hidden lg:block': !isSidebarVisible, 'block': isSidebarVisible}">
+      <ul class="menu">
+        <li v-for="section in sections.filter(s => s.include !== false)" :key="section.id" :class="`
               menu-item
               ${section.id === selectedSection.id && 'selected'}
-                        ${section.disabled && 'disabled'}
+                                ${section.disabled && 'disabled'}
             `" @click="!section.disabled && (selectedSection = section)"
-            :title="section.disabled ? section.disabled : ''">
-            <span v-text="`${section.emoji} ${section.caption}`" />
-          </li>
-        </ul>
-        <div class="status">
-          <Toggle v-model="useGpt4" label="GPT-4" title="This is around 10x more expensive if turned on." />
-          Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
-        </div>
+          :title="section.disabled ? section.disabled : ''">
+          <span v-text="`${section.emoji} ${section.caption}`" />
+        </li>
+      </ul>
+      <div class="status">
+        <Toggle v-model="useGpt4" label="GPT-4" title="This is around 10x more expensive if turned on." />
+        Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
       </div>
-      <div class="content">
-        <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
-        <template v-else>
-          <Chat v-if="selectedSection.id === 'interview'" type="interview" />
-          <!-- Add more sections here -->
-        </template>
-      </div>
+    </div>
+    <div class="content">
+      <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
+      <template v-else>
+        <Chat v-if="selectedSection.id === 'interview'" type="interview" />
+        <!-- Add more sections here -->
+      </template>
     </div>
   </div>
 </template>
@@ -58,7 +63,7 @@ function login(c: Credentials) {
 }
 
 .sidebar {
-  @apply w-full md:w-1/6 md:mr-6 fixed top-0 left-0 h-screen overflow-auto;
+  @apply md:w-full shadow md:w-1/6 md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto;
 }
 
 /* .menu {
@@ -84,10 +89,22 @@ function login(c: Credentials) {
 }
 
 .content {
-  @apply w-full md:w-5/6 md:ml-64;
+  @apply w-full md:w-5/6;
 }
 
 .status {
-  @apply absolute bottom-0 w-full text-sm p-2 text-gray-400;
+  @apply absolute bottom-10 lg:bottom-0 w-full text-sm p-2 text-gray-400;
+}
+
+.hamburger {
+  @apply lg:hidden absolute left-2 top-2;
+}
+
+.hamburger-line {
+  @apply block w-6 h-1 bg-gray-500 my-1 rounded;
+}
+
+.sidebar {
+  @apply bg-white lg:block;
 }
 </style>
