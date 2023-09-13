@@ -1,9 +1,13 @@
 import _ from "lodash";
 import { getCost, Model } from '.';
-import { Camelized, camelize, isCamelCase } from "vovas-utils";
+import { $if, Camelized, camelize, check, give, is, isCamelCase } from "vovas-utils";
 import { CompletionUsage } from "openai/resources";
 
-export type Usage = Camelized<CompletionUsage>;
+export type TokenUsage = Camelized<CompletionUsage>;
+
+export type Usage = TokenUsage & {
+  msTaken: { [model in Model]?: number };
+}
 
 export type UsageCost = {
   promptUsd: number;
@@ -19,6 +23,7 @@ export class UsageContainer {
       promptTokens: 0,
       completionTokens: 0,
       totalTokens: 0,
+      msTaken: {},
     },
 
     public cost: UsageCost = {
@@ -29,18 +34,21 @@ export class UsageContainer {
 
   ) { }
 
-  addUsage( usage: CompletionUsage | Usage, model: Model ) {
-    
-    if ( !isCamelCase(usage) ) usage = camelize(usage);
+  msPerPromptToken(model: Model) {
+    return ( this.usage.msTaken[model] ?? 0 / this.usage.promptTokens ) || undefined;
+  }
 
+  addUsage( model: Model, { msTaken: { [model]: msTaken }, ...usage }: Usage ) {
+    
     const { 
-      promptTokens, completionTokens, totalTokens
+      promptTokens, completionTokens, totalTokens,
     } = usage;
 
     const u = this.usage;
     u.promptTokens += promptTokens;
     u.completionTokens += completionTokens;
     u.totalTokens += totalTokens;
+    u.msTaken[model] = ( u.msTaken[model] ?? 0 ) + ( msTaken ?? 0 );
 
     const { 
       promptUsd, completionUsd, totalUsd
@@ -56,3 +64,5 @@ export class UsageContainer {
   };
 
 };
+
+export const globalUsageContainer = new UsageContainer();

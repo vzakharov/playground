@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Usage } from ".";
+import { TokenUsage } from ".";
 
 export const models = ['gpt-3.5-turbo', 'gpt-4'] as const;
 
@@ -21,7 +21,7 @@ export const centsPerMillionTokens = {
 
 
 export function getCost(
-  usage: Usage,
+  usage: TokenUsage,
   model: Model,
 ) {
   
