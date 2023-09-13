@@ -16,11 +16,11 @@ export function importData() {
   const jsonStr = prompt('Paste the JSON content here');
   if ( jsonStr ) {
     try {
-      const data = JSON.parse(jsonStr);
+      const newData = JSON.parse(jsonStr);
       for ( const key in data ) {
         data[key as keyof typeof data] = undefined;
       };
-      Object.assign(data, data);
+      Object.assign(data, newData);
     } catch (e: any) {
       alert(e.message);
     }

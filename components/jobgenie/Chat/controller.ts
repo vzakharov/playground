@@ -14,7 +14,6 @@ export class BaseChatController {
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
   msExpected = ref<number | null>(null);
-  usdSpent = useLocalRef('jobgenie-usd-spent', 0);
 
   constructor(
     public type: ChatType,
