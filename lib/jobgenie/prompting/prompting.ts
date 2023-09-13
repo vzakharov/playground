@@ -1,23 +1,20 @@
-import { AnyChatFunction, chatFunction } from "~/lib/vovas-openai";
-import { systemMessages } from "./system/messages";
+import { AnyChatFunction, ChatMessage } from "~/lib/vovas-openai";
+import { interviewPrompt as interview } from "./interview";
 
 export type PromptType = 'interview'; // Add more types as needed
 
-export type PromptingInfo<Fn extends AnyChatFunction> = {
+export type PromptingParams<Fn extends AnyChatFunction> = {
   systemMessage: string;
   fn?: Fn;
 };
 
-export const prompting = {
-  interview: {
-    systemMessage: systemMessages.interview,
-    fn: chatFunction(
-      'addDna',
-      'Adds the DNA (summary) to the user data',
-      {
-        dna: 'The DNA to add',
-        leadIn: 'Some short accompanying text to add before the DNA',
-      },
-    ),
-  }
-} as const;
+export type PromptingInput = {
+  type: PromptType;
+  messages: ChatMessage[];
+}
+
+export const prompting = ({ type, messages}: PromptingInput) => ({
+
+  interview,
+
+})[type](messages);

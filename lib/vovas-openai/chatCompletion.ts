@@ -17,7 +17,7 @@ export type ChatCompletionOptions<Fn extends AnyChatFunction> = {
   pickFrom?: number;
   apiKey?: string;
   usageContainer?: UsageContainer;
-  fn: Fn;
+  fn?: Fn;
 };
 
 export type ChatCompletionResultItem<Fn extends AnyChatFunction> =

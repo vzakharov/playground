@@ -30,3 +30,10 @@ export const isBy = _.values(says).reduce((acc, fn) => ({
 }), {} as {
   [R in ChatRole]: (message: ChatMessage) => message is ChatMessage<R>;
 });
+
+export const messagesBy = _.values(isBy).reduce((acc, fn) => ({
+  ...acc,
+  [fn.name]: (messages: ChatMessage[]) => messages.filter(fn),
+}), {} as {
+  [R in ChatRole]: (messages: ChatMessage[]) => ChatMessage<R>[];
+});

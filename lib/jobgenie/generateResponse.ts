@@ -11,11 +11,12 @@ export type GenerateResponseParams = {
 
 export async function generateResponse({ type, messages, msExpected, useGpt4 }: GenerateResponseParams) {
 
+  const promptingParams = prompting({ type, messages });
+  const { systemMessage, fn } = promptingParams;
   const promptMessages = [
-    { role: 'system', content: prompting[type].systemMessage } as const,
+    { role: 'system', content: systemMessage } as const,
     ...messages
   ];
-  const fn = prompting[type].fn;
   const model = useGpt4.value ? 'gpt-4' : 'gpt-3.5-turbo';
 
   msExpected.value = (

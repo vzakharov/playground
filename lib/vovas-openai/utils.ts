@@ -1,5 +1,5 @@
 import { is } from "vovas-utils";
-import { ChatMessage } from "./chatMessage";
+import { ChatMessage, ChatRole, isBy } from "./chatMessage";
 import { AnyChatFunction } from "./functions";
 
 export const shortestFirst = {
@@ -17,4 +17,6 @@ export function keysOf<T extends object>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
 
-export const jsonChars = (messages: ChatMessage[], fn: AnyChatFunction) => JSON.stringify([ messages, fn ]).length;
+export function jsonChars(messages: ChatMessage[], fn?: AnyChatFunction) {
+  return JSON.stringify([messages, fn]).length;
+}
