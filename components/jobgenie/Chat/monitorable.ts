@@ -38,12 +38,12 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
             const interval = setInterval(() => {
               msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
             }, 1000);
-            const response = await generateResponse({ type, messages, msExpected, useGpt4 });
+            const response = await generateResponse({ type, messages, msExpected, useGpt4 }, data);
             usdSpent.value += globalUsageContainer.cost.totalUsd;
             clearInterval(interval);
             messages.push(says.assistant(
               $if(response, is.string, give.itself)
-              .else(({ leadIn, dna }) => `${leadIn}\n\n> ${dna}`)
+              .else(({ content, dna }) => `${content}\n\n> ${dna}`)
             ));
           } catch (e: any) {
             if (e instanceof GenerateException) {
