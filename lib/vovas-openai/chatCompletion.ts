@@ -61,6 +61,7 @@ export async function chatCompletion<Fn extends AnyChatFunction>(
 
   usage && usageContainer?.addUsage(model, {
     ...camelize(usage),
+    promptJsonChars: JSON.stringify([ messages, functions ]).length,
     msTaken: { [model]: Date.now() - time },
   });
 

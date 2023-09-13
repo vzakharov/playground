@@ -1,11 +1,12 @@
 import _ from "lodash";
-import { getCost, Model } from '.';
-import { $if, Camelized, camelize, check, give, is, isCamelCase } from "vovas-utils";
+import { getCost, keysOf, Model } from '.';
+import { $if, $with, Camelized, camelize, check, give, is, isCamelCase } from "vovas-utils";
 import { CompletionUsage } from "openai/resources";
 
 export type TokenUsage = Camelized<CompletionUsage>;
 
 export type Usage = TokenUsage & {
+  promptJsonChars: number;
   msTaken: { [model in Model]?: number };
 }
 
@@ -23,6 +24,7 @@ export class UsageContainer {
       promptTokens: 0,
       completionTokens: 0,
       totalTokens: 0,
+      promptJsonChars: 0,
       msTaken: {},
     },
 
@@ -34,32 +36,28 @@ export class UsageContainer {
 
   ) { }
 
-  msPerPromptToken(model: Model) {
-    return ( this.usage.msTaken[model] ?? 0 / this.usage.promptTokens ) || undefined;
+  msPerPromptJsonChar(model: Model) {
+    return ( this.usage.msTaken[model] ?? 0 / this.usage.promptJsonChars ) || undefined;
   }
 
   addUsage( model: Model, { msTaken: { [model]: msTaken }, ...usage }: Usage ) {
+
+    const { usage: u, cost: c } = this;
     
-    const { 
-      promptTokens, completionTokens, totalTokens,
-    } = usage;
-
-    const u = this.usage;
-    u.promptTokens += promptTokens;
-    u.completionTokens += completionTokens;
-    u.totalTokens += totalTokens;
+    for ( const k of keysOf(usage) ) {
+      u[k] += usage[k];
+    }
     u.msTaken[model] = ( u.msTaken[model] ?? 0 ) + ( msTaken ?? 0 );
+    
+    const cost = getCost(usage, model);
 
-    const { 
-      promptUsd, completionUsd, totalUsd
-    } = getCost(usage, model);
+    for ( const k of keysOf(this.cost) ) {
+      c[k] = parseFloat(
+        ( c[k] + cost[k] )
+        .toFixed(5)
+      );
+    }
 
-    const c = this.cost;
-    c.promptUsd += promptUsd;
-    c.completionUsd += completionUsd;
-    c.totalUsd += totalUsd;
-
-    this.cost = _.mapValues(c, v => parseFloat(v.toFixed(5)));
 
   };
 

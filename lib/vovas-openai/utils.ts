@@ -5,5 +5,12 @@ export const shortestFirst = {
   betterIf: ( evaluation: number, bestEvaluation: number ) => evaluation < bestEvaluation,
 };
 
-export const itselfOrIts = <K extends string>( key: K ) => <T>( result: T | { [key in K]: T } ) =>
-  is.object(result) ? result[key] : result;
+export function itselfOrIts<K extends string>(key: K) {
+  return <T>(result: T | {
+    [key in K]: T;
+  }) => is.object(result) ? result[key] : result;
+}
+
+export function keysOf<T extends object>(obj: T) {
+  return Object.keys(obj) as (keyof T)[];
+}
