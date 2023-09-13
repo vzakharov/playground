@@ -5,7 +5,7 @@ import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
 import { data, findChat } from '../data';
 import { Monitorable } from './monitorable';
 import { QuoteHandler } from './quoteHandler';
-import { ChatType } from '../../../lib/jobgenie/types';
+import { ChatType } from './types';
 import { useLocalRef } from 'use-vova';
 
 export class BaseChatController {
