@@ -1,10 +1,13 @@
 import { ChatMessage, generate, shortestFirst } from '~/lib/vovas-openai';
-import { PromptType, systemMessages } from './systemMessages';
+import { PromptType, prompting } from './prompting';
 
 export async function generateResponse(type: PromptType, messages: ChatMessage[]) {
 
   const { result } = await generate(
-    buildPrompt(type, messages), {
+    [
+      { role: 'system', content: prompting[type].systemMessage } as const,
+      ...messages
+    ], {
       model: 'gpt-4',
       pickFrom: 3,
       ...shortestFirst,
@@ -14,11 +17,4 @@ export async function generateResponse(type: PromptType, messages: ChatMessage[]
   
   return result;
 
-}
-
-export function buildPrompt(type: PromptType, messages: ChatMessage[]) {
-  return [
-    { role: 'system', content: systemMessages[type] } as const,
-    ...messages
-  ]
-}
+};
