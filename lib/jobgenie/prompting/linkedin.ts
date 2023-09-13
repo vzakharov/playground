@@ -1,4 +1,4 @@
-import { ChatMessage, chatFunction, messagesBy, stackUp } from "lib/vovas-openai";
+import { ChatMessage, chatFunction, messagesBy, stackUp } from "~/lib/vovas-openai";
 import { PromptingInput, PromptingParams } from "./prompting";
 import { mainSystemMessage } from "./mainSystemMessage";
 
