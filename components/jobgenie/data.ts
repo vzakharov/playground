@@ -1,8 +1,9 @@
+import { ChatMessage } from "lib/vovas-openai";
 import _ from "lodash";
 import { useLocalReactive } from "use-vova";
 import { also } from "vovas-utils";
 
-import { AppData, ChatType } from "~/lib/jobgenie";
+import { AppData, ChatType } from "lib/jobgenie/types";
 
 export const data = useLocalReactive<AppData>('jobgenie', {});
 

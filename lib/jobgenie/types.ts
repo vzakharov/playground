@@ -1,4 +1,4 @@
-import { ChatMessage } from "~/lib/vovas-openai";
+import { ChatMessage } from "lib/vovas-openai";
 
 export const chatTypes = ['interview'] as const;
 

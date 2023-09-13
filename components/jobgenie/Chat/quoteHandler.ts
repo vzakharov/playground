@@ -1,4 +1,4 @@
-import { ChatMessage } from "~/lib/vovas-openai";
+import { ChatMessage } from "lib/vovas-openai";
 import { BaseChatController } from "./controller";
 import { Class } from "vovas-utils";
 
