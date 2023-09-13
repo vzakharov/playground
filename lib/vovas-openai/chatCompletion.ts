@@ -1,14 +1,14 @@
 import _ from 'lodash';
-import { ChatCompletionCreateParams, ChatCompletionMessageParam } from 'openai/resources/chat';
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
 import { $throw } from 'vovas-utils';
-import { Model, UsageContainer } from '.';
+import { AnyChatFunction, ChatFunction, ChatFunctionReturns, Model, UsageContainer } from '.';
 import { openai } from './openai';
 
 const { log } = console;
 
 export type Conversation = [query: string, response: string][];
 
-export type ChatCompletionOptions = {
+export type ChatCompletionOptions<Fn extends AnyChatFunction> = {
   model?: Model;
   temperature?: number;
   maxTokens?: number;
@@ -17,19 +17,26 @@ export type ChatCompletionOptions = {
   pickFrom?: number;
   apiKey?: string;
   usageContainer?: UsageContainer;
-  functions?: ChatCompletionCreateParams.Function[];
+  fn: Fn;
 };
 
-export async function chatCompletion(
+export type ChatCompletionResultItem<Fn extends AnyChatFunction> =
+  Fn extends AnyChatFunction 
+    ? string | ChatFunctionReturns<Fn> 
+    : string;
+
+export async function chatCompletion<Fn extends AnyChatFunction>(
   messages: ChatCompletionMessageParam[],
-  options?: ChatCompletionOptions,
-) {
+  options?: ChatCompletionOptions<Fn>,
+): Promise<ChatCompletionResultItem<Fn>[]> {
 
   // log.cyan({ messages, options });
 
   const { 
-    model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, pickFrom = 1, apiKey, usageContainer, functions
+    model = 'gpt-3.5-turbo', temperature, maxTokens, topP, stop, pickFrom = 1, apiKey, usageContainer, fn
   } = options ?? {};
+
+  const functions = fn ? [fn] : undefined;
 
   const {
     choices, usage,
@@ -53,13 +60,19 @@ export async function chatCompletion(
 
   usage && usageContainer?.addUsage(usage, model);
 
-  const contents = choices.map(
-    ({ message }) =>
-      (message ?? $throw(`No message in response: ${JSON.stringify(choices)}`))
-        .content ??
-      $throw(`No content in response message: ${JSON.stringify(message)}`),
-  );
+  const results = choices.map(
+    ({ message }) => {
+      // return (message ?? $throw(`No message in response: ${JSON.stringify(choices)}`))
+      //   .content ??
+      //   $throw(`No content in response message: ${JSON.stringify(message)}`);
+      if ( !message ) throw new Error(`No message in response: ${JSON.stringify(choices)}`);
+      const { content, function_call: functionCall } = message;
+      if ( content ) return content;
+      if ( !functionCall ) throw new Error(`No content or function_call in response message: ${JSON.stringify(message)}`);
+      return JSON.parse(functionCall.arguments) as ChatFunctionReturns<Fn>;
+    },
+  ) as ChatCompletionResultItem<Fn>[];
 
-  return contents;
+  return results;
     
 }

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Class, also } from 'vovas-utils';
+import { $if, Class, also, give, is } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
 import { GenerateException, isBy, says } from '~/lib/vovas-openai';
 import { BaseChatController } from './controller';
@@ -35,7 +35,10 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
           try {
             generating.start();
             const response = await generateResponse(type, messages);
-            messages.push(says.assistant(response));
+            messages.push(says.assistant(
+              $if(response, is.string, give.itself)
+              .else(({ leadIn, dna }) => `${leadIn}\n\n> ${dna}`)
+            ));
           } catch (e: any) {
             if (e instanceof GenerateException) {
               // Remove last message and give an alert

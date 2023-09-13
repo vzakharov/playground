@@ -1,17 +1,29 @@
-import { FunctionThatReturns, give, ifGeneric } from "vovas-utils";
-import { ChatCompletionOptions, ChatMessage, Model, Usage, UsageContainer, UsageCost, chatCompletion } from ".";
+import { FunctionThatReturns, give, ifGeneric, is } from "vovas-utils";
+import { AnyChatFunction, ChatCompletionOptions, ChatCompletionResultItem, ChatMessage, Model, Usage, UsageContainer, UsageCost, chatCompletion } from ".";
 
 const { log } = console;
 
+export type PostProcess<Fn extends AnyChatFunction, Result> = (output: ChatCompletionResultItem<Fn>) => Result;
+
+export type PostProcessed<Fn extends AnyChatFunction, PP> =
+  PP extends PostProcess<Fn, infer Result>
+    ? Result extends unknown
+      ? ChatCompletionResultItem<Fn>
+      : Result
+    : ChatCompletionResultItem<Fn>;
+
+
 export type GenerateConfig<
   Result,
+  PP extends PostProcess<Fn, Result | null>,
   Evaluation,
-  ThrowIfNone extends boolean
-> = ChatCompletionOptions & {
+  ThrowIfNone extends boolean,
+  Fn extends AnyChatFunction
+> = ChatCompletionOptions<Fn> & {
   maxAttempts?: number;
   throwIfNone?: ThrowIfNone;
-  postProcess?: (output: string) => Result | null;
-  evaluate: (result: Result) => Evaluation | null;
+  postProcess?: PP;
+  evaluate: (result: PostProcessed<Fn, PP>) => Evaluation | null;
   betterIf: (current: Evaluation, best: Evaluation) => boolean;
   qualifiesIf?: (best: Evaluation) => boolean;
 };
@@ -24,26 +36,46 @@ export type DebugData<E> = {
   cost: UsageCost;
 };
 
-export type GenerateResult<Result, Evaluation, ThrowIfNone> = {
-  result: ThrowIfNone extends true ? Result : Result | undefined;
+export type GenerateResult<
+  Fn extends AnyChatFunction,
+  PP,
+  Evaluation,
+  ThrowIfNone
+> = {
+  result: 
+    ThrowIfNone extends true 
+      ? PostProcessed<Fn, PP> 
+      : PostProcessed<Fn, PP> | undefined;
   debugData: DebugData<Evaluation>;
 };
 
-export async function generate<Result, Evaluation, ThrowIfNone extends boolean>(
+export async function generate<
+  Result,
+  PP extends PostProcess<Fn, Result>,
+  Evaluation,
+  ThrowIfNone extends boolean,
+  Fn extends AnyChatFunction
+>(
   promptMessages: ChatMessage[], {
     maxAttempts = 3,
     throwIfNone,
-    postProcess = give.itself as FunctionThatReturns<Result extends string ? Result : never>,
+    postProcess,
     // I.e., we need to warn (via returning never) if the user wants to generate a non-string result without using any post-processing.
     evaluate, 
     betterIf, 
     qualifiesIf = () => true,
     usageContainer = new UsageContainer(),
     ...chatCompletionOptions
-  }: GenerateConfig<Result, Evaluation, ThrowIfNone>) {
+  }: GenerateConfig<
+    Result,
+    PP,
+    Evaluation,
+    ThrowIfNone,
+    Fn
+  >) {
 
   let best: undefined | {
-    result: Result;
+    result: PostProcessed<Fn, PP>;
     evaluation: Evaluation;
   };
 
@@ -66,7 +98,12 @@ export async function generate<Result, Evaluation, ThrowIfNone extends boolean>(
 
       log({ rawResult });
 
-      const result = postProcess(rawResult);
+      const result = (
+        postProcess === undefined
+          ? rawResult
+          : postProcess(rawResult)
+      ) as PostProcessed<Fn, PP>;
+
       const evaluation = result ? evaluate(result) : null;
       allEvaluations.push(evaluation);
 
@@ -99,7 +136,7 @@ export async function generate<Result, Evaluation, ThrowIfNone extends boolean>(
   return {
     result,
     debugData,
-  } as GenerateResult<Result, Evaluation, ThrowIfNone>;
+  } as GenerateResult<Fn, PP, Evaluation, ThrowIfNone>;
 
 };
 
