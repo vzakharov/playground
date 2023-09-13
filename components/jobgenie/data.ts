@@ -3,17 +3,7 @@ import _ from "lodash";
 import { useLocalReactive } from "use-vova";
 import { also } from "vovas-utils";
 
-import { ChatType } from "components/jobgenie/Chat/types";
-
-export type AppData = Partial<{
-  username: string;
-  chats: {
-    type: ChatType;
-    messages: ChatMessage[];
-  }[];
-  dna: string;
-}>;
-
+import { AppData, ChatType } from "lib/jobgenie/types";
 
 export const data = useLocalReactive<AppData>('jobgenie', {});
 

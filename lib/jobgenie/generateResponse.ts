@@ -1,6 +1,7 @@
 import { ChatMessage, generate, globalUsageContainer, itselfOrIts, jsonChars, shortestFirst } from '~/lib/vovas-openai';
 import { PromptType, prompting } from './prompting/prompting';
 import { RefLike } from './utils';
+import { AppData } from './types';
 
 export type GenerateResponseParams = {
   type: PromptType;
@@ -9,10 +10,14 @@ export type GenerateResponseParams = {
   useGpt4: RefLike<boolean>;
 };
 
-export async function generateResponse({ type, messages, msExpected, useGpt4 }: GenerateResponseParams) {
+export async function generateResponse(
+  { type, messages, msExpected, useGpt4 }: GenerateResponseParams,
+  data: AppData
+) {
 
-  const promptingParams = prompting({ type, messages });
-  const { systemMessage, fn } = promptingParams;
+  const promptingParams = prompting({ type, messages, data });
+  const { systemMessage } = promptingParams;
+  const fn = promptingParams.fn || undefined;
   const promptMessages = [
     { role: 'system', content: systemMessage } as const,
     ...messages
@@ -28,7 +33,7 @@ export async function generateResponse({ type, messages, msExpected, useGpt4 }: 
       model,
       pickFrom: 3,
       ...shortestFirst,
-      evaluate: result => itselfOrIts('leadIn')(result).length,
+      evaluate: result => itselfOrIts('content')(result).length,
       throwIfNone: true,
       fn,
     }

@@ -3,8 +3,9 @@ import { ChatMessage, chatFunction, messagesBy, stackUp } from "~/lib/vovas-open
 import _ from "lodash";
 import { also } from "vovas-utils";
 import { mainSystemMessage } from "./mainSystemMessage";
+import { PromptingInput, PromptingParams } from "./prompting";
 
-export function interviewPrompt(messages: ChatMessage[]) {
+export function interviewPrompt({ messages }: PromptingInput) {
 
   const numQuestions = messagesBy.assistant(messages).length;
   const requestFunctionCall = numQuestions > 2;
@@ -33,18 +34,14 @@ export function interviewPrompt(messages: ChatMessage[]) {
         To do this, call the \`addDna\` function according to the attached specifications. Good luck!`
       ]),
 
-      ...requestFunctionCall && {
-
-        fn: chatFunction(
-          'addDna',
-          'Adds the DNA (summary) to the user data',
-          {
-            dna: 'The DNA to add',
-            leadIn: 'Some short accompanying text to add before the DNA, in the same tone as the previous messages'
-          }
-        )
-
-      }
+      fn: requestFunctionCall &&  chatFunction(
+        'addDna',
+        'Adds the DNA (summary) to the user data',
+        {
+          dna: 'The DNA to add',
+          content: 'Some short accompanying text to add before the DNA, in the same tone as the previous messages'
+        }
+      )
     
   } as const, console.log);
 
