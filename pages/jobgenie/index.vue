@@ -1,3 +1,22 @@
+<script setup lang="ts">
+
+import Chat from '~/components/jobgenie/Chat/Chat.vue';
+import { Credentials } from '~/components/jobgenie/Credentials';
+import Login from '~/components/jobgenie/Login.vue';
+import { data } from '~/components/jobgenie/data';
+import Toggle from '~/components/shared/Toggle.vue';
+import { sections, selectedSection } from './sections';
+import { usdSpent, useGpt4 } from './utils';
+
+const process = useWindowProcess();
+
+function login(c: Credentials) {
+  data.username = c.username;
+  process.env.OPENAI_API_KEY = c.apiKey;
+}
+
+</script>
+
 <template>
   <div class="container">
     <div class="flex-container">
@@ -28,24 +47,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-
-import Chat from '~/components/jobgenie/Chat/Chat.vue';
-import { Credentials } from '~/components/jobgenie/Credentials';
-import Login from '~/components/jobgenie/Login.vue';
-import { data } from '~/components/jobgenie/data';
-import Toggle from '~/components/shared/Toggle.vue';
-import { sections, selectedSection } from './sections';
-import { usdSpent, useGpt4 } from './utils';
-
-const process = useWindowProcess();
-
-function login(c: Credentials) {
-  data.username = c.username;
-  process.env.OPENAI_API_KEY = c.apiKey;
-}
-
-</script>
 
 <style scoped lang="postcss">
 .container {
