@@ -1,12 +1,10 @@
 import _ from 'lodash';
-import { UnwrapRef } from 'nuxt/dist/app/compat/capi';
 import { Resolvable, mixinable } from 'vovas-utils';
+import { ChatType } from '~/lib/jobgenie';
 import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
-import { data, findChat } from '../data';
+import { findChat } from '../data';
 import { Monitorable } from './monitorable';
 import { QuoteHandler } from './quoteHandler';
-import { ChatType } from '../../../lib/jobgenie/types';
-import { useLocalRef } from 'use-vova';
 
 export class BaseChatController {
 
