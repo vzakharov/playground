@@ -4,7 +4,7 @@ import { generateResponse } from '~/lib/jobgenie';
 import { GenerateException, globalUsageContainer, isBy, says } from '~/lib/vovas-openai';
 import { BaseChatController } from './controller';
 import { data } from '../data';
-import { usdSpent } from '~/pages/jobgenie/utils';
+import { usdSpent, useGpt4 } from '~/pages/jobgenie/utils';
 
 
 export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
@@ -38,7 +38,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
             const interval = setInterval(() => {
               msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
             }, 1000);
-            const response = await generateResponse(type, messages, msExpected);
+            const response = await generateResponse({ type, messages, msExpected, useGpt4 });
             usdSpent.value += globalUsageContainer.cost.totalUsd;
             clearInterval(interval);
             messages.push(says.assistant(

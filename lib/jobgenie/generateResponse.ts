@@ -2,14 +2,21 @@ import { ChatMessage, generate, globalUsageContainer, itselfOrIts, jsonChars, sh
 import { PromptType, prompting } from './prompting/prompting';
 import { RefLike } from './utils';
 
-export async function generateResponse(type: PromptType, messages: ChatMessage[], msExpected: RefLike<number | null>) {
+export type GenerateResponseParams = {
+  type: PromptType;
+  messages: ChatMessage[];
+  msExpected: RefLike<number | null>;
+  useGpt4: RefLike<boolean>;
+};
+
+export async function generateResponse({ type, messages, msExpected, useGpt4 }: GenerateResponseParams) {
 
   const promptMessages = [
     { role: 'system', content: prompting[type].systemMessage } as const,
     ...messages
   ];
   const fn = prompting[type].fn;
-  const model = 'gpt-4';
+  const model = useGpt4.value ? 'gpt-4' : 'gpt-3.5-turbo';
 
   msExpected.value = (
     jsonChars(promptMessages, fn) * globalUsageContainer.msPerPromptJsonChar(model)

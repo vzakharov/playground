@@ -6,14 +6,28 @@
           <li v-for="section in sections.filter(s => s.include !== false)" :key="section.id" :class="`
               menu-item
               ${section.id === selectedSection.id && 'selected'}
-              ${section.disabled && 'disabled'}
+                        ${section.disabled && 'disabled'}
             `" @click="!section.disabled && (selectedSection = section)"
             :title="section.disabled ? section.disabled : ''">
             <span v-text="`${section.emoji} ${section.caption}`" />
           </li>
         </ul>
         <div class="status">
-          Total spent: ${{ Math.round(usdSpent*100)/100 }}
+          <div class="switch-container">
+            <label for="gpt-switch" class="flex items-center cursor-pointer">
+              <div class="relative">
+                <input type="checkbox" id="gpt-switch" v-model="useGpt4" class="hidden" />
+                <div class="toggle__line bg-gray-400 rounded-full shadow-inner"></div>
+                <div class="toggle__dot absolute bg-white rounded-full shadow inset-y-0 left-0"></div>
+              </div>
+              <div class="ml-3 text-gray-700 font-medium"
+                :title="'This is around 10x more expensive if turned on.'"
+              >
+                GPT-4
+              </div>
+            </label>
+          </div>
+          Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
         </div>
       </div>
       <div class="content">
@@ -29,19 +43,20 @@
 
 <script setup lang="ts">
 
-  import Chat from '~/components/jobgenie/Chat/Chat.vue';
-  import { Credentials } from '~/components/jobgenie/Credentials';
-  import Login from '~/components/jobgenie/Login.vue';
-  import { data } from '~/components/jobgenie/data';
-  import { sections, selectedSection } from './sections';
-  import { usdSpent } from './utils'
+import Chat from '~/components/jobgenie/Chat/Chat.vue';
+import { Credentials } from '~/components/jobgenie/Credentials';
+import Login from '~/components/jobgenie/Login.vue';
+import { data } from '~/components/jobgenie/data';
+import { sections, selectedSection } from './sections';
+import { usdSpent, useGpt4 } from './utils'
+import { useLocalRef } from 'use-vova';
 
-  const process = useWindowProcess();
+const process = useWindowProcess();
 
-  function login(c: Credentials) {
-    data.username = c.username;
-    process.env.OPENAI_API_KEY = c.apiKey;
-  }
+function login(c: Credentials) {
+  data.username = c.username;
+  process.env.OPENAI_API_KEY = c.apiKey;
+}
 
 </script>
 
@@ -86,5 +101,25 @@
 
 .status {
   @apply absolute bottom-0 w-full text-sm p-2 text-gray-400;
+}
+
+.switch-container {
+  @apply my-4;
+}
+
+.toggle__line {
+  @apply transition-all duration-200 ease-in-out w-8 h-4;
+}
+
+.toggle__dot {
+  @apply transition-all duration-200 ease-in-out transform w-4 h-4;
+}
+
+input:checked~.toggle__line {
+  @apply bg-blue-500;
+}
+
+input:checked~.toggle__dot {
+  @apply translate-x-full border-blue-400;
 }
 </style>
