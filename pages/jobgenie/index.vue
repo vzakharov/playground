@@ -4,10 +4,12 @@ import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
+import Button from '~/components/shared/Button.vue';
+import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
+import { exportData, importData } from '~/components/jobgenie/exportImport';
 import { sections, selectedSection } from './sections';
 import { usdSpent, useGpt4 } from './utils';
-import Sidebar from '~/components/shared/Sidebar.vue';
 
 const process = useWindowProcess();
 
@@ -37,6 +39,17 @@ function login(c: Credentials) {
         </ul>
       </template>
       <template #lower>
+      <!-- Export data -->
+        <Button rounded small outline gray
+          class="mb-2"
+          caption="⤓ Export data"
+          @click="exportData"
+        />
+        <!-- Import data -->
+        <Button rounded small outline gray
+          caption="⤒ Import data"
+          @click="importData"
+        />
         <Toggle v-model="useGpt4" label="GPT-4" title="This is around 10x more expensive if turned on." />
         Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
       </template>

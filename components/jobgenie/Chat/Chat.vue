@@ -46,16 +46,6 @@
         caption="↺ Start over"
         @click="c.startOver" 
       />
-      <!-- Export data -->
-      <Button rounded small outline gray class="me-2"
-        caption="⤓ Export data"
-        @click="exportData"
-      />
-      <!-- Import data -->
-      <Button rounded small outline gray
-        caption="⤒ Import data"
-        @click="importData"
-      />
     </div>
   </div>
 </template>
@@ -68,7 +58,6 @@
   import Button from '~/components/shared/Button.vue';
   import { isBy } from '~/lib/vovas-openai';
   import { ChatController } from './controller';
-  import { exportData, importData } from '../exportImport';
   import { data } from '../data';
   import { dnaJustSet, setDna } from '../dna'
 
