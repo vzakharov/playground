@@ -6,6 +6,7 @@ import { data, findChat } from '../data';
 import { Monitorable } from './monitorable';
 import { QuoteHandler } from './quoteHandler';
 import { ChatType } from './types';
+import { useLocalRef } from 'use-vova';
 
 export class BaseChatController {
 
@@ -13,6 +14,7 @@ export class BaseChatController {
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
   msExpected = ref<number | null>(null);
+  usdSpent = useLocalRef('jobgenie-usd-spent', 0);
 
   constructor(
     public type: ChatType,

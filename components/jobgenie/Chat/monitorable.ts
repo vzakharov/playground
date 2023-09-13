@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { $if, Class, also, give, is } from 'vovas-utils';
 import { generateResponse } from '~/lib/jobgenie';
-import { GenerateException, isBy, says } from '~/lib/vovas-openai';
+import { GenerateException, globalUsageContainer, isBy, says } from '~/lib/vovas-openai';
 import { BaseChatController } from './controller';
 import { data } from '../data';
+import { usdSpent } from '~/pages/jobgenie/utils';
 
 
 export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
@@ -38,6 +39,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
               msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
             }, 1000);
             const response = await generateResponse(type, messages, msExpected);
+            usdSpent.value += globalUsageContainer.cost.totalUsd;
             clearInterval(interval);
             messages.push(says.assistant(
               $if(response, is.string, give.itself)
