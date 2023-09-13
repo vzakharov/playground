@@ -16,8 +16,7 @@ export async function generateResponse(
 ) {
 
   const promptingParams = prompting({ type, messages, data });
-  const { systemMessage } = promptingParams;
-  const fn = promptingParams.fn || undefined;
+  const { systemMessage, fn } = promptingParams;
   const promptMessages = [
     { role: 'system', content: systemMessage } as const,
     ...messages
