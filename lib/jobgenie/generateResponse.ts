@@ -1,5 +1,5 @@
 import { ChatMessage, generate, shortestFirst } from '~/lib/vovas-openai';
-import { PromptType, prompting } from './prompting';
+import { PromptType, prompting } from './prompting/prompting';
 
 export async function generateResponse(type: PromptType, messages: ChatMessage[]) {
 
