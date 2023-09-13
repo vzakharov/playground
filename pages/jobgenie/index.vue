@@ -54,7 +54,7 @@ function login(c: Credentials) {
 
 <style scoped lang="postcss">
 .container {
-  @apply mx-auto px-4 pb-20;
+  @apply mx-auto px-4 pb-20 lg:pl-64;
 }
 
 .flex-container {

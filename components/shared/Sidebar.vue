@@ -23,7 +23,7 @@ const isVisible = ref(false);
 <style scoped lang="postcss">
 
 .hamburger {
-  @apply lg:hidden absolute left-2 top-2;
+  @apply lg:hidden fixed left-2 top-2 bg-white p-1 shadow rounded;
 }
 
 .hamburger-line {
@@ -31,7 +31,8 @@ const isVisible = ref(false);
 }
 
 .sidebar {
-  @apply md:w-full shadow md:w-1/6 md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto bg-white lg:block;
+  @apply shadow rounded md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto bg-white lg:block p-2;
+  width: 12rem;
 }
 
 .lower {
