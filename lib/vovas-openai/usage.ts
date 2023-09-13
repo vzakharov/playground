@@ -37,7 +37,7 @@ export class UsageContainer {
   ) { }
 
   msPerPromptJsonChar(model: Model) {
-    return ( this.usage.msTaken[model] ?? 0 / this.usage.promptJsonChars ) || undefined;
+    return ( this.usage.msTaken[model] ?? 0 ) / this.usage.promptJsonChars;
   }
 
   addUsage( model: Model, { msTaken: { [model]: msTaken }, ...usage }: Usage ) {

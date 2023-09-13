@@ -18,7 +18,7 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
     monitor() {
 
       const {
-        messages, generating, type,
+        messages, generating, type, msExpected
       } = this;
 
       watch(messages, async () => {
@@ -34,7 +34,11 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
         if (isBy.user(lastMessage)) {
           try {
             generating.start();
-            const response = await generateResponse(type, messages);
+            const interval = setInterval(() => {
+              msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
+            }, 1000);
+            const response = await generateResponse(type, messages, msExpected);
+            clearInterval(interval);
             messages.push(says.assistant(
               $if(response, is.string, give.itself)
               .else(({ leadIn, dna }) => `${leadIn}\n\n> ${dna}`)

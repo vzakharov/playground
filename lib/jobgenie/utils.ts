@@ -1,0 +1,1 @@
+export type RefLike<T> = { value: T };

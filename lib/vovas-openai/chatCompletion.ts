@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources/chat';
 import { $throw, camelize } from 'vovas-utils';
-import { AnyChatFunction, ChatFunction, ChatFunctionReturns, Model, UsageContainer } from '.';
+import { AnyChatFunction, ChatFunction, ChatFunctionReturns, Model, UsageContainer, globalUsageContainer } from '.';
 import { openai } from './openai';
 
 const { log } = console;
@@ -59,11 +59,17 @@ export async function chatCompletion<Fn extends AnyChatFunction>(
 
   // log.green({ choices, usage });
 
-  usage && usageContainer?.addUsage(model, {
-    ...camelize(usage),
-    promptJsonChars: JSON.stringify([ messages, functions ]).length,
-    msTaken: { [model]: Date.now() - time },
-  });
+  if ( usage && usageContainer ) {
+
+    usageContainer.addUsage(model, {
+      ...camelize(usage),
+      promptJsonChars: JSON.stringify([ messages, functions ]).length,
+      msTaken: { [model]: Date.now() - time },
+    });
+
+    globalUsageContainer.addUsage(model, usageContainer.usage);
+
+  };
 
   const results = choices.map(
     ({ message }) => {

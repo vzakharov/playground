@@ -25,17 +25,17 @@
         @click="c.editMessage(message)"
       />
     </div>
-    <div v-if="c.generating.inProgress" class="msg msg-assistant animate-pulse">
-      ...
-    </div>
+    <div v-if="c.generating.inProgress" class="msg msg-assistant animate-pulse"
+      v-text="msExpected ? `Generating (expected in ${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
+    />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
       <input type="text" class="input-box"
-        v-model="c.userMessage.value"
+        v-model="userMessage"
         placeholder="Type your message here..."
         ref="userInput"
       >
       <Button rounded small
-        v-if="!!c.userMessage.value" 
+        v-if="!!userMessage" 
         type="submit" 
         caption="↑"
       />
@@ -77,6 +77,9 @@
   }>();
 
   const c = ChatController.create(type);
+
+  const { userMessage, msExpected } = c;
+
   addProperties(window, { _, c, data});
 
 </script>
