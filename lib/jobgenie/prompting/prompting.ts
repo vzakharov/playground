@@ -16,9 +16,9 @@ export type PromptingInput = {
   data: AppData;
 }
 
-export const allPrompts = {
+export const prompting = (input: PromptingInput) => ({
+
   interview,
   linkedin,
-};
 
-export const prompting = (input: PromptingInput) => allPrompts[input.type](input);
+})[input.type](input);

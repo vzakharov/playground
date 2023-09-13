@@ -34,7 +34,7 @@ export function linkedinPrompt({ messages, data: { dna }}: PromptingInput) {
         bio: 'The bio to use in the profile',
         experience: 'The experience to use in the profile in Markdown format',
       }
-    ) || undefined
+    )
     
 
   } as const

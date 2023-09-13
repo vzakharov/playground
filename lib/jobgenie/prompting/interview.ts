@@ -34,14 +34,14 @@ export function interviewPrompt({ messages }: PromptingInput) {
         To do this, call the \`addDna\` function according to the attached specifications. Good luck!`
       ]),
 
-      fn: requestFunctionCall && chatFunction(
+      fn: requestFunctionCall &&  chatFunction(
         'addDna',
         'Adds the DNA (summary) to the user data',
         {
           dna: 'The DNA to add',
           content: 'Some short accompanying text to add before the DNA, in the same tone as the previous messages'
         }
-      ) || undefined
+      )
     
   } as const, console.log);
 
