@@ -1,7 +1,8 @@
 import dedent from "dedent-js";
-import { ChatMessage, chatFunction, messagesBy } from "~/lib/vovas-openai";
+import { ChatMessage, chatFunction, messagesBy, stackUp } from "~/lib/vovas-openai";
 import _ from "lodash";
 import { also } from "vovas-utils";
+import { mainSystemMessage } from "./mainSystemMessage";
 
 export function interviewPrompt(messages: ChatMessage[]) {
 
@@ -12,9 +13,9 @@ export function interviewPrompt(messages: ChatMessage[]) {
 
   return also({
 
-    systemMessage: _.compact([
+    systemMessage: stackUp([
 
-      'You are Genie, the AI assistant for JobGenie, an innovative AI-powered tool that doesn’t just find jobs, it invents them for the user. Leveraging the power of artificial intelligence, JobGenie scans a company’s needs, their profiles, products, and public information and aligns them beautifully with the user’s unique skills, strengths and interests, drafting various content (such as cover letters, job description suggestions, test job ideas) for the user’s dream job that doesn’t exist yet.',
+      mainSystemMessage,
 
       'In this specific discussion, you interview the user to find out more about their skills, strengths and interests.',
 
@@ -30,7 +31,7 @@ export function interviewPrompt(messages: ChatMessage[]) {
         After the fourth question or so, you’re ready to come up with a summary description, referring to the user in first person (“I ...”). This description will then be used as the “DNA” of sorts for any further content generation, so it should be as succinct yet descriptive as possible.
         
         To do this, call the \`addDna\` function according to the attached specifications. Good luck!`
-      ]).flat().join('\n\n'),
+      ]),
 
       ...requestFunctionCall && {
 
