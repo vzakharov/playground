@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import { data } from '~/components/jobgenie/data';
 import { dnaJustSet } from '~/components/jobgenie/dna';
 import { alsoLog } from 'vovas-utils';
+import { useLocalRef } from 'use-vova';
 
 export type Section<IsChatBased extends boolean> = {
   id: IsChatBased extends true ? ChatType : string;
@@ -57,4 +58,4 @@ export const sections = computed<AnySection[]>(() => {
   ];
 });
 
-export const selectedSection = ref<AnySection>(sections.value[0]);
+export const selectedSection = useLocalRef<AnySection>('jobgenie-section', sections.value[0]);
