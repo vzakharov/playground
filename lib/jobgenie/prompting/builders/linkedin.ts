@@ -28,7 +28,7 @@ export const linkedinPromptBuilder = new PromptBuilder('linkedin', {
 
     ],
 
-    fn: chatFunction(
+    fnArgs: [
       'addProfile',
       'Sets the LinkedIn profile based on the user’s DNA and resume/experience',
       {
@@ -37,6 +37,6 @@ export const linkedinPromptBuilder = new PromptBuilder('linkedin', {
         bio: 'The bio to use in the profile',
         experience: 'The experience to use in the profile in Markdown format',
       }
-    )
+    ]
 
 });

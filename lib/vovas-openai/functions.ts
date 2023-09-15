@@ -1,8 +1,9 @@
+import { IsNever } from "lib/jobgenie";
 import _ from "lodash";
 
 export type Keyable = keyof any;
 
-export type ChatFunction<Name extends string, Props extends Keyable, Optional extends Props | undefined> = {
+export type ChatFunction<Name extends string, Props extends string, Optional extends Props> = {
   name: Name,
   description: string,
   parameters: {
@@ -10,23 +11,28 @@ export type ChatFunction<Name extends string, Props extends Keyable, Optional ex
     properties: {
       [K in Props]: ChatFunctionProp
     },
-    required: Optional extends Props ? readonly Exclude<Props, Optional>[] : readonly Props[]
+    required: readonly Exclude<Props, Optional>[];
   }
 };
 
-export type AnyChatFunction = ChatFunction<string, Keyable, Keyable | undefined>;
+export type AnyChatFunction = ChatFunction<string, string, never>;
 
-export type SimplifiedChatFunction<Name extends string, Props extends Keyable, Optional extends Props> = [
+export type SimplifiedChatFunction<Name extends string, Props extends string, Optional extends Props> = [
   name: Name,
   description: string,
   parameters: {
     [K in Props]: string
   },
-  optional?: readonly Optional[]
-]
+  optional?: Optional[]
+];
+
+export type SimplifiedChatFunctionFor<F extends AnyChatFunction> =
+  F extends ChatFunction<infer Name, infer Props, infer Optional> 
+    ? SimplifiedChatFunction<Name, Props, Optional> 
+    : never;
 
 export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
-  ...[ name, description, parameters, optional = []]: SimplifiedChatFunction<Name, Props, Optional>
+  ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional>
 ) {
 
   return {
@@ -35,7 +41,7 @@ export function chatFunction<Name extends string, Props extends string, Optional
     parameters: {
       type: 'object',
       properties: _.mapValues(parameters, description => ({ type: 'string', description })),
-      required: _.difference(Object.keys(parameters), optional),
+      required: optional ? _.difference(Object.keys(parameters), optional) : Object.keys(parameters)
     }
   } as unknown as ChatFunction<Name, Props, Optional>;
 
@@ -50,7 +56,14 @@ export type ChatFunctionProp = {
 
 export type ChatFunctionReturns<F extends AnyChatFunction> =
   F extends ChatFunction<any, infer Props, infer Optional> ? {
-    [K in Props]: K extends Optional ? string | undefined : string
+    // [K in Props]: K extends Optional ? string | undefined : string
+    [K in Props]:
+      Optional extends Props
+        ? K extends Optional
+          ? string | undefined
+          : string
+        : string
+
   } : never;
 
 
@@ -60,11 +73,14 @@ const exampleChatFunction = chatFunction(
   {
     city: 'The city to get the forecast for',
     date: 'The date to get the forecast for',
+    language: 'The language to get the forecast in'
   },
-  ['date']
+  ['date', 'language']
 )
 
 type ExampleChatFunction = typeof exampleChatFunction;
+
+type SimpleExampleChatFunction = SimplifiedChatFunctionFor<ExampleChatFunction>;
 
 type ExampleChatFunctionReturns = ChatFunctionReturns<ExampleChatFunction>;
 

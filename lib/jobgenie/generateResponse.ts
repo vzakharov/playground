@@ -36,7 +36,9 @@ export async function generateResponse<T extends ChatType>(
       model,
       pickFrom: 3,
       ...shortestFirst,
-      evaluate: result => itselfOrIts('content')(result).length,
+      evaluate: result => 
+        // itselfOrIts('content')(result).length,
+        is.string(result) ? result.length : result.content.length,
       throwIfNone: true,
       fn,
     }

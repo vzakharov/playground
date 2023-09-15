@@ -20,4 +20,6 @@ export type AssetsMap = {
 
 export type Assets<T extends ChatType> = MapToGeneric<AssetsMap, T>;
 
+type TestAssets = AssetsMap['job']
+
 export type AllAssets = Partial<Assets<any>>;

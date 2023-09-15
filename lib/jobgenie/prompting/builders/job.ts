@@ -22,7 +22,7 @@ export const jobPromptBuilder = new PromptBuilder('job', {
 
   ],
 
-  fn: chatFunction(
+  fnArgs: [
     'addJob',
     'Adds the job title and description to the user data',
     {
@@ -32,6 +32,6 @@ export const jobPromptBuilder = new PromptBuilder('job', {
       whyJob: 'A markdown-formatted bullet list of reasons why the job is a good fit for the user',
       content: 'Some short accompanying text to add before the generated data, in the same tone as the previous messages'
     }
-  )
+  ]
 
 });

@@ -26,13 +26,13 @@ export const interviewPromptBuilder = new PromptBuilder('interview', {
         To do this, call the \`addDna\` function according to the attached specifications. Good luck!`
   ],
 
-  fn: chatFunction(
+  fnArgs: [
     'addDna',
     'Adds the DNA (summary) to the user data',
     {
       dna: 'The DNA to add',
       content: 'Some short accompanying text to add before the DNA, in the same tone as the previous messages'
     }
-  )
+  ]
 
 });

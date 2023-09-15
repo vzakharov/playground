@@ -1,6 +1,6 @@
-import { NestedArray, messagesBy, says, stackUp } from "~/lib/vovas-openai";
-import { ChatFunctionFor, PromptBuilderInput } from "./prompting";
-import { AppData, ChatType, toRawMessage } from "~/lib/jobgenie";
+import { ChatFunction, NestedArray, SimplifiedChatFunction, SimplifiedChatFunctionFor, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
+import { ChatFunctionFor, FnPropsFor, PromptBuilderInput } from "./prompting";
+import { AppData, AssetsMap, ChatType, StringKeys, toRawMessage } from "~/lib/jobgenie";
 
 
 export type PromptBuilderConfig<T extends ChatType> = {
@@ -10,10 +10,10 @@ export type PromptBuilderConfig<T extends ChatType> = {
     isFirstResponse: boolean; 
     requestFunctionCall: boolean;
   }) => NestedArray<string>;
-  fn: ChatFunctionFor<T>;
+  fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
 };
 
-export class PromptBuilder<T extends ChatType> {
+export class PromptBuilder<T extends ChatType, FnName extends string, FnProps extends FnPropsFor<T>> {
 
   constructor(
     public type: T,
@@ -23,7 +23,9 @@ export class PromptBuilder<T extends ChatType> {
   build(input: PromptBuilderInput<T>) {
 
     const { messages } = input;
-    const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessage, fn } = this.config;
+    const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessage, fnArgs } = this.config;
+
+    const fn = chatFunction(...fnArgs);
 
     const numResponses = messagesBy.assistant(messages).length;
     const isFirstResponse = numResponses === 0;
@@ -39,9 +41,9 @@ export class PromptBuilder<T extends ChatType> {
             systemMessage
           ])
         ),
-        ...messages.map(toRawMessage<T>(fn))
+        ...messages.map(toRawMessage(fn))
       ],
-      fn
+      fn: requestFunctionCall ? fn : undefined
     };
   }
 

@@ -2,6 +2,10 @@ import _ from "lodash";
 
 export type RefLike<T> = { value: T };
 
+export type StringKeys<T> = Extract<keyof T, string>;
+
+export type IsNever<T> = [T] extends [never] ? true : false;
+
 export type UnionToIntersection<U> = 
   ( 
     U extends any 
@@ -23,7 +27,7 @@ export type Unfilter<Filter extends Record<string, any>> = {
   [K in keyof Filter]: any
 };
 
-export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[]) {
+export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[] | readonly T[]) {
   return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
 }
 
@@ -31,14 +35,9 @@ export function isAmong<T>(arr: readonly T[]) {
   return (item: any): item is T => arr.includes(item);
 };
 
-type TestType1 = {
-  a: 'hello' | 'world'
-  b: 'hello'
-}
+// type TestType1 = 'hello' | 'world';
 
-type TestType2 = {
-  a: 'hello'
-};
+// type TestType2 = 'hello';
 
-type TestType3 = TestType2 extends Partial<TestType1> ? true : false; // true
-type TestType4 = TestType1 extends Partial<TestType2> ? true : false; // false
+// type TestType3 = TestType2 extends Partial<TestType1> ? true : false; // true
+// type TestType4 = TestType1 extends Partial<TestType2> ? true : false; // false
