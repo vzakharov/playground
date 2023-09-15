@@ -1,15 +1,16 @@
 import _ from 'lodash';
-import { $if, Class, also, give, is } from 'vovas-utils';
-import { generateResponse } from '~/lib/jobgenie';
+import { Class, also, is } from 'vovas-utils';
+import { ChatType, ContentAndAssets, generateResponse } from '~/lib/jobgenie';
 import { GenerateException, globalUsageContainer, isBy, says } from '~/lib/vovas-openai';
-import { BaseChatController } from './controller';
+import { usdSpent, useGpt4 } from '~/components/jobgenie/refs';
 import { data } from '../data';
-import { usdSpent, useGpt4 } from '~/pages/jobgenie/utils';
+import { BaseChatController } from './controller';
+import { autoMessage } from './autoMessage';
 
 
-export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
+export function ChatResponder<T extends ChatType>(Base: Class<BaseChatController<T>>) {
 
-  return class C extends Base {
+  return class R extends Base {
 
     constructor(...args: any[]) {
       super(...args);
@@ -24,27 +25,25 @@ export function Monitorable<C extends Class<BaseChatController>>(Base: C) {
 
       watch(messages, async () => {
 
+        console.log('generating', JSON.stringify(generating, null, 2));
         await generating.promise;
-
         const lastMessage = _.last(messages)
           ?? also(
-            says.user(`Hi, I’m ${data.username ?? 'looking for some assistance'}.`),
-            m => messages.push(m)
+            autoMessage[type]?.(),
+            m => m && messages.push(m)
           );
+        
+        console.log({ lastMessage })
 
-        if (isBy.user(lastMessage)) {
+        if (!lastMessage || isBy.user(lastMessage)) {
           try {
             generating.start();
             const interval = setInterval(() => {
               msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
             }, 1000);
-            const response = await generateResponse({ type, messages, msExpected, useGpt4 }, data);
-            usdSpent.value += globalUsageContainer.cost.totalUsd;
+            const result = await generateResponse({ type, messages, msExpected, useGpt4 }, data);
             clearInterval(interval);
-            messages.push(says.assistant(
-              $if(response, is.string, give.itself)
-              .else(({ content, dna }) => `${content}\n\n> ${dna}`)
-            ));
+            messages.push(result);
           } catch (e: any) {
             if (e instanceof GenerateException) {
               // Remove last message and give an alert

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources/chat';
 import { $throw, camelize } from 'vovas-utils';
-import { AnyChatFunction, ChatFunction, ChatFunctionReturns, Model, UsageContainer, globalUsageContainer } from '.';
+import { AnyChatFunction, ChatFunction, ChatFunctionReturns, ChatMessage, Model, UsageContainer, globalUsageContainer } from '.';
 import { openai } from './openai';
 
 const { log } = console;
@@ -26,7 +26,7 @@ export type ChatCompletionResultItem<Fn extends AnyChatFunction> =
     : string;
 
 export async function chatCompletion<Fn extends AnyChatFunction>(
-  messages: ChatCompletionMessageParam[],
+  messages: ChatMessage[],
   options?: ChatCompletionOptions<Fn>,
 ): Promise<ChatCompletionResultItem<Fn>[]> {
 

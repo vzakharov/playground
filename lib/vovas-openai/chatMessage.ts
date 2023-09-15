@@ -5,11 +5,14 @@ export const chatRoles = ['user', 'assistant', 'system'] as const;
 
 export type ChatRole = typeof chatRoles[number];
 
-// export type ChatMessage = ChatCompletionMessageParam;
-export type ChatMessage<R extends ChatRole = ChatRole> = {
-  role: R;
-  content: string;
-} & Omit<ChatCompletionMessageParam, 'role' | 'content'>;
+export type WithRole<R extends ChatRole = any> = { role: R };
+
+export type ChatMessage<R extends ChatRole = ChatRole> = 
+  WithRole<R>
+  & {
+    content: R extends 'assistant' ? string | null : string;
+  }
+  & Omit<ChatCompletionMessageParam, 'role' | 'content'>;
 
 export function chatMessage<R extends ChatRole>(role: R, content: string): ChatMessage<R> {
   return {
@@ -24,16 +27,16 @@ export const says = _.values(chatRoles).reduce((acc, role) => ({
   [K in ChatRole]: (content: string) => ChatMessage<K>;
 });
 
-export const isBy = _.values(says).reduce((acc, fn) => ({
+export const isBy = _.values(chatRoles).reduce((acc, role) => ({
   ...acc,
-  [fn.name]: (message: ChatMessage) => message.role === fn.name,
+  [role]: (message: WithRole) => message.role === role,
 }), {} as {
-  [R in ChatRole]: (message: ChatMessage) => message is ChatMessage<R>;
+  [R in ChatRole]: <M extends WithRole>(message: M) => message is M & WithRole<R>;
 });
 
 export const messagesBy = _.values(isBy).reduce((acc, fn) => ({
   ...acc,
-  [fn.name]: (messages: ChatMessage[]) => messages.filter(fn),
+  [fn.name]: (messages: WithRole[]) => messages.filter(fn),
 }), {} as {
-  [R in ChatRole]: (messages: ChatMessage[]) => ChatMessage<R>[];
+  [R in ChatRole]: <M extends WithRole>(messages: M[]) => (M & WithRole<R>)[];
 });

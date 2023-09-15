@@ -1,17 +1,26 @@
+import { ChatType, chatTypes, isAmong } from '~/lib/jobgenie';
 import { computed, ref } from 'vue';
 import { data } from '~/components/jobgenie/data';
 import { dnaJustSet } from '~/components/jobgenie/dna';
+import { alsoLog } from 'vovas-utils';
 
-export type Section = {
-  id: string;
+export type Section<IsChatBased extends boolean> = {
+  id: IsChatBased extends true ? ChatType : string;
   caption: string;
   emoji: string;
   include?: boolean;
   disabled?: string | false;
 };
 
+export type AnySection = Section<boolean>;
+
+export function isChatBased(section: AnySection): section is Section<true> {
+  return isAmong(chatTypes)(section.id);
+}
+
+
 // Add your sections here
-export const sections = computed<Section[]>(() => {
+export const sections = computed<AnySection[]>(() => {
 
   const disableAllButInterview = !data.dna && 'Please complete the interview and pick a DNA first to unlock this section';
 
@@ -48,4 +57,4 @@ export const sections = computed<Section[]>(() => {
   ];
 });
 
-export const selectedSection = ref<Section>(sections.value[0]);
+export const selectedSection = ref<AnySection>(sections.value[0]);

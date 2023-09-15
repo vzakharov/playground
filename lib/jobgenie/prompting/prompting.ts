@@ -1,24 +1,27 @@
-import { AnyChatFunction, ChatMessage } from "~/lib/vovas-openai";
-import { interviewPrompt as interview } from "./interview";
-import { AppData } from "../types";
-import { linkedinPrompt as linkedin } from "./linkedin";
+import { ChatFunction, ChatFunctionReturns, ChatMessage } from "~/lib/vovas-openai";
+import { interviewPromptBuilder } from "./builders/interview";
+import { AppChatMessage, AppData, ChatType } from "../types";
+import { linkedinPromptBuilder } from "./builders/linkedin";
+import { AssetsMap } from "../assets";
+import { findBy } from "..";
+import _ from "lodash";
+import { PromptBuilder } from "./PromptBuilder";
+import { jobPromptBuilder } from "./builders/job";
 
-export type PromptType = 'interview' | 'linkedin'; // Add more types as needed
-
-export type PromptingParams<Fn extends AnyChatFunction> = {
-  systemMessage: string;
-  fn?: Fn | false;
-};
-
-export type PromptingInput = {
-  type: PromptType;
-  messages: ChatMessage[];
+export type PromptBuilderInput<T extends ChatType> = {
+  type: T;
+  messages: AppChatMessage<T>[];
   data: AppData;
-}
-
-export const allPrompts = {
-  interview,
-  linkedin,
 };
 
-export const prompting = (input: PromptingInput) => allPrompts[input.type](input);
+export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, keyof AssetsMap[T] | 'content', undefined>;
+
+export const storedPromptBuilders = [
+  interviewPromptBuilder,
+  linkedinPromptBuilder,
+  jobPromptBuilder
+];
+
+export function getPromptBuilder<U extends ChatType>(type: U){
+  return findBy({ type }, storedPromptBuilders) as any as PromptBuilder<U>;
+};

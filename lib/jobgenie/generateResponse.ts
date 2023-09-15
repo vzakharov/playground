@@ -1,30 +1,34 @@
-import { ChatMessage, generate, globalUsageContainer, itselfOrIts, jsonChars, shortestFirst } from '~/lib/vovas-openai';
-import { PromptType, prompting } from './prompting/prompting';
+import { savedMsPerPromptJsonChar, usdSpent } from '~/components/jobgenie/refs';
+import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
+import { toRawMessage } from './toRawMessages';
+import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
 import { RefLike } from './utils';
-import { AppData } from './types';
+import { is } from 'vovas-utils';
+import { getPromptBuilder } from './prompting';
 
-export type GenerateResponseParams = {
-  type: PromptType;
-  messages: ChatMessage[];
+export type GenerateResponseParams<T extends ChatType> = {
+  type: T;
+  messages: AppChatMessage<T>[];
   msExpected: RefLike<number | null>;
   useGpt4: RefLike<boolean>;
 };
 
-export async function generateResponse(
-  { type, messages, msExpected, useGpt4 }: GenerateResponseParams,
+export async function generateResponse<T extends ChatType>(
+  { type, messages, msExpected, useGpt4 }: GenerateResponseParams<T>,
   data: AppData
 ) {
-
-  const promptingParams = prompting({ type, messages, data });
-  const { systemMessage, fn } = promptingParams;
-  const promptMessages = [
-    { role: 'system', content: systemMessage } as const,
-    ...messages
-  ];
+  const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
   const model = useGpt4.value ? 'gpt-4' : 'gpt-3.5-turbo';
 
+  const jsonChars = reduceChatMessages({ promptMessages });
+
+  const msPerPromptJsonChar = 
+    globalUsageContainer.msPerPromptJsonChar(model)
+    || savedMsPerPromptJsonChar[model]
+    || NaN;
+
   msExpected.value = (
-    jsonChars(promptMessages, fn) * globalUsageContainer.msPerPromptJsonChar(model)
+    jsonChars * msPerPromptJsonChar
   ) || null;
 
   const { result } = await generate(promptMessages, 
@@ -37,7 +41,18 @@ export async function generateResponse(
       fn,
     }
   );
+
+  savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
   
-  return result;
+  usdSpent.value += globalUsageContainer.cost.totalUsd;
+
+  return {
+    role: 'assistant' as const,
+    ...is.string(result)
+      ? { content: result }
+      : (
+        ({ content, ...assets }) => ({ content, assets }) as ContentAndAssets<T>
+      )(result)
+  }
 
 };

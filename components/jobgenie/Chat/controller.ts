@@ -1,12 +1,11 @@
-import _ from 'lodash';
+import _, { create } from 'lodash';
 import { Resolvable, mixinable } from 'vovas-utils';
-import { ChatType } from '~/lib/jobgenie';
-import { ChatMessage, isBy, says } from '~/lib/vovas-openai';
+import { AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
+import { isBy, says } from '~/lib/vovas-openai';
 import { findChat } from '../data';
-import { Monitorable } from './monitorable';
-import { QuoteHandler } from './quoteHandler';
+import { ChatResponder } from './responder';
 
-export class BaseChatController {
+export class BaseChatController<T extends ChatType> {
 
   userMessage = ref('');
   generating = reactive(new Resolvable({ startResolved: true }));
@@ -14,15 +13,16 @@ export class BaseChatController {
   msExpected = ref<number | null>(null);
 
   constructor(
-    public type: ChatType,
-    public messages = findChat(type).messages
+    public type: T,
+    public chat = findChat(type),
+    public messages = chat.messages,
   ) {}
 
-  private removeMessagesFrom(message: ChatMessage) {
+  private removeMessagesFrom(message: AppChatMessage<T>) {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));
   }
 
-  editMessage(message: ChatMessage<'user'>) {
+  editMessage(message: AppChatMessage<T, 'user'>) {
     this.userMessage.value = message.content;
     this.removeMessagesFrom(message);
     nextTick(() => {
@@ -35,7 +35,7 @@ export class BaseChatController {
     return lastMessage && isBy.user(lastMessage);
   }
 
-  regenerate(message: ChatMessage<'assistant'>) {
+  regenerate(message: AppChatMessage<T, 'assistant'>) {
     this.removeMessagesFrom(message);
   }
 
@@ -55,7 +55,25 @@ export class BaseChatController {
 
 };
 
-export const ChatController =
-  mixinable(BaseChatController)
-    .mixin(Monitorable)
-    .mixin(QuoteHandler);
+export function createChatController<T extends ChatType>(type: T) {
+  return mixinable(BaseChatController<T>)
+    .mixin(ChatResponder)
+    .create(type);
+}
+
+export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
+
+export const activeChatControllers: ChatController<any>[] = reactive([]);
+
+export function getOrCreateChatController<T extends ChatType>(type: T) {
+  const chatController = findBy({ type }, activeChatControllers);
+  if (chatController) {
+    console.log({ chatController });
+    return chatController as ChatController<T>;
+  } else {
+    const newChatController = createChatController(type);
+    console.log({ newChatController });
+    activeChatControllers.push(newChatController);
+    return newChatController;
+  }
+}

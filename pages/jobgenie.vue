@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { alsoLog } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
@@ -8,8 +9,8 @@ import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
-import { sections, selectedSection } from './sections';
-import { usdSpent, useGpt4 } from './utils';
+import { isChatBased, sections, selectedSection } from '~/components/jobgenie/sections';
+import { usdSpent, useGpt4 } from '~/components/jobgenie/refs';
 
 const process = useWindowProcess();
 
@@ -31,7 +32,7 @@ function login(c: Credentials) {
               ${section.id === selectedSection.id && 'selected'}
               ${section.disabled && 'disabled'}
             `"
-            @click="!section.disabled && (selectedSection = section)"
+            @click="!section.disabled && ( selectedSection = section )"
             :title="section.disabled ? section.disabled : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />
@@ -50,14 +51,22 @@ function login(c: Credentials) {
           caption="⤒ Import data"
           @click="importData"
         />
-        <Toggle v-model="useGpt4" label="GPT-4" title="This is around 10x more expensive if turned on." />
+        <Toggle 
+          v-model="useGpt4" 
+          :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
+          title="This is around 10x more expensive if turned on." 
+        />
         Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
       </template>
     </Sidebar>
     <div class="content">
       <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
       <template v-else>
-        <Chat v-if="selectedSection.id === 'interview'" type="interview" />
+        <Chat
+          v-if="isChatBased(selectedSection)"
+          :key="selectedSection.id"
+          :type="selectedSection.id"
+        />
         <!-- Add more sections here -->
       </template>
     </div>
@@ -97,7 +106,7 @@ function login(c: Credentials) {
 }
 
 .content {
-  @apply w-full md:w-5/6;
+  @apply w-full md:w-5/6 mt-10;
 }
 
 .status {
