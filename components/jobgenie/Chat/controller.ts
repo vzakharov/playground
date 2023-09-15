@@ -2,7 +2,7 @@ import _, { create } from 'lodash';
 import { Resolvable, mixinable } from 'vovas-utils';
 import { AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
-import { findChat } from '../data';
+import { findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
 
 export class BaseChatController<T extends ChatType> {
@@ -14,7 +14,7 @@ export class BaseChatController<T extends ChatType> {
 
   constructor(
     public type: T,
-    public chat = findChat(type),
+    public chat = findOrCreateChat(type),
     public messages = chat.messages,
   ) {}
 

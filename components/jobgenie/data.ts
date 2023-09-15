@@ -10,7 +10,7 @@ export const data = useLocalReactive<AppData>('jobgenie', {
 
 export const { chats } = data;
 
-export function findChat<T extends ChatType>(type: T) {
+export function findOrCreateChat<T extends ChatType>(type: T) {
   return (
     findBy({ type }, chats)
       ?? also(
