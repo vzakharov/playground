@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 
-const isVisible = ref(false);
+import { isVisible } from './sidebar';
 
 </script>
 
