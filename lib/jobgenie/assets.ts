@@ -13,6 +13,8 @@ export type AssetsMap = {
   job: {
     title: string;
     description: string;
+    whyMe: string;
+    whyJob: string;
   };
 };
 
