@@ -6,7 +6,7 @@ import { PromptBuilder } from "../PromptBuilder";
 export const interviewPromptBuilder = new PromptBuilder('dna', { 
 
   mainSystemMessage,
-  requestFunctionCallAfter: 2,
+  requestFunctionCallAfter: 3,
 
   buildSystemMessage: ({ isFirstResponse, requestFunctionCall }) => [
 
@@ -19,21 +19,19 @@ export const interviewPromptBuilder = new PromptBuilder('dna', {
         
         Then, proceed with the initial questions to narrow down the interview.`
 
-      : !requestFunctionCall
-      
-        ? 'Each question after the first one should ask for some more detail to help come up with the most accurate and representative summary.'
+      : 'Each question after the first one should ask for some more detail to help come up with the most accurate and representative summary.',
 
-        : dedent`
-          After the fourth question or so, call the attached function to generate the actual DNA. Refer to the user in first person (“I ...”) so that they can better relate to the text.
-        `
+    requestFunctionCall && dedent`
+      Once you think you have enough information, call the attached function to generate the actual DNA. Refer to the user in first person (“I ...”) so that they can better relate to the text.
+    `
   ],
 
   fnArgs: [
     'addDna',
     'Adds the DNA (summary) to the user data',
     {
-      dna: 'The DNA summary to add',
-      content: 'Some short accompanying text to add before the DNA'
+      dna: 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves',
+      content: 'Some short explanatory text to add before the DNA, from yourself'
     }
   ]
 

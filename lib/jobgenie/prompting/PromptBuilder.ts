@@ -9,7 +9,7 @@ export type PromptBuilderConfig<T extends ChatType> = {
   buildSystemMessage: (params: PromptBuilderInput<T> & { 
     isFirstResponse: boolean; 
     requestFunctionCall: boolean;
-  }) => NestedArray<string>;
+  }) => NestedArray<string | false>;
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
 };
 

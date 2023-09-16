@@ -24,7 +24,7 @@ export function countJsonChars(messages: ChatMessage[], fn?: AnyChatFunction) {
 
 export type NestedArray<T> = (T | NestedArray<T>)[];
 
-export function stackUp(strings: NestedArray<string> | false | undefined) {
+export function stackUp(strings: NestedArray<string | false> | false | undefined) {
   return strings
     ? _.compact(strings.flat()).join('\n\n')
     : '';
