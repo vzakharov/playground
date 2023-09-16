@@ -2,7 +2,7 @@ import _ from "lodash";
 
 export type RefLike<T> = { value: T };
 
-export type StringKey<T> = Extract<keyof T, string>;
+export type StringKeys<T> = Extract<keyof T, string>;
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
