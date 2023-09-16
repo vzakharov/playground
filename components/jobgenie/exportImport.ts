@@ -1,4 +1,6 @@
+import { forEach, is } from 'vovas-utils';
 import { data } from './data';
+import { AppData, assertAppData, defaultData } from 'lib/jobgenie';
 
 export function exportData() {
   const dataStr = JSON.stringify(data, null, 2);
@@ -17,10 +19,10 @@ export function importData() {
   if ( jsonStr ) {
     try {
       const newData = JSON.parse(jsonStr);
-      for ( const key in data ) {
-        data[key as keyof typeof data] = undefined;
-      };
-      Object.assign(data, newData);
+      assertAppData(newData);
+      forEach(data, (value, key) => {
+        data[key] = is.undefined(newData[key]) ? defaultData[key] : newData[key];
+      });
     } catch (e: any) {
       alert(e.message);
     }

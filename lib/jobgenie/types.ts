@@ -1,5 +1,6 @@
 import { ChatRole, ChatMessage as RawChatMessage } from "~/lib/vovas-openai";
 import { AllAssets, Assets } from ".";
+import { every, forEach } from "vovas-utils";
 
 export const chatTypes = ['interview', 'linkedin', 'job'] as const;
 
@@ -19,8 +20,24 @@ export type AppChat<T extends ChatType> = {
 };
 
 export type AppData = {
-  username?: string;
+  username: string | null;
   chats: AppChat<ChatType>[];
-  dna?: string;
+  dna: string | null;
   assets: AllAssets;
+};
+
+export const defaultData: AppData = {
+  chats: [],
+  assets: {},
+  username: null,
+  dna: null
+};
+
+export function assertAppData(data: any): asserts data is AppData {
+  forEach(defaultData, (value, key) => {
+    // return key in data && typeof data[key] === typeof value;
+    if ( !(key in data) || typeof data[key] !== typeof value ) {
+      throw new Error(`Invalid data: ${key} is missing or has the wrong type`);
+    }
+  })
 };

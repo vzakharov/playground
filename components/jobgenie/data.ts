@@ -1,16 +1,12 @@
-import { AppChat, AppData, ChatType, findBy } from "~/lib/jobgenie";
+import { AppChat, AppData, ChatType, defaultData, findBy } from "~/lib/jobgenie";
 import _ from "lodash";
 import { useLocalReactive } from "use-vova";
 import { also } from "vovas-utils";
 
-export const data = useLocalReactive<AppData>('jobgenie', {
-  chats: [],
-  assets: {}
-});
-
-export const { chats } = data;
+export const data = useLocalReactive('jobgenie-data', defaultData);
 
 export function findOrCreateChat<T extends ChatType>(type: T) {
+  const { chats } = data;
   return (
     findBy({ type }, chats)
       ?? also(

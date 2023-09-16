@@ -7,7 +7,7 @@
   import Card from '~/components/shared/Card.vue';
   import { isBy } from '~/lib/vovas-openai';
   import { getOrCreateChatController } from './controller';
-  import { data, findChat } from '../data';
+  import { data } from '../data';
   import { ChatType } from '~/lib/jobgenie'
 
   const { type } = defineProps<{
