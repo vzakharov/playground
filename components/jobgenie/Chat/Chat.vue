@@ -104,7 +104,19 @@
   /* We’re not making these scoped because the tags are created dynamically, so Vue doesn’t know about them. */
 
   .msg p {
-    @apply pb-4;
+    @apply pt-2 pb-2;
+  }
+
+  .msg ol {
+    @apply list-decimal pl-4;
+  }
+
+  .msg ul {
+    @apply list-disc;
+  }
+
+  .msg li {
+    @apply pb-2;
   }
 
 </style>

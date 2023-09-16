@@ -1,10 +1,11 @@
 import _, { create } from 'lodash';
-import { Resolvable, mixinable } from 'vovas-utils';
-import { AppChat, AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
+import { Resolvable, forEach, mixinable } from 'vovas-utils';
+import { AppChat, AppChatMessage, ChatType, defaultData, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
-import { findOrCreateChat } from '../data';
+import { data, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
 import { userInput, userMessage } from '../refs';
+import { exportData } from '../exportImport';
 
 export class BaseChatController<T extends ChatType> {
 
@@ -46,8 +47,11 @@ export class BaseChatController<T extends ChatType> {
   }
 
   startOver() {
-    if (window.confirm("Are you sure you want to start over? All current messages will be lost.")) {
-      this.messages.splice(0, this.messages.length);
+    if (window.confirm("Are you sure you want to start over? All current data will be lost.")) {
+      exportData();
+      forEach(data, (value, key) => {
+        data[key] = defaultData[key];
+      });
     }
   }
 
