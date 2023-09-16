@@ -4,10 +4,10 @@ import { AppChat, AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
 import { dataLastLoaded, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
+import { userMessage } from '../refs';
 
 export class BaseChatController<T extends ChatType> {
 
-  userMessage = ref('');
   generating = reactive(new Resolvable({ startResolved: true }));
   userInput = ref<HTMLInputElement | null>(null);
   msExpected = ref<number | null>(null);
@@ -25,7 +25,7 @@ export class BaseChatController<T extends ChatType> {
   }
 
   editMessage(message: AppChatMessage<T, 'user'>) {
-    this.userMessage.value = message.content;
+    userMessage.value = message.content;
     this.removeMessagesFrom(message);
     nextTick(() => {
       this.userInput.value?.select();
@@ -42,10 +42,10 @@ export class BaseChatController<T extends ChatType> {
   }
 
   sendMessage() {
-    const content = this.userMessage.value;
+    const content = userMessage.value;
     if (content.trim() !== '') {
       this.messages.push(says.user(content));
-      this.userMessage.value = '';
+      userMessage.value = '';
     }
   }
 

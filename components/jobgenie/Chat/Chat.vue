@@ -9,6 +9,7 @@
   import { getOrCreateChatController } from './controller';
   import { data } from '../data';
   import { ChatType } from '~/lib/jobgenie'
+  import { userMessage } from '../refs';
 
   const { type } = defineProps<{
     type: ChatType;
@@ -50,12 +51,12 @@
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
       <textarea class="input-box"
-        v-model="c.userMessage.value"
+        v-model="userMessage"
         placeholder="Type your message here..."
         ref="userInput"
       />
       <Button rounded small
-        v-if="!!c.userMessage.value" 
+        v-if="!!userMessage"
         type="submit" 
         caption="↑"
       />
