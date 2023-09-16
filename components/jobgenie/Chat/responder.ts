@@ -25,19 +25,15 @@ export function ChatResponder<T extends ChatType>(Base: Class<BaseChatController
 
       watch(messages, async () => {
 
-        console.log('generating', JSON.stringify(generating, null, 2));
-        await generating.promise;
         const lastMessage = _.last(messages)
           ?? also(
             autoMessage[type]?.(),
             m => m && messages.push(m)
           );
         
-        console.log({ lastMessage })
-
         if (!lastMessage || isBy.user(lastMessage)) {
           try {
-            generating.start();
+            await generating.restartAfterWait();
             const interval = setInterval(() => {
               msExpected.value = Math.max((msExpected.value ?? 0 ) - 1000, 0) || null
             }, 1000);

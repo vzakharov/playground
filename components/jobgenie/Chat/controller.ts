@@ -1,8 +1,8 @@
 import _, { create } from 'lodash';
 import { Resolvable, mixinable } from 'vovas-utils';
-import { AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
+import { AppChat, AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
-import { findOrCreateChat } from '../data';
+import { dataLastLoaded, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
 
 export class BaseChatController<T extends ChatType> {
@@ -14,9 +14,11 @@ export class BaseChatController<T extends ChatType> {
 
   constructor(
     public type: T,
-    public chat = findOrCreateChat(type),
-    public messages = chat.messages,
-  ) {}
+  ) { }
+
+  get messages() {
+    return findOrCreateChat(this.type).messages;
+  }
 
   private removeMessagesFrom(message: AppChatMessage<T>) {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));

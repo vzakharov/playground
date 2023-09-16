@@ -36,8 +36,8 @@ export const defaultData: AppData = {
 export function assertAppData(data: any): asserts data is AppData {
   forEach(defaultData, (value, key) => {
     // return key in data && typeof data[key] === typeof value;
-    if ( !(key in data) || typeof data[key] !== typeof value ) {
-      throw new Error(`Invalid data: ${key} is missing or has the wrong type`);
+    if ( !(key in data) ) {
+      throw new Error(`${key} missing`)
     }
   })
 };

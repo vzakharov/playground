@@ -1,6 +1,6 @@
 import { forEach, is } from 'vovas-utils';
-import { data } from './data';
-import { AppData, assertAppData, defaultData } from 'lib/jobgenie';
+import { data, dataLastLoaded } from './data';
+import { AppData, assertAppData, defaultData } from '~/lib/jobgenie';
 
 export function exportData() {
   const dataStr = JSON.stringify(data, null, 2);
@@ -23,6 +23,7 @@ export function importData() {
       forEach(data, (value, key) => {
         data[key] = is.undefined(newData[key]) ? defaultData[key] : newData[key];
       });
+      dataLastLoaded.value = Date.now();
     } catch (e: any) {
       alert(e.message);
     }
