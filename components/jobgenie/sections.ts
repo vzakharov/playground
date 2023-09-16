@@ -23,37 +23,31 @@ export function isChatBased(section: AnySection): section is Section<true> {
 // Add your sections here
 export const sections = computed<AnySection[]>(() => {
 
-  const disableAllButInterview = !data.dna && 'Please complete the interview and pick a DNA first to unlock this section';
+  const disableAllButDna = !data.dna && 'Please complete the interview and pick a DNA first to unlock this section';
 
   return [
     {
-      id: 'interview',
-      caption: 'Interview',
-      emoji: '🤝',
-    },
-    {
       id: 'dna',
       caption: 'DNA' + (dnaJustSet.value ? ' 👈' : ''),
-      emoji: '🧬',
-      disabled: disableAllButInterview,
+      emoji: '🧬'
     },
     {
       id: 'linkedin',
       caption: 'LinkedIn profile',
       emoji: '👔',
-      disabled: disableAllButInterview,
+      disabled: disableAllButDna,
     },
     {
       id: 'job',
       caption: 'Craft-a-job',
       emoji: '🧪',
-      disabled: disableAllButInterview,
+      disabled: disableAllButDna,
     },
     {
       id: 'company',
       caption: 'Pitch-a-company',
       emoji: '🏢',
-      disabled: disableAllButInterview,
+      disabled: disableAllButDna,
     }
   ];
 });

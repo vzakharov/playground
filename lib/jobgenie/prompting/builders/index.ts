@@ -1,3 +1,3 @@
-export * from './interview';
+export * from './dna';
 export * from './job';
 export * from './linkedin';

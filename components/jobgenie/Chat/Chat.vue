@@ -98,3 +98,13 @@
 }
 
 </style>
+
+<style lang="postcss">
+
+  /* We’re not making these scoped because the tags are created dynamically, so Vue doesn’t know about them. */
+
+  .msg p {
+    @apply pb-4;
+  }
+
+</style>

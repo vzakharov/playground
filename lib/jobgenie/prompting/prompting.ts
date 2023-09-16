@@ -1,5 +1,5 @@
 import { ChatFunction, ChatFunctionReturns, ChatMessage } from "~/lib/vovas-openai";
-import { interviewPromptBuilder } from "./builders/interview";
+import { interviewPromptBuilder } from "./builders/dna";
 import { AppChatMessage, AppData, ChatType } from "../types";
 import { linkedinPromptBuilder } from "./builders/linkedin";
 import { AssetsMap } from "../assets";

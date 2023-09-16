@@ -2,7 +2,7 @@ import { ChatType } from "./types";
 import { MapToGeneric } from "./utils";
 
 export type AssetsMap = {
-  interview: {
+  dna: {
     dna: string;
   };
   linkedin: {

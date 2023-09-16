@@ -8,6 +8,6 @@ export type AutoMessageMap = {
 
 export const autoMessage: AutoMessageMap = {
 
-  interview: () => says.user(`Hi, I’m ${data.username ?? 'looking for some assistance'}.`)
+  dna: () => says.user(`Hi, I’m ${data.username ?? 'looking for some assistance'}.`)
 
 };

@@ -2,7 +2,7 @@ import { ChatRole, ChatMessage as RawChatMessage } from "~/lib/vovas-openai";
 import { AllAssets, Assets } from ".";
 import { every, forEach } from "vovas-utils";
 
-export const chatTypes = ['interview', 'linkedin', 'job'] as const;
+export const chatTypes = ['dna', 'linkedin', 'job'] as const;
 
 export type ChatType = typeof chatTypes[number];
 
