@@ -6,17 +6,21 @@
   import Button from '~/components/shared/Button.vue';
   import Card from '~/components/shared/Card.vue';
   import { isBy } from '~/lib/vovas-openai';
-  import { getOrCreateChatController } from './controller';
-  import { data, findChat } from '../data';
+  import { createChatController, getOrCreateChatController } from './controller';
+  import { data, dataLoadedTimestamp } from '../data';
   import { ChatType } from '~/lib/jobgenie'
 
   const { type } = defineProps<{
     type: ChatType;
   }>();
 
-  const c = getOrCreateChatController(type);
+  // const c = getOrCreateChatController(type);
+  const c = computed(() => {
+    dataLoadedTimestamp.value;      // i.e. we want to recompute this whenever data is loaded
+    return createChatController(type)
+  });
 
-  const { userMessage, msExpected } = c;
+  const { userMessage, msExpected } = c.value;
 
   addProperties(window, { _, c, data});
 
@@ -66,7 +70,7 @@
       <!-- Start over -->
       <Button rounded small outline gray class="me-2"
         caption="↺ Start over"
-        @click="c.startOver" 
+        @click="c.startOver()" 
       />
     </div>
   </div>

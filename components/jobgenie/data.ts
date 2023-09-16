@@ -1,16 +1,30 @@
-import { AppChat, AppData, ChatType, findBy } from "~/lib/jobgenie";
+import { AppChat, AppData, ChatType, findBy, forEach } from "~/lib/jobgenie";
 import _ from "lodash";
-import { useLocalReactive } from "use-vova";
+import { useLocalReactive, useLocalReactiveRef, useLocalRef } from "use-vova";
 import { also } from "vovas-utils";
 
-export const data = useLocalReactive<AppData>('jobgenie', {
+export const dataRef = useLocalReactiveRef<AppData>('jobgenie', {
   chats: [],
   assets: {}
 });
 
-export const { chats } = data;
+export const data = getSettersFromRef(dataRef);
+
+export function getSettersFromRef<T extends object>(ref: Ref<T>) {
+  const result = {} as T;
+  forEach(ref.value, (value, key) => {
+    Object.defineProperty(result, key, {
+      get: () => ref.value[key],
+      set: (newValue) => ref.value[key] = newValue
+    });
+  });
+  return result;
+};
+
+export const dataLoadedTimestamp = useLocalRef('jobgenie-data-loaded', Date.now())
 
 export function findOrCreateChat<T extends ChatType>(type: T) {
+  const { chats } = data;
   return (
     findBy({ type }, chats)
       ?? also(

@@ -1,4 +1,4 @@
-import { data } from './data';
+import { data, dataLoadedTimestamp, dataRef } from './data';
 
 export function exportData() {
   const dataStr = JSON.stringify(data, null, 2);
@@ -17,10 +17,8 @@ export function importData() {
   if ( jsonStr ) {
     try {
       const newData = JSON.parse(jsonStr);
-      for ( const key in data ) {
-        data[key as keyof typeof data] = undefined;
-      };
-      Object.assign(data, newData);
+      dataRef.value = newData;
+      dataLoadedTimestamp.value = Date.now();
     } catch (e: any) {
       alert(e.message);
     }

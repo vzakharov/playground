@@ -11,7 +11,7 @@ import Toggle from '~/components/shared/Toggle.vue';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
 import { isChatBased, sections, selectedSection } from '~/components/jobgenie/sections';
 import { usdSpent, useGpt4 } from '~/components/jobgenie/refs';
-import { isVisible as sidebarIsVisible } from '~/components/shared/sidebar';
+import { isSidebarVisible } from '~/components/shared/refs';
 
 const process = useWindowProcess();
 
@@ -33,7 +33,7 @@ function login(c: Credentials) {
               ${section.id === selectedSection.id && 'selected'}
               ${section.disabled && 'disabled'}
             `"
-            @click="!section.disabled && ( selectedSection = section ) && ( sidebarIsVisible = false )"
+            @click="!section.disabled && ( selectedSection = section ) && ( isSidebarVisible = false )"
             :title="section.disabled ? section.disabled : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />
