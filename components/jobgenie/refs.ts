@@ -7,5 +7,3 @@ export const useGpt4 = useLocalRef('jobgenie-use-gpt4', false);
 export const savedMsPerPromptJsonChar = useLocalReactive<{ 
   [model in Model]?: number 
 }>('jobgenie-ms-per-prompt-json-char', {});
-
-export const isSidebarVisible = ref(false);

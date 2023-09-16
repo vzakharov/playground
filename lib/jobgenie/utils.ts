@@ -41,7 +41,3 @@ export function isAmong<T>(arr: readonly T[]) {
 
 // type TestType3 = TestType2 extends Partial<TestType1> ? true : false; // true
 // type TestType4 = TestType1 extends Partial<TestType2> ? true : false; // false
-
-export function forEach<T extends object, K extends keyof T>(obj: T, callback: (value: T[K], key: K) => void) {
-  _.forEach(obj, callback as any);
-};
