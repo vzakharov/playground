@@ -1,6 +1,6 @@
 import { ChatFunction, NestedArray, SimplifiedChatFunction, SimplifiedChatFunctionFor, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
 import { ChatFunctionFor, FnPropsFor, PromptBuilderInput } from "./prompting";
-import { AppData, AssetsMap, ChatType, StringKeys, toRawMessage } from "~/lib/jobgenie";
+import { AppData, AssetsMap, ChatType, StringKey, toRawMessage } from "~/lib/jobgenie";
 
 
 export type PromptBuilderConfig<T extends ChatType> = {
@@ -13,7 +13,7 @@ export type PromptBuilderConfig<T extends ChatType> = {
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
 };
 
-export class PromptBuilder<T extends ChatType, FnName extends string, FnProps extends FnPropsFor<T>> {
+export class PromptBuilder<T extends ChatType> {
 
   constructor(
     public type: T,

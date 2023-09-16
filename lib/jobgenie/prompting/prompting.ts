@@ -3,7 +3,7 @@ import { interviewPromptBuilder } from "./builders/interview";
 import { AppChatMessage, AppData, ChatType } from "../types";
 import { linkedinPromptBuilder } from "./builders/linkedin";
 import { AssetsMap } from "../assets";
-import { StringKeys, findBy } from "..";
+import { StringKey, findBy } from "..";
 import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
@@ -15,9 +15,9 @@ export type PromptBuilderInput<T extends ChatType> = {
 };
 
 export type FnPropsFor<T extends ChatType> =
-  StringKeys<AssetsMap[T]> | 'content';
+  StringKey<AssetsMap[T]> | 'content';
 
-export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, StringKeys<AssetsMap[T]> | 'content', never>;
+export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, StringKey<AssetsMap[T]> | 'content', never>;
 
 export const storedPromptBuilders = [
   interviewPromptBuilder,
