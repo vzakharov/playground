@@ -4,18 +4,19 @@ import { AppChat, AppChatMessage, ChatType, defaultData, findBy } from '~/lib/jo
 import { isBy, says } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
-import { userInput, userMessage } from '../refs';
+import { dataLastLoaded, state, userInput, userMessage } from '../refs';
 import { exportData } from '../exportImport';
 
 export class BaseChatController<T extends ChatType> {
 
+
   constructor(
     public type: T,
-  ) { }
-
-  get messages() {
-    return findOrCreateChat(this.type).messages;
+    public messages = findOrCreateChat(type).messages
+  ) { 
+    // debugger
   }
+
 
   private removeMessagesFrom(message: AppChatMessage<T>) {
     this.messages.splice(this.messages.indexOf(message), this.messages.length - this.messages.indexOf(message));
@@ -48,10 +49,12 @@ export class BaseChatController<T extends ChatType> {
 
   startOver() {
     if (window.confirm("Are you sure you want to start over? All current data will be lost.")) {
-      exportData();
+      // exportData();
       forEach(data, (value, key) => {
         data[key] = defaultData[key];
       });
+      dataLastLoaded.value = Date.now();
+      // debugger
     }
   }
 
@@ -66,16 +69,16 @@ export function createChatController<T extends ChatType>(type: T) {
 export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
 
 export const activeChatControllers: ChatController<any>[] = reactive([]);
+console.log({ activeChatControllers })
 
-export function getOrCreateChatController<T extends ChatType>(type: T) {
+export function renewChatController<T extends ChatType>(type: T) {
   const chatController = findBy({ type }, activeChatControllers);
   if (chatController) {
-    console.log({ chatController });
-    return chatController as ChatController<T>;
-  } else {
-    const newChatController = createChatController(type);
-    console.log({ newChatController });
-    activeChatControllers.push(newChatController);
-    return newChatController;
-  }
+    console.log("Deleting old chat controller:", chatController);
+    _.pull(activeChatControllers, chatController);
+  };
+  const newChatController = createChatController(type);
+  console.log("Creating new chat controller:", newChatController);
+  activeChatControllers.push(newChatController);
+  return newChatController;
 }

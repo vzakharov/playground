@@ -10,7 +10,7 @@ import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
 import { isChatBased, sections } from '~/components/jobgenie/sections';
-import { state } from '~/components/jobgenie/refs';
+import { state, dataLastLoaded } from '~/components/jobgenie/refs';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 import { chatTypes } from '~/lib/jobgenie';
 
@@ -67,7 +67,7 @@ function login(c: Credentials) {
       <template v-else>
         <Chat
           v-if="isAmong(chatTypes)(selectedSectionId)"
-          :key="selectedSectionId"
+          :key="`${selectedSectionId}-${dataLastLoaded}`"
           :type="selectedSectionId"
         />
         <!-- Add more sections here -->

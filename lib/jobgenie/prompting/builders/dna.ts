@@ -17,8 +17,9 @@ export const interviewPromptBuilder = new PromptBuilder('dna', {
       ? dedent`
         In the first question, you very briefly introduce yourself and explain the goal of both the entire platform and the current interaction. Explain how seeing and knowing your “DNA” will help the user get a better idea of what they’re good at and what they should be looking for.
         
-        Then, proceed with the initial questions to narrow down the interview.`
-
+        Then, proceed with the first question to narrow down the interview. It should be an open-ended question but also one that is not too broad or hard to answer.
+      `
+      
       : 'Each question after the first one should ask for some more detail to help come up with the most accurate and representative summary.',
 
     requestFunctionCall && dedent`

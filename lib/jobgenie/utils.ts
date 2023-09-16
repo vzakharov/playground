@@ -35,9 +35,9 @@ export function isAmong<T>(arr: readonly T[]) {
   return (item: any): item is T => arr.includes(item);
 };
 
-// type TestType1 = 'hello' | 'world';
-
-// type TestType2 = 'hello';
-
-// type TestType3 = TestType2 extends Partial<TestType1> ? true : false; // true
-// type TestType4 = TestType1 extends Partial<TestType2> ? true : false; // false
+export function debugAnd<Args, Result>(fn: (...args: Args[]) => Result) {
+  return (...args: Args[]) => {
+    // debugger;
+    return fn(...args);
+  }
+};

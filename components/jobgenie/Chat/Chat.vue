@@ -6,7 +6,7 @@
   import Button from '~/components/shared/Button.vue';
   import Card from '~/components/shared/Card.vue';
   import { isBy } from '~/lib/vovas-openai';
-  import { getOrCreateChatController } from './controller';
+  import { renewChatController } from './controller';
   import { data } from '../data';
   import { ChatType } from '~/lib/jobgenie'
   import { userMessage, generating, userInput, msExpected } from '../refs';
@@ -15,7 +15,7 @@
     type: ChatType;
   }>();
 
-  const c = getOrCreateChatController(type);
+  const c = renewChatController(type);
 
   addProperties(window, { _, c, data});
 
