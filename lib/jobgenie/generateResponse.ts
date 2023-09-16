@@ -1,24 +1,27 @@
-import { savedMsPerPromptJsonChar, usdSpent } from '~/components/jobgenie/refs';
+import { state } from '~/components/jobgenie/refs';
 import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { toRawMessage } from './toRawMessages';
 import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
 import { RefLike } from './utils';
 import { is } from 'vovas-utils';
 import { getPromptBuilder } from './prompting';
+import { State } from './state';
 
 export type GenerateResponseParams<T extends ChatType> = {
-  type: T;
-  messages: AppChatMessage<T>[];
+  type: T,
+  messages: AppChatMessage<T>[],
   msExpected: RefLike<number | null>;
-  useGpt4: RefLike<boolean>;
+  data: AppData
 };
 
 export async function generateResponse<T extends ChatType>(
-  { type, messages, msExpected, useGpt4 }: GenerateResponseParams<T>,
-  data: AppData
+  params: GenerateResponseParams<T>,
+  state: State
 ) {
+  const { type, messages, data, msExpected } = params;
+  const { useGpt4, savedMsPerPromptJsonChar } = state;
   const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
-  const model = useGpt4.value ? 'gpt-4' : 'gpt-3.5-turbo';
+  const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });
 
@@ -44,9 +47,9 @@ export async function generateResponse<T extends ChatType>(
     }
   );
 
-  savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
+  state.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
   
-  usdSpent.value += globalUsageContainer.cost.totalUsd;
+  state.usdSpent += globalUsageContainer.cost.totalUsd;
 
   return {
     role: 'assistant' as const,

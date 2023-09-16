@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { alsoLog } from 'vovas-utils';
+import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
@@ -10,10 +10,12 @@ import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
 import { isChatBased, sections } from '~/components/jobgenie/sections';
-import { usdSpent, useGpt4, selectedSection } from '~/components/jobgenie/refs';
+import { state } from '~/components/jobgenie/refs';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
+import { chatTypes } from '~/lib/jobgenie';
 
 const process = useWindowProcess();
+const { usdSpent, useGpt4, selectedSectionId } = toRefs(state);
 
 function login(c: Credentials) {
   data.username = c.username;
@@ -30,10 +32,10 @@ function login(c: Credentials) {
           <li v-for="section in sections.filter(s => s.include !== false)" :key="section.id" 
             :class="`
               menu-item
-              ${section.id === selectedSection.id && 'selected'}
+              ${section.id === selectedSectionId && 'selected'}
               ${section.disabled && 'disabled'}
             `"
-            @click="!section.disabled && ( selectedSection = section ) && ( sidebarIsVisible = false )"
+            @click="!section.disabled && ( selectedSectionId = section.id ) && ( sidebarIsVisible = false )"
             :title="section.disabled ? section.disabled : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />
@@ -64,9 +66,9 @@ function login(c: Credentials) {
       <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
       <template v-else>
         <Chat
-          v-if="isChatBased(selectedSection)"
-          :key="selectedSection.id"
-          :type="selectedSection.id"
+          v-if="isAmong(chatTypes)(selectedSectionId)"
+          :key="selectedSectionId"
+          :type="selectedSectionId"
         />
         <!-- Add more sections here -->
       </template>
