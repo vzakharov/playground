@@ -45,14 +45,3 @@ export function isAmong<T>(arr: readonly T[]) {
 export function forEach<T extends object, K extends keyof T>(obj: T, callback: (value: T[K], key: K) => void) {
   _.forEach(obj, callback as any);
 };
-
-export function reactiveValue<T extends object>(ref: Ref<T>) {
-  const result = {} as T;
-  forEach(ref.value, (value, key) => {
-    Object.defineProperty(result, key, {
-      get: () => ref.value[key],
-      set: (newValue) => ref.value[key] = newValue
-    });
-  });
-  return result;
-};
