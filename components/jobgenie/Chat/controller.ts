@@ -4,13 +4,9 @@ import { AppChat, AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
 import { dataLastLoaded, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
-import { userMessage } from '../refs';
+import { userInput, userMessage } from '../refs';
 
 export class BaseChatController<T extends ChatType> {
-
-  generating = reactive(new Resolvable({ startResolved: true }));
-  userInput = ref<HTMLInputElement | null>(null);
-  msExpected = ref<number | null>(null);
 
   constructor(
     public type: T,
@@ -28,7 +24,7 @@ export class BaseChatController<T extends ChatType> {
     userMessage.value = message.content;
     this.removeMessagesFrom(message);
     nextTick(() => {
-      this.userInput.value?.select();
+      userInput.value?.select();
     });
   }
 

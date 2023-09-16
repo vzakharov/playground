@@ -9,7 +9,7 @@
   import { getOrCreateChatController } from './controller';
   import { data } from '../data';
   import { ChatType } from '~/lib/jobgenie'
-  import { userMessage } from '../refs';
+  import { userMessage, generating, userInput, msExpected } from '../refs';
 
   const { type } = defineProps<{
     type: ChatType;
@@ -46,8 +46,8 @@
         @click="c.editMessage(message)"
       />
     </div>
-    <div v-if="c.generating.inProgress" class="msg msg-assistant animate-pulse"
-      v-text="c.msExpected.value ? `Generating (~${Math.round(c.msExpected.value / 1000)}s)...` : 'Generating...'"
+    <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse"
+      v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
       <textarea class="input-box"
