@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 
-import { isVisible } from './sidebar';
+import { isVisible } from './refs';
 
 </script>
 
