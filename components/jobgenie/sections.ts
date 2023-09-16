@@ -57,5 +57,3 @@ export const sections = computed<AnySection[]>(() => {
     }
   ];
 });
-
-export const selectedSection = useLocalRef<AnySection>('jobgenie-section', sections.value[0]);

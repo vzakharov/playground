@@ -5,8 +5,6 @@ import { also } from "vovas-utils";
 
 export const data = useLocalReactive('jobgenie-data', defaultData);
 
-export const dataLastLoaded = useLocalRef('jobgenie-data-last-loaded', Date.now());
-
 export function findOrCreateChat<T extends ChatType>(type: T) {
   const { chats } = data;
   return (

@@ -9,8 +9,8 @@ import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
-import { isChatBased, sections, selectedSection } from '~/components/jobgenie/sections';
-import { usdSpent, useGpt4 } from '~/components/jobgenie/refs';
+import { isChatBased, sections } from '~/components/jobgenie/sections';
+import { usdSpent, useGpt4, selectedSection } from '~/components/jobgenie/refs';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 
 const process = useWindowProcess();

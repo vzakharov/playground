@@ -2,7 +2,7 @@ import _, { create } from 'lodash';
 import { Resolvable, mixinable } from 'vovas-utils';
 import { AppChat, AppChatMessage, ChatType, findBy } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
-import { dataLastLoaded, findOrCreateChat } from '../data';
+import { findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
 import { userInput, userMessage } from '../refs';
 
