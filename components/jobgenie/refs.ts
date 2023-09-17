@@ -1,4 +1,4 @@
-import { Model } from "lib/vovas-openai";
+import { AnyGenerateResult, Model } from "lib/vovas-openai";
 import { useLocalReactive, useLocalRef } from "use-vova";
 import { Resolvable } from "vovas-utils";
 import { AnySection, sections } from "./sections";
@@ -7,6 +7,7 @@ import { defaultState } from "~/lib/jobgenie";
 export const state = useLocalReactive('jobgenie-state', {
   ...defaultState,
   selectedSectionId: sections.value[0].id,
+  leftovers: [] as AnyGenerateResult[]
 });
 
 export const userMessage = ref('');

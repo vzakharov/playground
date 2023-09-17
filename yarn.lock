@@ -6670,10 +6670,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-vova@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/use-vova/-/use-vova-0.1.1.tgz#93cbcc3c611996fac3b7a05f5f3078c8f632b005"
-  integrity sha512-k28U8I0o0ejuxVSVP0Z32Bjxi1KqWVz+TV0rshm2GF4xCOzDKRNZ9xgzwZtcgwF44VReJaiVU31FAo2b1YIGPg==
+use-vova@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/use-vova/-/use-vova-0.1.2.tgz#3b4c10a93f42379e0c2fe4b655a6e6c537c67d5f"
+  integrity sha512-Xg/ilBFUT2Y23Iy1km4SHsUl7/N+K4aM0qKXxUbChOJzaNGhDCJ++gOkzbU5IItck2YAFtRD3FaRDdfgvbWupw==
   dependencies:
     nuxt "^3.2.3"
 

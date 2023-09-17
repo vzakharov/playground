@@ -13,7 +13,7 @@ export type PromptBuilderConfig<T extends ChatType> = {
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
 };
 
-export class PromptBuilder<T extends ChatType, FnName extends string, FnProps extends FnPropsFor<T>> {
+export class PromptBuilder<T extends ChatType> {
 
   constructor(
     public type: T,

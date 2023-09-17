@@ -13,8 +13,8 @@ export async function handleResponseGeneration<T extends ChatType>(type: T, mess
   }, 1000);
   generating.start();
   try {
-    const result = await generateResponse({ type, messages, msExpected, data }, state);
-    messages.push(result);
+    const responseMessage = await generateResponse({ type, messages, msExpected, data }, state);
+    messages.push(responseMessage);
   } catch (e: any) {
     if (e instanceof GenerateException) {
       // Remove last message and give an alert

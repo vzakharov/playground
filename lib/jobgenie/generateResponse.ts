@@ -3,9 +3,9 @@ import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shorte
 import { toRawMessage } from './toRawMessages';
 import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
 import { RefLike } from './utils';
-import { is } from 'vovas-utils';
+import { is, mutate } from 'vovas-utils';
 import { getPromptBuilder } from './prompting';
-import { State } from './state';
+import { State, hash } from './state';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,
@@ -34,30 +34,38 @@ export async function generateResponse<T extends ChatType>(
     jsonChars * msPerPromptJsonChar
   ) || null;
 
-  const { result } = await generate(promptMessages, 
+  const { result, leftovers } = await generate(promptMessages, 
     {
       model,
-      pickFrom: 1,
+      pickFrom: 3,
       ...shortestFirst,
       evaluate: result => 
-        // itselfOrIts('content')(result).length,
-        is.string(result) ? result.length : result.content.length,
+        itselfOrIts('content')(result).length,
+        // is.string(result) ? result.length : result.content.length,
       throwIfNone: true,
       fn,
     }
   );
 
   state.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
-  
   state.usdSpent += globalUsageContainer.cost.totalUsd;
 
-  return {
+  const responseMessage = {
     role: 'assistant' as const,
     ...is.string(result)
       ? { content: result }
       : (
         ({ content, ...assets }) => ({ content, assets }) as ContentAndAssets<T>
       )(result)
-  }
+  };
+
+  mutate(state, { 
+    leftovers: {
+      results: leftovers,
+      hash: hash(responseMessage),
+    }
+  });
+
+  return responseMessage;
 
 };

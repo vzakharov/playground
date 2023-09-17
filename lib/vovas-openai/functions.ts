@@ -56,13 +56,12 @@ export type ChatFunctionProp = {
 
 export type ChatFunctionReturns<F extends AnyChatFunction> =
   F extends ChatFunction<any, infer Props, infer Optional> ? {
-    // [K in Props]: K extends Optional ? string | undefined : string
     [K in Props]:
-      Optional extends Props
-        ? K extends Optional
+      [Optional] extends [never]
+        ? string
+        : K extends Optional
           ? string | undefined
           : string
-        : string
 
   } : never;
 

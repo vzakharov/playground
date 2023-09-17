@@ -1,5 +1,6 @@
 import { FunctionThatReturns, give, ifGeneric, is } from "vovas-utils";
 import { AnyChatFunction, ChatCompletionOptions, ChatCompletionResultItem, ChatMessage, Model, Usage, UsageContainer, UsageCost, chatCompletion } from ".";
+import _ from "lodash";
 
 const { log } = console;
 
@@ -46,12 +47,15 @@ export type GenerateResult<
     ThrowIfNone extends true 
       ? PostProcessed<Fn, PP> 
       : PostProcessed<Fn, PP> | undefined;
+  leftovers: PostProcessed<Fn, PP>[];
   debugData: DebugData<Evaluation>;
 };
 
+export type AnyGenerateResult = GenerateResult<any, any, any, any>;
+
 export async function generate<
-  Result,
-  PP extends PostProcess<Fn, Result>,
+  // Result,
+  PP extends PostProcess<Fn, any>,
   Evaluation,
   ThrowIfNone extends boolean,
   Fn extends AnyChatFunction
@@ -67,7 +71,9 @@ export async function generate<
     usageContainer = new UsageContainer(),
     ...chatCompletionOptions
   }: GenerateConfig<
-    Result,
+    // Result,
+    PP extends PostProcess<Fn, infer Result> ? Result : 
+      'postProcess doesn’t extend PostProcess<Fn, Result>',
     PP,
     Evaluation,
     ThrowIfNone,
@@ -82,6 +88,8 @@ export async function generate<
   const allEvaluations: (Evaluation | null)[] = [];
 
   let attempts = 1;
+
+  const processedResults: PostProcessed<Fn, PP>[] = [];
 
   outer:
   for ( ; attempts <= maxAttempts ?? 3; attempts++ ) {
@@ -111,6 +119,8 @@ export async function generate<
 
       if ( !best || betterIf(evaluation, best.evaluation) )
         best = { result, evaluation };
+      
+      processedResults.push(result);
 
     };
 
@@ -135,6 +145,7 @@ export async function generate<
 
   return {
     result,
+    leftovers: _.pull(processedResults, result),
     debugData,
   } as GenerateResult<Fn, PP, Evaluation, ThrowIfNone>;
 
