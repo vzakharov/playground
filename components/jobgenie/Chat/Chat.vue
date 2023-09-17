@@ -8,7 +8,7 @@
   import { isBy } from '~/lib/vovas-openai';
   import { renewChatController } from './controller';
   import { data } from '../data';
-  import { ChatType, areLeftoversForMessage } from '~/lib/jobgenie'
+  import { ChatType, areLeftoversForMessage, assetCaptions } from '~/lib/jobgenie'
   import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
 
   const { type } = defineProps<{
@@ -27,7 +27,10 @@
       <div :class="isBy.user(message) ? 'msg msg-user' : 'msg msg-assistant'">
         <span v-html="Marked.parse(message.content)" />
         <div v-if="message.assets">
-          <Card v-for="(content, title) in message.assets" :key="title" :="{ title, content }" />
+          <Card v-for="(content, title) in message.assets" :key="title" :="{ 
+            title: assetCaptions[title], 
+            content 
+          }" />
         </div>
       </div>
       <div :class="`flex self-${isBy.user(message) ? 'end' : 'start'}`">

@@ -30,8 +30,8 @@ export const jobPromptBuilder = new PromptBuilder('job', {
     'addJob',
     'Adds the job title and description to the user data',
     {
-      title: 'The job title to add',
-      description: 'The job description to add, in first person and future tense (“I will ...”)',
+      jobTitle: 'The job title to add',
+      jobDescription: 'The job description to add, in first person and future tense (“I will ...”)',
       whyMe: 'A markdown-formatted bullet list of reasons why the user is a good fit for the job',
       whyJob: 'A markdown-formatted bullet list of reasons why the job is a good fit for the user',
       content: 'Some short accompanying text to add before the generated data, in the same tone as the previous messages'
