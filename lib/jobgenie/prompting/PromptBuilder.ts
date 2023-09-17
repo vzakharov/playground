@@ -1,4 +1,4 @@
-import { ChatFunction, NestedArray, SimplifiedChatFunction, SimplifiedChatFunctionFor, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
+import { ChatFunction, NestedArrayable, SimplifiedChatFunction, SimplifiedChatFunctionFor, StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
 import { ChatFunctionFor, FnPropsFor, PromptBuilderInput } from "./prompting";
 import { AppData, AssetsMap, ChatType, StringKeys, toRawMessage } from "~/lib/jobgenie";
 
@@ -6,10 +6,10 @@ import { AppData, AssetsMap, ChatType, StringKeys, toRawMessage } from "~/lib/jo
 export type PromptBuilderConfig<T extends ChatType> = {
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
-  buildSystemMessage: (params: PromptBuilderInput<T> & { 
+  buildSystemMessages: (params: PromptBuilderInput<T> & { 
     isFirstResponse: boolean; 
     requestFunctionCall: boolean;
-  }) => NestedArray<string | false>;
+  }) => Record<'pre' | 'post', StackUpable>;
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
 };
 
@@ -23,7 +23,7 @@ export class PromptBuilder<T extends ChatType, FnName extends string, FnProps ex
   build(input: PromptBuilderInput<T>) {
 
     const { messages } = input;
-    const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessage, fnArgs } = this.config;
+    const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs } = this.config;
 
     const fn = chatFunction(...fnArgs);
 
@@ -31,17 +31,21 @@ export class PromptBuilder<T extends ChatType, FnName extends string, FnProps ex
     const isFirstResponse = numResponses === 0;
     const requestFunctionCall = numResponses > requestFunctionCallAfter;
 
-    const systemMessage = buildSystemMessage({ isFirstResponse, requestFunctionCall, ...input });
+    const { 
+      pre: preMessage, 
+      post: postMessage 
+    } = buildSystemMessages({ isFirstResponse, requestFunctionCall, ...input });
 
     return {
       promptMessages: [
         says.system(
           stackUp([
             mainSystemMessage,
-            systemMessage
+            preMessage
           ])
         ),
-        ...messages.map(toRawMessage(fn))
+        ...messages.map(toRawMessage(fn)),
+        says.system(stackUp(postMessage))
       ],
       fn: requestFunctionCall ? fn : undefined
     };

@@ -22,11 +22,13 @@ export function countJsonChars(messages: ChatMessage[], fn?: AnyChatFunction) {
   return JSON.stringify([messages, fn]).length;
 }
 
-export type NestedArray<T> = (T | NestedArray<T>)[];
+export type NestedArrayable<T> = T | (T | NestedArrayable<T>)[];
 
-export function stackUp(strings: NestedArray<string | false> | false | undefined) {
+export type StackUpable = NestedArrayable<string | false>;
+
+export function stackUp(strings?: StackUpable) {
   return strings
-    ? _.compact(strings.flat()).join('\n\n')
+    ? _.compact(_.castArray(strings).flat()).join('\n\n')
     : '';
 }
 

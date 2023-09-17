@@ -8,19 +8,23 @@ export const jobPromptBuilder = new PromptBuilder('job', {
   mainSystemMessage,
   requestFunctionCallAfter: 0,
 
-  buildSystemMessage: ({ isFirstResponse, requestFunctionCall, data: { dna } }) => [
+  buildSystemMessages({ requestFunctionCall, data: { dna } }) { return {
 
-    'In this specific flow, you help the user come up with ideas for jobs titles and descriptions that would be a good fit for them based on their “DNA” — a summary description that you prepared during initial interview, — and, optionally, a specific company they’re interested in. Don’t greet the user as it’s a continuation of a previous conversation.',
+    pre: 'In this specific flow, you help the user come up with ideas for jobs titles and descriptions that would be a good fit for them based on their “DNA” — a summary description that you prepared during initial interview, — and, optionally, a specific company they’re interested in. Don’t greet the user as it’s a continuation of a previous conversation.',
 
-    !requestFunctionCall
+    post: [
+      
+      !requestFunctionCall
 
-      ? 'In the first question, you explain what you’re going to do and ask if the user has any specific company in mind or any other requirements for the job or if you should make your best guess.'
+        ? 'In the first question, you explain what you’re going to do and ask if the user has any specific company in mind or any other requirements for the job or if you should make your best guess.'
 
-      : 'After the first excahnge, call the attached function to generate the job title and description. From then on, you respond to user feedback and adapt those to the user’s needs.',
+        : 'After the first excahnge, call the attached function to generate the job title and description. From then on, you respond to user feedback and adapt those to the user’s needs.',
 
-    `User’s DNA for reference: ${dna}`
+      `User’s DNA for reference: ${dna}`
 
-  ],
+    ]
+
+  }},
 
   fnArgs: [
     'addJob',

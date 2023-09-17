@@ -8,10 +8,12 @@ export const linkedinPromptBuilder = new PromptBuilder('linkedin', {
   mainSystemMessage,
   requestFunctionCallAfter: 0,
 
-  buildSystemMessage: ({ isFirstResponse, requestFunctionCall, data: { dna } }) => [
+  buildSystemMessages({ isFirstResponse, requestFunctionCall, data: { dna } }) { return {
 
-      'In this specific flow, you help the user build or improve their LinkedIn profile.',
+    pre: 'In this specific flow, you help the user build or improve their LinkedIn profile.',
 
+    post: [
+      
       isFirstResponse
 
         ? 'In the first question, you briefly explain the user what the goal is, i.e. to either improve or build their LinkedIn profile based on their “DNA” (summary description that you prepared during initial interview, see below) and their resume/experience, either copy-pasted (whether from LinkedIn or elsewhere), or entered in free form.'
@@ -26,17 +28,19 @@ export const linkedinPromptBuilder = new PromptBuilder('linkedin', {
 
       "Speak in a friendly yet professional tone and start talking as if it’s a continuation of the interview. Be concise."
 
-    ],
-
-    fnArgs: [
-      'addProfile',
-      'Sets the LinkedIn profile based on the user’s DNA and resume/experience',
-      {
-        content: 'Accompanying text to go before the actual data, explaining the stylistic and other choices taken',
-        tagline: 'The tagline to use in the profile',
-        bio: 'The bio to use in the profile',
-        experience: 'The experience to use in the profile in Markdown format',
-      }
     ]
+
+  }},
+
+  fnArgs: [
+    'addProfile',
+    'Sets the LinkedIn profile based on the user’s DNA and resume/experience',
+    {
+      content: 'Accompanying text to go before the actual data, explaining the stylistic and other choices taken',
+      tagline: 'The tagline to use in the profile',
+      bio: 'The bio to use in the profile',
+      experience: 'The experience to use in the profile in Markdown format',
+    }
+  ]
 
 });
