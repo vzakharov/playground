@@ -37,7 +37,7 @@ export async function generateResponse<T extends ChatType>(
   const { result } = await generate(promptMessages, 
     {
       model,
-      pickFrom: 3,
+      pickFrom: 1,
       ...shortestFirst,
       evaluate: result => 
         // itselfOrIts('content')(result).length,
