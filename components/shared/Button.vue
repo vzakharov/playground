@@ -10,6 +10,7 @@
       ${small ? 'px-2 py-1' : 'px-4 py-2'}
     `"
     :type="type"
+    :title="tooltip"
     @click="onClick"
   >
     <slot>{{ caption }}</slot>
@@ -28,7 +29,8 @@
     rounded: Boolean,
     small: Boolean,
     outline: Boolean,
-    checkmarkAfterCallback: Boolean
+    checkmarkAfterCallback: Boolean,
+    tooltip: String,
   })
 
   const emit = defineEmits(['click'])

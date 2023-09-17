@@ -6,6 +6,7 @@ import { data, findOrCreateChat } from '../data';
 import { ChatResponder } from './responder';
 import { dataLastLoaded, state, userInput, userMessage } from '../refs';
 import { exportData } from '../exportImport';
+import { LeftoverHandler } from './leftoverHandler';
 
 export class BaseChatController<T extends ChatType> {
 
@@ -63,6 +64,7 @@ export class BaseChatController<T extends ChatType> {
 export function createChatController<T extends ChatType>(type: T) {
   return mixinable(BaseChatController<T>)
     .mixin(ChatResponder)
+    .mixin(LeftoverHandler)
     .create(type);
 }
 

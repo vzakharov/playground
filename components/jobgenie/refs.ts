@@ -7,8 +7,9 @@ import { defaultState } from "~/lib/jobgenie";
 export const state = useLocalReactive('jobgenie-state', {
   ...defaultState,
   selectedSectionId: sections.value[0].id,
-  leftovers: [] as AnyGenerateResult[]
 });
+
+export const { leftovers } = toRefs(state);
 
 export const userMessage = ref('');
 export const generating = reactive(new Resolvable({ startResolved: true }));

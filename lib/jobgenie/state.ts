@@ -1,4 +1,4 @@
-import { AnyGenerateResult, Model } from "lib/vovas-openai";
+import { AnyGenerateResult, AnyPostProcessed, Model } from "lib/vovas-openai";
 
 export const defaultState = {
   usdSpent: 0,
@@ -8,20 +8,23 @@ export const defaultState = {
     'gpt-4': 15,
   },
   leftovers: {
-    results: [] as AnyGenerateResult['leftovers'],
+    results: [],
     hash: '',
-  },
+  } as Leftovers<any>,
+};
+
+export type Leftovers<T> = {
+  results: T[],
+  hash: string,
 };
 
 
 export type State = typeof defaultState;
 
 export function areLeftoversForMessage<T>(
-  leftovers: State['leftovers'], 
+  leftovers: Leftovers<any>,
   message: T
-): leftovers is State['leftovers'] & { 
-  results: T[] 
-} {
+): leftovers is Leftovers<T> {
   return leftovers.hash === hash(message);
 }
 

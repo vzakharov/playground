@@ -8,8 +8,8 @@
   import { isBy } from '~/lib/vovas-openai';
   import { renewChatController } from './controller';
   import { data } from '../data';
-  import { ChatType } from '~/lib/jobgenie'
-  import { userMessage, generating, userInput, msExpected } from '../refs';
+  import { ChatType, areLeftoversForMessage } from '~/lib/jobgenie'
+  import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
 
   const { type } = defineProps<{
     type: ChatType;
@@ -29,20 +29,20 @@
         <div v-if="message.assets">
           <Card v-for="(content, title) in message.assets" :key="title" :="{ title, content }" />
         </div>
-            
-            <!--
-            <Button small rounded class="ml-2 self-start" 
-              :outline="!!data.dna"
-              :caption="dnaJustSet === quote ? '✓' : 'Set as DNA'"
-              @click="setDna(quote)"
-            /> -->
       </div>
+      <Button v-if="areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
+        caption="→"
+        tooltip="Loop through alternatives"
+        @click="c.loopLeftovers(message)"
+      />
       <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
         caption="↺"
+        tooltip="Regenerate"
         @click="c.regenerate(message)"
       />
       <Button v-if="index && isBy.user(message)" small rounded outline class="ml-2 self-end" 
         caption="✎"
+        tooltip="Edit"
         @click="c.editMessage(message)"
       />
     </div>

@@ -12,7 +12,8 @@ export type PostProcessed<Fn extends AnyChatFunction, PP> =
       ? ChatCompletionResultItem<Fn>
       : Result
     : ChatCompletionResultItem<Fn>;
-
+  
+export type AnyPostProcessed = PostProcessed<any, any>;
 
 export type GenerateConfig<
   Result,

@@ -50,22 +50,24 @@ export async function generateResponse<T extends ChatType>(
   state.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
   state.usdSpent += globalUsageContainer.cost.totalUsd;
 
-  const responseMessage = {
+  const fromRawMessage = (raw: typeof result) => ({
     role: 'assistant' as const,
-    ...is.string(result)
-      ? { content: result }
+    ...is.string(raw)
+      ? { content: raw }
       : (
         ({ content, ...assets }) => ({ content, assets }) as ContentAndAssets<T>
-      )(result)
-  };
+      )(raw)
+  })
+
+  const responseMessage = fromRawMessage(result);
 
   mutate(state, { 
     leftovers: {
-      results: leftovers,
+      results: leftovers.map(fromRawMessage),
       hash: hash(responseMessage),
     }
   });
 
-  return responseMessage;
+  return responseMessage
 
 };
