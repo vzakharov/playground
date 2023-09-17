@@ -110,11 +110,11 @@
   }
 
   .msg ol {
-    @apply list-decimal pl-4;
+    @apply list-decimal pl-2 pt-2;
   }
 
   .msg ul {
-    @apply list-disc;
+    @apply list-disc pl-2 pt-2;
   }
 
   .msg li {
