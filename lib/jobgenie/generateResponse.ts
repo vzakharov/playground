@@ -65,6 +65,7 @@ export async function generateResponse<T extends ChatType>(
     leftovers: {
       results: leftovers.map(fromRawMessage),
       hash: hash(responseMessage),
+      selectedIndex: 1
     }
   });
 

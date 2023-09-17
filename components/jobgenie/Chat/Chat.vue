@@ -30,8 +30,8 @@
           <Card v-for="(content, title) in message.assets" :key="title" :="{ title, content }" />
         </div>
       </div>
-      <Button v-if="areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
-        caption="→"
+      <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
+        :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
         tooltip="Loop through alternatives"
         @click="c.loopLeftovers(message)"
       />

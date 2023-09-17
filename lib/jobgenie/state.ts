@@ -1,3 +1,4 @@
+import { Charm } from "@jedisct1/charm";
 import { AnyGenerateResult, AnyPostProcessed, Model } from "lib/vovas-openai";
 
 export const defaultState = {
@@ -10,12 +11,14 @@ export const defaultState = {
   leftovers: {
     results: [],
     hash: '',
+    selectedIndex: 1, // 1-based, it’s just for the UI
   } as Leftovers<any>,
 };
 
 export type Leftovers<T> = {
   results: T[],
   hash: string,
+  selectedIndex: number,
 };
 
 

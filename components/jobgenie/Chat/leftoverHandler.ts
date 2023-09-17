@@ -19,6 +19,10 @@ export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatControll
 
       state.leftovers.results.push(message);
       state.leftovers.hash = hash(leftover);
+      state.leftovers.selectedIndex += 1;
+      if ( state.leftovers.selectedIndex > state.leftovers.results.length + 1 )
+        state.leftovers.selectedIndex = 1;
+      // That’s a tad ugly, but I don’t want to spend too much time on this
 
       this.messages.splice(this.messages.indexOf(message), 1, leftover);
 
