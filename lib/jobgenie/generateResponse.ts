@@ -1,11 +1,10 @@
-import { state } from '~/components/jobgenie/refs';
-import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { toRawMessage } from './toRawMessages';
-import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
-import { RefLike } from './utils';
+import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
+import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { getPromptBuilder } from './prompting';
-import { State, hash } from './state';
+import { State } from './state';
+import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
+import { RefLike, withUniqueId } from './utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,
@@ -17,7 +16,7 @@ export type GenerateResponseParams<T extends ChatType> = {
 export async function generateResponse<T extends ChatType>(
   params: GenerateResponseParams<T>,
   state: State
-) {
+): Promise<AppChatMessage<T, 'assistant'>> {
   const { type, messages, data, msExpected } = params;
   const { useGpt4, savedMsPerPromptJsonChar } = state;
   const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
@@ -51,20 +50,21 @@ export async function generateResponse<T extends ChatType>(
   state.usdSpent += globalUsageContainer.cost.totalUsd;
 
   const fromRawMessage = (raw: typeof result) => ({
+    ...withUniqueId(),
     role: 'assistant' as const,
     ...is.string(raw)
       ? { content: raw }
       : (
         ({ content, ...assets }) => ({ content, assets }) as ContentAndAssets<T>
       )(raw)
-  })
+  });
 
   const responseMessage = fromRawMessage(result);
 
   mutate(state, { 
     leftovers: {
       results: leftovers.map(fromRawMessage),
-      hash: hash(responseMessage),
+      baseId: responseMessage.id,
       selectedIndex: 1
     }
   });

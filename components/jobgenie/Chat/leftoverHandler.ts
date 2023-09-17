@@ -1,7 +1,7 @@
-import { AppChatMessage, ChatType, areLeftoversForMessage, hash } from "~/lib/jobgenie";
 import { $throw, Class } from "vovas-utils";
+import { AppChatMessage, ChatType, areLeftoversForMessage } from "~/lib/jobgenie";
+import { state } from "../refs";
 import { BaseChatController } from "./controller";
-import { leftovers, state } from "../refs";
 
 export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatController<T>>) {
 
@@ -18,7 +18,7 @@ export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatControll
         ?? $throw('No leftovers left');
 
       state.leftovers.results.push(message);
-      state.leftovers.hash = hash(leftover);
+      state.leftovers.baseId = leftover.id;
       state.leftovers.selectedIndex += 1;
       if ( state.leftovers.selectedIndex > state.leftovers.results.length + 1 )
         state.leftovers.selectedIndex = 1;

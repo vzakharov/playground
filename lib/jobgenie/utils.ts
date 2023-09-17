@@ -41,3 +41,9 @@ export function debugAnd<Args, Result>(fn: (...args: Args[]) => Result) {
     return fn(...args);
   }
 };
+
+export function withUniqueId() {
+  return {
+    id: _.uniqueId(`${new Date().toISOString()}_`)
+  }
+};

@@ -1,5 +1,4 @@
-import { Charm } from "@jedisct1/charm";
-import { AnyGenerateResult, AnyPostProcessed, Model } from "lib/vovas-openai";
+import { AnyGenerateResult, AnyPostProcessed, ChatMessage, Model } from "lib/vovas-openai";
 
 export const defaultState = {
   usdSpent: 0,
@@ -10,27 +9,22 @@ export const defaultState = {
   },
   leftovers: {
     results: [],
-    hash: '',
+    baseId: null,
     selectedIndex: 1, // 1-based, it’s just for the UI
   } as Leftovers<any>,
 };
 
-export type Leftovers<T> = {
+export type Leftovers<T extends { id: string }> = {
   results: T[],
-  hash: string,
+  baseId: string | null,
   selectedIndex: number,
 };
 
-
 export type State = typeof defaultState;
 
-export function areLeftoversForMessage<T>(
+export function areLeftoversForMessage<T extends { id: string }>(
   leftovers: Leftovers<any>,
   message: T
 ): leftovers is Leftovers<T> {
-  return leftovers.hash === hash(message);
-}
-
-export function hash<T>(message: T) {
-  return JSON.stringify(message);
-}
+  return !!message.id && leftovers.baseId === message.id;
+};

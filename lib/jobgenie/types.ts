@@ -12,7 +12,11 @@ export type ContentAndAssets<T extends ChatType> = {
 };
 
 export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> = 
-  RawChatMessage<R> & ContentAndAssets<T>;
+  RawChatMessage<R> 
+  & ContentAndAssets<T> 
+  & {
+    id: string
+  }
 
 export type AppChat<T extends ChatType> = {
   type: T;

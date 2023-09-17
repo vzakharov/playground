@@ -1,12 +1,11 @@
-import _, { create } from 'lodash';
-import { Resolvable, forEach, mixinable } from 'vovas-utils';
-import { AppChat, AppChatMessage, ChatType, defaultData, findBy } from '~/lib/jobgenie';
+import _ from 'lodash';
+import { forEach, mixinable } from 'vovas-utils';
+import { AppChatMessage, ChatType, defaultData, findBy, withUniqueId } from '~/lib/jobgenie';
 import { isBy, says } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
-import { ChatResponder } from './responder';
-import { dataLastLoaded, state, userInput, userMessage } from '../refs';
-import { exportData } from '../exportImport';
+import { dataLastLoaded, userInput, userMessage } from '../refs';
 import { LeftoverHandler } from './leftoverHandler';
+import { ChatResponder } from './responder';
 
 export class BaseChatController<T extends ChatType> {
 
@@ -43,7 +42,10 @@ export class BaseChatController<T extends ChatType> {
   sendMessage() {
     const content = userMessage.value;
     if (content.trim() !== '') {
-      this.messages.push(says.user(content));
+      this.messages.push({
+        ...says.user(content),
+        ...withUniqueId()
+      });
       userMessage.value = '';
     }
   }
