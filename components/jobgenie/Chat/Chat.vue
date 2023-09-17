@@ -30,21 +30,23 @@
           <Card v-for="(content, title) in message.assets" :key="title" :="{ title, content }" />
         </div>
       </div>
-      <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
-        :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
-        tooltip="Loop through alternatives"
-        @click="c.loopLeftovers(message)"
-      />
-      <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
-        caption="↺"
-        tooltip="Regenerate"
-        @click="c.regenerate(message)"
-      />
-      <Button v-if="index && isBy.user(message)" small rounded outline class="ml-2 self-end" 
-        caption="✎"
-        tooltip="Edit"
-        @click="c.editMessage(message)"
-      />
+      <div :class="`flex self-${isBy.user(message) ? 'end' : 'start'}`">
+        <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
+          :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
+          tooltip="Loop through alternatives"
+          @click="c.loopLeftovers(message)"
+        />
+        <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
+          caption="↺"
+          tooltip="Regenerate"
+          @click="c.regenerate(message)"
+        />
+        <Button v-if="index && isBy.user(message)" small rounded outline class="ml-2 self-end" 
+          caption="✎"
+          tooltip="Edit"
+          @click="c.editMessage(message)"
+        />
+      </div>
     </div>
     <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse"
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
