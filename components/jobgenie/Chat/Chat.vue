@@ -25,7 +25,7 @@
 <template>
   <div>
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
-      <div :class="isBy.user(message) ? 'msg msg-user' : 'msg msg-assistant'">
+      <div :class="`msg msg-${message.role}`">
         <span v-html="Marked.parse(message.content)" />
         <div v-if="message.assets">
           <Card v-for="(content, title) in message.assets" :key="title" :="{ 
@@ -33,29 +33,29 @@
             content 
           }"/>
         </div>
-      </div>
-      <div :class="`flex self-${isBy.user(message) ? 'end' : 'start'}`">
-        <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="ml-2 self-start"
-          :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
-          tooltip="Loop through alternatives"
-          @click="c.loopLeftovers(message)"
-        />
-        <Button v-if="isBy.assistant(message)" small rounded outline class="mx-1" 
-          caption="↺"
-          tooltip="Regenerate"
-          @click="c.regenerate(message)"
-        />
-        <Button v-if="index && isBy.user(message)" small rounded outline class="mx-1" 
-          caption="✎"
-          tooltip="Edit"
-          @click="c.editMessage(message)"
-        />
-        <Button v-if="
-          message.assets && message.assets !== activeAssets[c.type]
-        " rounded small outline gray class="mx-1"
-          caption="Use this"
-          tooltip="Set this asset globally for any relevant generations"
-        />
+        <div :class="`flex justify-${isBy.user(message) ? 'end' : 'start'}`">
+          <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="mx-1"
+            :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
+            tooltip="Loop through alternatives"
+            @click="c.loopLeftovers(message)"
+          />
+          <Button v-if="isBy.assistant(message)" small rounded outline class="mx-1" 
+            caption="↺"
+            tooltip="Regenerate"
+            @click="c.regenerate(message)"
+          />
+          <Button v-if="index && isBy.user(message)" small rounded outline class="mx-1" 
+            caption="✎"
+            tooltip="Edit"
+            @click="c.editMessage(message)"
+          />
+          <Button v-if="
+            message.assets && message.assets !== activeAssets[c.type]
+          " rounded small outline gray class="mx-1"
+            caption="Use this"
+            tooltip="Set this asset globally for any relevant generations"
+          />
+        </div>
       </div>
     </div>
     <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse"
@@ -85,7 +85,7 @@
 
 <style scoped lang="postcss">
 .msg-container {
-  @apply flex flex-col w-full;
+  @apply flex flex-col;
 }
 
 .msg {
