@@ -1,7 +1,6 @@
 import { ChatType, chatTypes, isAmong } from '~/lib/jobgenie';
 import { computed, ref } from 'vue';
 import { data } from '~/components/jobgenie/data';
-import { dnaJustSet } from '~/components/jobgenie/dna';
 import { alsoLog } from 'vovas-utils';
 import { useLocalRef } from 'use-vova';
 
@@ -28,7 +27,7 @@ export const sections = computed<AnySection[]>(() => {
   return [
     {
       id: 'dna',
-      caption: 'DNA' + (dnaJustSet.value ? ' 👈' : ''),
+      caption: 'DNA',
       emoji: '🧬'
     },
     {

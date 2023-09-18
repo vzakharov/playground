@@ -23,4 +23,6 @@ export type Assets<T extends ChatType> = {
   [K in keyof AssetsMap[T]]: string;
 };
 
-export const getAssetCaptions = <T extends ChatType>(type: T) => assetCaptions[type] as Assets<T>;
+export function getAssetCaptions<T extends ChatType>(type: T) {
+  return assetCaptions[type] as Assets<T>;
+};

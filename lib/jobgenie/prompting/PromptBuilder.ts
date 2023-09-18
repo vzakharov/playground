@@ -3,7 +3,7 @@ import { SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, st
 import { FnPropsFor } from "./prompting";
 
 
-export type PromptBuilderConfig<T extends ChatType, A extends ChatType[] | null> = {
+export type PromptBuilderConfig<T extends ChatType, A extends ChatType[] | undefined> = {
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
   buildSystemMessages: (params: PromptBuilderInput<T, A> & { 
@@ -14,13 +14,13 @@ export type PromptBuilderConfig<T extends ChatType, A extends ChatType[] | null>
   requiredAssets?: A;
 };
 
-export type PromptBuilderInput<T extends ChatType, A extends ChatType[] | null> = {
+export type PromptBuilderInput<T extends ChatType, A extends ChatType[] | undefined> = {
   type: T;
   messages: AppChatMessage<T>[];
   data: A extends ChatType[] ? AppData & { assets: Assets<A[number]> } : AppData;
 };
 
-export class PromptBuilder<T extends ChatType, A extends ChatType[] | null> {
+export class PromptBuilder<T extends ChatType, A extends ChatType[] | undefined> {
 
   constructor(
     public type: T,
@@ -30,7 +30,9 @@ export class PromptBuilder<T extends ChatType, A extends ChatType[] | null> {
   build(input: PromptBuilderInput<T, A>) {
 
     const { messages } = input;
-    const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs } = this.config;
+    const { 
+      mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs, requiredAssets 
+    } = this.config;
 
     const fn = chatFunction(...fnArgs);
 
