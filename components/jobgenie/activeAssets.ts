@@ -3,7 +3,7 @@ import { objectWithKeys } from "vovas-utils";
 import { data } from "./data";
 import _ from "lodash";
 
-export const activeAssets = computed<Partial<AssetsMap>>(() => {
+export const activeAssets = computed(() => {
 
   return objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
 
@@ -16,6 +16,8 @@ export const activeAssets = computed<Partial<AssetsMap>>(() => {
       .sortBy(m => m.assetsPickedAt ?? 0)
       .last()?.assets;
 
-  })
+  }) as {
+    [T in ChatType]?: Assets<T>
+  }
 
 });

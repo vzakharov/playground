@@ -8,7 +8,7 @@
   import { isBy } from '~/lib/vovas-openai';
   import { renewChatController } from './controller';
   import { data } from '../data';
-  import { ChatType, areLeftoversForMessage, assetCaptions } from '~/lib/jobgenie'
+  import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions } from '~/lib/jobgenie'
   import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
   import { activeAssets } from '../activeAssets';
 
@@ -29,7 +29,7 @@
         <span v-html="Marked.parse(message.content)" />
         <div v-if="message.assets">
           <Card v-for="(content, title) in message.assets" :key="title" :="{ 
-            title: assetCaptions[title], 
+            title: getAssetCaptions(c.type)[title],
             content 
           }"/>
         </div>

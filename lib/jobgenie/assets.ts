@@ -1,37 +1,30 @@
+import { Chat } from "openai/resources";
 import { ChatType } from "./types";
 import { MapToGeneric } from "./utils";
 
-
-export type AssetsMap = {
+export const assetCaptions = {
   dna: {
-    dna: string;
-  };
+    dna: 'DNA'
+  },
   linkedin: {
-    tagline: string;
-    bio: string;
-    experience: string;
-  };
+    tagline: 'Tagline',
+    bio: 'Bio',
+    experience: 'Experience'
+  },
   job: {
-    title: string;
-    description: string;
-    whyMe: string;
-    whyJob: string;
-  };
+    title: 'Job title',
+    description: 'Job description',
+    whyMe: 'Why me?',
+    whyJob: 'Why this job?'
+  }
+} satisfies Record<ChatType, Record<string, string>>;
+
+export type AssetsMap = typeof assetCaptions;
+
+export type Assets<T extends ChatType> = {
+  [K in keyof AssetsMap[T]]: string;
 };
 
-export type Assets<T extends ChatType> = MapToGeneric<AssetsMap, T>;
+type JobAssets = Assets<'job'>;
 
-type TestAssets = AssetsMap['job']
-
-export type AllAssets = Partial<Assets<any>>;
-
-export const assetCaptions: Record<keyof AllAssets, string> = {
-  dna: 'DNA',
-  tagline: 'Tagline',
-  bio: 'Bio',
-  experience: 'Experience',
-  title: 'Job title',
-  description: 'Job description',
-  whyMe: 'Why me?',
-  whyJob: 'Why this job?'
-};
+export const getAssetCaptions = <T extends ChatType>(type: T) => assetCaptions[type] as Assets<T>;

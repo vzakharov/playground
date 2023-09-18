@@ -1,6 +1,5 @@
-import { AllAssets } from ".";
-import { every, forEach } from "vovas-utils";
-import _ from "lodash";
+import { forEach } from "vovas-utils";
+import { AssetsMap } from ".";
 import { AppChatMessage } from "./AppChatMessage";
 
 export const chatTypes = ['dna', 'linkedin', 'job'] as const;
@@ -16,7 +15,7 @@ export type AppData = {
   username: string | null;
   chats: AppChat<ChatType>[];
   dna: string | null;
-  assets: AllAssets;
+  assets: Partial<AssetsMap>;
 };
 
 export const defaultData: AppData = {

@@ -8,7 +8,7 @@ export const linkedinPromptBuilder = new PromptBuilder('linkedin', {
   mainSystemMessage,
   requestFunctionCallAfter: 0,
 
-  buildSystemMessages({ isFirstResponse, requestFunctionCall, data: { dna } }) { return {
+  buildSystemMessages({ isFirstResponse, requestFunctionCall, data: { assets: { dna }} }) { return {
 
     pre: 'In this specific flow, you help the user build or improve their LinkedIn profile.',
 
