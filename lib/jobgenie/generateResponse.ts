@@ -1,10 +1,9 @@
-import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
 import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
+import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
 import { State } from './state';
 import { AppData, ChatType } from './types';
-import { AppChatMessage, WithContentAndAssets } from "./AppChatMessage";
 import { RefLike, withUniqueId } from './utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
@@ -56,9 +55,9 @@ export async function generateResponse<T extends ChatType>(
     ...is.string(raw)
       ? { content: raw }
       : (
-        ({ content, ...assets }) => ({ content, assets }) as WithContentAndAssets<T>
+        ({ content, ...assets }) => ({ content, assets })
       )(raw)
-  });
+  }) as AppChatMessage<T, 'assistant'>;
 
   const responseMessage = fromRawMessage(result);
 

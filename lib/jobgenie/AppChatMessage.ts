@@ -4,15 +4,12 @@ import { objectWithKeys } from "vovas-utils";
 import { ChatType } from "./types";
 
 
-export type WithContentAndAssets<T extends ChatType> = {
-  content: string;
-  assets?: Assets<T>;
-};
-
 export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
   RawChatMessage<R> &
-  WithContentAndAssets<T> &
-  WithId;
+  WithId & {
+    content: string;
+    assets?: Assets<T>;
+  };
 
 export const says = objectWithKeys(chatRoles, role => <T extends ChatType>(content: string, params?: Omit<AppChatMessage<T>, 'id' | 'role' | 'content'>) => ({
   ...rawSays[role](content),
