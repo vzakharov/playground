@@ -1,4 +1,5 @@
-import { AppChatMessage, ChatType } from './types';
+import { ChatType } from './types';
+import { AppChatMessage } from "./AppChatMessage";
 import { ChatFunctionFor } from './prompting';
 import { ChatMessage } from 'lib/vovas-openai';
 import { $throw } from 'vovas-utils';

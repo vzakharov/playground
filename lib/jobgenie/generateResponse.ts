@@ -3,7 +3,8 @@ import { is, mutate } from 'vovas-utils';
 import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { getPromptBuilder } from './prompting';
 import { State } from './state';
-import { AppChatMessage, AppData, ChatType, ContentAndAssets } from './types';
+import { AppData, ChatType } from './types';
+import { AppChatMessage, WithContentAndAssets } from "./AppChatMessage";
 import { RefLike, withUniqueId } from './utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
@@ -55,7 +56,7 @@ export async function generateResponse<T extends ChatType>(
     ...is.string(raw)
       ? { content: raw }
       : (
-        ({ content, ...assets }) => ({ content, assets }) as ContentAndAssets<T>
+        ({ content, ...assets }) => ({ content, assets }) as WithContentAndAssets<T>
       )(raw)
   });
 

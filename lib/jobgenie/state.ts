@@ -1,5 +1,6 @@
 import { AnyGenerateResult, AnyPostProcessed, ChatMessage, Model } from "lib/vovas-openai";
-import { AppChatMessage, ChatType } from "./types";
+import { ChatType } from "./types";
+import { AppChatMessage } from "./AppChatMessage";
 
 export const defaultState = {
   usdSpent: 0,
