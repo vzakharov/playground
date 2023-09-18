@@ -9,6 +9,7 @@ export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
   WithId & {
     content: string;
     assets?: Assets<T>;
+    assetsPickedAt?: number;
   };
 
 export const says = objectWithKeys(chatRoles, role => <T extends ChatType>(content: string, params?: Omit<AppChatMessage<T>, 'id' | 'role' | 'content'>) => ({

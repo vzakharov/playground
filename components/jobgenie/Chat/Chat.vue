@@ -49,11 +49,10 @@
             tooltip="Edit"
             @click="c.editMessage(message)"
           />
-          <Button v-if="
-            message.assets && message.assets !== activeAssets[c.type]
-          " rounded small outline gray class="mx-1"
+          <Button v-if="message.assets && message.assets !== activeAssets[c.type]" rounded small outline gray class="mx-1"
             caption="Use this"
             tooltip="Set this asset globally for any relevant generations"
+            @click="message.assetsPickedAt = Date.now()"
           />
         </div>
       </div>

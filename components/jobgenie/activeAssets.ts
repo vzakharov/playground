@@ -11,7 +11,10 @@ export const activeAssets = computed<Partial<AssetsMap>>(() => {
     
     if ( !chat ) return undefined;
 
-    return chat.messages.findLast(m => m.assets)?.assets;
+    return _(chat.messages)
+      .filter(m => !!m.assets)
+      .sortBy(m => m.assetsPickedAt ?? 0)
+      .last()?.assets;
 
   })
 
