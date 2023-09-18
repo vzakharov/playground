@@ -1,6 +1,7 @@
-import { ChatRole, ChatMessage as RawChatMessage } from "~/lib/vovas-openai";
-import { AllAssets, Assets } from ".";
-import { every, forEach } from "vovas-utils";
+import { ChatRole, ChatMessage as RawChatMessage, chatRoles, says as rawSays } from "~/lib/vovas-openai";
+import { AllAssets, Assets, withUniqueId } from ".";
+import { every, forEach, objectWithKeys } from "vovas-utils";
+import _ from "lodash";
 
 export const chatTypes = ['dna', 'linkedin', 'job'] as const;
 
@@ -16,7 +17,17 @@ export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
   & ContentAndAssets<T> 
   & {
     id: string
-  }
+  };
+
+export const says = objectWithKeys(chatRoles, role =>
+  <T extends ChatType>(content: string, params?: Omit<AppChatMessage<T>, 'id' | 'role' | 'content'>) => ({
+    ...rawSays[role](content),
+    ...params,
+    ...withUniqueId()
+  })
+) as {
+  [K in ChatRole]: <T extends ChatType>(content: string, assets?: Assets<T>) => AppChatMessage<T, K>;
+};
 
 export type AppChat<T extends ChatType> = {
   type: T;

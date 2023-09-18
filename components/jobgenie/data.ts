@@ -7,14 +7,6 @@ export const data = useLocalReactive('jobgenie-data', defaultData);
 
 export function findOrCreateChat<T extends ChatType>(type: T) {
   const { chats } = data;
-  // debugger
-  // const chat = (
-  //   findBy({ type }, chats)
-  //     ?? also(
-  //       { type, messages: [] },
-  //       chat => chats.push(chat)
-  //     ) 
-  // );
   const chat = findBy({ type }, chats);
   if ( !chat ) {
     chats.push({ type, messages: [] });

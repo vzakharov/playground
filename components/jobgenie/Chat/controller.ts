@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { forEach, mixinable } from 'vovas-utils';
-import { AppChatMessage, ChatType, defaultData, findBy, withUniqueId } from '~/lib/jobgenie';
-import { isBy, says } from '~/lib/vovas-openai';
+import { AppChatMessage, ChatType, defaultData, findBy, says, withUniqueId } from '~/lib/jobgenie';
+import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
 import { dataLastLoaded, userInput, userMessage } from '../refs';
 import { LeftoverHandler } from './leftoverHandler';
@@ -42,10 +42,7 @@ export class BaseChatController<T extends ChatType> {
   sendMessage() {
     const content = userMessage.value;
     if (content.trim() !== '') {
-      this.messages.push({
-        ...says.user(content),
-        ...withUniqueId()
-      });
+      this.messages.push(says.user(content));
       userMessage.value = '';
     }
   }

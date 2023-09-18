@@ -1,4 +1,5 @@
 import { AnyGenerateResult, AnyPostProcessed, ChatMessage, Model } from "lib/vovas-openai";
+import { AppChatMessage, ChatType } from "./types";
 
 export const defaultState = {
   usdSpent: 0,
@@ -14,17 +15,17 @@ export const defaultState = {
   } as Leftovers<any>,
 };
 
-export type Leftovers<T extends { id: string }> = {
-  results: T[],
+export type Leftovers<T extends ChatType> = {
+  results: AppChatMessage<T>[],
   baseId: string | null,
   selectedIndex: number,
 };
 
 export type State = typeof defaultState;
 
-export function areLeftoversForMessage<T extends { id: string }>(
+export function areLeftoversForMessage<T extends ChatType>(
   leftovers: Leftovers<any>,
-  message: T
+  { id }: AppChatMessage<T>
 ): leftovers is Leftovers<T> {
-  return !!message.id && leftovers.baseId === message.id;
+  return !!id && ( leftovers.baseId === id );
 };

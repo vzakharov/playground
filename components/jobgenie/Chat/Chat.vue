@@ -30,7 +30,7 @@
           <Card v-for="(content, title) in message.assets" :key="title" :="{ 
             title: assetCaptions[title], 
             content 
-          }" />
+          }"/>
         </div>
       </div>
       <div :class="`flex self-${isBy.user(message) ? 'end' : 'start'}`">
@@ -39,15 +39,19 @@
           tooltip="Loop through alternatives"
           @click="c.loopLeftovers(message)"
         />
-        <Button v-if="isBy.assistant(message)" small rounded outline class="ml-2 self-start" 
+        <Button v-if="isBy.assistant(message)" small rounded outline class="mx-1" 
           caption="↺"
           tooltip="Regenerate"
           @click="c.regenerate(message)"
         />
-        <Button v-if="index && isBy.user(message)" small rounded outline class="ml-2 self-end" 
+        <Button v-if="index && isBy.user(message)" small rounded outline class="mx-1" 
           caption="✎"
           tooltip="Edit"
           @click="c.editMessage(message)"
+        />
+        <Button v-if="message.assets" rounded small outline gray class="mx-1"
+          caption="Accept"
+          tooltip="Set this asset globally for any relevant generations"
         />
       </div>
     </div>

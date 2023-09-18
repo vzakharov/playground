@@ -3,6 +3,10 @@
     <div class="card">
       <div class="card-title">{{ title }}</div>
       <div class="card-content" v-html="Marked.parse(content)" />
+      <!-- If footer template is provided, render it -->
+      <div v-if="$slots.footer" class="card-footer">
+        <slot name="footer" />
+      </div>
     </div>
   </div>
 </template>
@@ -14,6 +18,12 @@
     title: string;
     content: string;
   }>();
+
+  // Define slots
+  defineSlots<{
+    footer: void;
+  }>();
+
 </script>
 
 <style scoped lang="postcss">
@@ -31,5 +41,9 @@
 
 .card-content {
   @apply text-gray-700 p-4 pt-2;
+}
+
+.card-footer {
+  @apply p-4 pt-2 border-t border-gray-200;
 }
 </style>

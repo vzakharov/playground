@@ -39,6 +39,13 @@ then
     exit 1
 fi
 
+# If the directory doesn't exist, exit
+if [ ! -d "$1" ]
+then
+    echo "Directory doesn't exist"
+    exit 1
+fi
+
 # Navigate to the directory
 cd "$1"
 

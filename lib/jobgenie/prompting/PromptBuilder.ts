@@ -1,6 +1,6 @@
-import { ChatFunction, NestedArrayable, SimplifiedChatFunction, SimplifiedChatFunctionFor, StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
-import { ChatFunctionFor, FnPropsFor, PromptBuilderInput } from "./prompting";
-import { AppData, AssetsMap, ChatType, StringKeys, toRawMessage } from "~/lib/jobgenie";
+import { ChatType, toRawMessage } from "~/lib/jobgenie";
+import { SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
+import { FnPropsFor, PromptBuilderInput } from "./prompting";
 
 
 export type PromptBuilderConfig<T extends ChatType> = {

@@ -35,3 +35,5 @@ export function stackUp(strings?: StackUpable) {
 export function codeBlock(string: string): `\`\`\`\n${string}\n\`\`\`` {
   return `\`\`\`\n${string}\n\`\`\``;
 }
+
+export type Inferrable<T, Args extends any[] = []> = T | ((...args: Args) => T);
