@@ -6,7 +6,7 @@ import { $throw } from 'vovas-utils';
 
 export function toRawMessage<T extends ChatType>(fn?: ChatFunctionFor<T>) {
 
-  return ({ assets, content, ...message }: AppChatMessage<T>) => ({
+  return ({ assets, content, id, ...message }: AppChatMessage<T>) => ({
     ...!assets
       ? { content }
       : {

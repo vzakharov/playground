@@ -12,8 +12,8 @@ export type AssetsMap = {
     experience: string;
   };
   job: {
-    jobTitle: string;
-    jobDescription: string;
+    title: string;
+    description: string;
     whyMe: string;
     whyJob: string;
   };
@@ -30,8 +30,8 @@ export const assetCaptions: Record<keyof AllAssets, string> = {
   tagline: 'Tagline',
   bio: 'Bio',
   experience: 'Experience',
-  jobTitle: 'Job title',
-  jobDescription: 'Job description',
+  title: 'Job title',
+  description: 'Job description',
   whyMe: 'Why me?',
   whyJob: 'Why this job?'
 };

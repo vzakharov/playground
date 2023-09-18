@@ -10,6 +10,7 @@
   import { data } from '../data';
   import { ChatType, areLeftoversForMessage, assetCaptions } from '~/lib/jobgenie'
   import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
+  import { activeAssets } from '../activeAssets';
 
   const { type } = defineProps<{
     type: T;
@@ -49,8 +50,10 @@
           tooltip="Edit"
           @click="c.editMessage(message)"
         />
-        <Button v-if="message.assets" rounded small outline gray class="mx-1"
-          caption="Accept"
+        <Button v-if="
+          message.assets && message.assets !== activeAssets[c.type]
+        " rounded small outline gray class="mx-1"
+          caption="Use this"
           tooltip="Set this asset globally for any relevant generations"
         />
       </div>
