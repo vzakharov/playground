@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends ChatType">
 
   import { Marked } from '@ts-stack/markdown';
   import _ from 'lodash';
@@ -12,7 +12,7 @@
   import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
 
   const { type } = defineProps<{
-    type: ChatType;
+    type: T;
   }>();
 
   const c = renewChatController(type);
