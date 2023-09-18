@@ -14,7 +14,6 @@ export type AppChat<T extends ChatType> = {
 export type AppData = {
   username: string | null;
   chats: AppChat<ChatType>[];
-  dna: string | null;
   assets: Partial<AssetsMap>;
 };
 
@@ -22,7 +21,6 @@ export const defaultData: AppData = {
   chats: [],
   assets: {},
   username: null,
-  dna: null
 };
 
 export function assertAppData(data: any): asserts data is AppData {

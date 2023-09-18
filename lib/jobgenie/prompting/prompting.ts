@@ -9,12 +9,6 @@ import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
 
-export type PromptBuilderInput<T extends ChatType> = {
-  type: T;
-  messages: AppChatMessage<T>[];
-  data: AppData;
-};
-
 export type FnPropsFor<T extends ChatType> =
   StringKey<AssetsMap[T]> | 'content';
 

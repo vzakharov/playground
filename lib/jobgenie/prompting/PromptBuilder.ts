@@ -1,26 +1,33 @@
-import { ChatType, toRawMessage } from "~/lib/jobgenie";
+import { AppChatMessage, AppData, Assets, ChatType, toRawMessage } from "~/lib/jobgenie";
 import { SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
-import { FnPropsFor, PromptBuilderInput } from "./prompting";
+import { FnPropsFor } from "./prompting";
 
 
-export type PromptBuilderConfig<T extends ChatType> = {
+export type PromptBuilderConfig<T extends ChatType, A extends ChatType[] | null> = {
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
-  buildSystemMessages: (params: PromptBuilderInput<T> & { 
+  buildSystemMessages: (params: PromptBuilderInput<T, A> & { 
     isFirstResponse: boolean; 
     requestFunctionCall: boolean;
   }) => Record<'pre' | 'post', StackUpable>;
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
+  requiredAssets?: A;
 };
 
-export class PromptBuilder<T extends ChatType> {
+export type PromptBuilderInput<T extends ChatType, A extends ChatType[] | null> = {
+  type: T;
+  messages: AppChatMessage<T>[];
+  data: A extends ChatType[] ? AppData & { assets: Assets<A[number]> } : AppData;
+};
+
+export class PromptBuilder<T extends ChatType, A extends ChatType[] | null> {
 
   constructor(
     public type: T,
-    public config: PromptBuilderConfig<T>
-  ) { }
+    public config: PromptBuilderConfig<T, A>
+) { }
 
-  build(input: PromptBuilderInput<T>) {
+  build(input: PromptBuilderInput<T, A>) {
 
     const { messages } = input;
     const { mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs } = this.config;

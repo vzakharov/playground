@@ -7,8 +7,9 @@ export const jobPromptBuilder = new PromptBuilder('job', {
 
   mainSystemMessage,
   requestFunctionCallAfter: 0,
+  requiredAssets: ['dna'],
 
-  buildSystemMessages({ requestFunctionCall, data: { dna } }) { return {
+  buildSystemMessages({ requestFunctionCall, data: { assets: { dna: { dna } } } }) { return {
 
     pre: 'In this specific flow, you help the user come up with ideas for jobs titles and descriptions that would be a good fit for them based on their “DNA” — a summary description that you prepared during initial interview, — and, optionally, a specific company they’re interested in. Don’t greet the user as it’s a continuation of a previous conversation.',
 

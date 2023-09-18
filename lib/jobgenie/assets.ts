@@ -1,6 +1,4 @@
-import { Chat } from "openai/resources";
 import { ChatType } from "./types";
-import { MapToGeneric } from "./utils";
 
 export const assetCaptions = {
   dna: {
@@ -24,7 +22,5 @@ export type AssetsMap = typeof assetCaptions;
 export type Assets<T extends ChatType> = {
   [K in keyof AssetsMap[T]]: string;
 };
-
-type JobAssets = Assets<'job'>;
 
 export const getAssetCaptions = <T extends ChatType>(type: T) => assetCaptions[type] as Assets<T>;
