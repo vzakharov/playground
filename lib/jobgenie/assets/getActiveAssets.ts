@@ -1,15 +1,14 @@
-import { AppChat, Assets, AssetsMap, ChatType, chatTypes, findBy } from "~/lib/jobgenie";
-import { objectWithKeys } from "vovas-utils";
-import { data } from "./data";
 import _ from "lodash";
+import { objectWithKeys } from "vovas-utils";
+import { AppChat, AppData, Assets, ChatType, chatTypes, findBy } from "~/lib/jobgenie";
 
-export const activeAssets = computed(() => {
+export function getActiveAssets(data: AppData) {
 
   return objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
 
     const chat = findBy({ type }, data.chats) as AppChat<T> | undefined;
-    
-    if ( !chat ) return undefined;
+
+    if (!chat) return undefined;
 
     return _(chat.messages)
       .filter(m => !!m.assets)
@@ -17,7 +16,7 @@ export const activeAssets = computed(() => {
       .last()?.assets;
 
   }) as {
-    [T in ChatType]?: Assets<T>
-  }
+      [T in ChatType]?: Assets<T>;
+    };
 
-});
+}

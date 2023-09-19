@@ -5,12 +5,13 @@ import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
+import { exportData, importData } from '~/components/jobgenie/exportImport';
+import { activeAssets, dataLastLoaded } from '~/components/jobgenie/refs';
+import { sections } from '~/components/jobgenie/sections';
+import { state } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { exportData, importData } from '~/components/jobgenie/exportImport';
-import { isChatBased, sections } from '~/components/jobgenie/sections';
-import { state, dataLastLoaded } from '~/components/jobgenie/refs';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 import { chatTypes } from '~/lib/jobgenie';
 
@@ -29,14 +30,14 @@ function login(c: Credentials) {
     <Sidebar>
       <template #upper>
         <ul>
-          <li v-for="section in sections.filter(s => s.include !== false)" :key="section.id" 
+          <li v-for="section in sections" :key="section.id" 
             :class="`
               menu-item
               ${section.id === selectedSectionId && 'selected'}
               ${section.disabled && 'disabled'}
             `"
             @click="!section.disabled && ( selectedSectionId = section.id ) && ( sidebarIsVisible = false )"
-            :title="section.disabled ? section.disabled : ''"
+            :title="section.disabled ? 'Please complete the previous sections first.' : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />
           </li>

@@ -1,52 +1,34 @@
-import { ChatType, chatTypes, isAmong } from '~/lib/jobgenie';
-import { computed, ref } from 'vue';
-import { data } from '~/components/jobgenie/data';
-import { alsoLog } from 'vovas-utils';
-import { useLocalRef } from 'use-vova';
+import { ChatType, create, getPromptBuilder } from '~/lib/jobgenie';
+import { activeAssets } from './refs';
+import _ from 'lodash';
+import { map } from 'vovas-utils';
 
-export type Section<IsChatBased extends boolean> = {
-  id: IsChatBased extends true ? ChatType : string;
-  caption: string;
-  emoji: string;
-  include?: boolean;
-  disabled?: string | false;
-};
+export const sectionConfigs = [
+  {
+    id: 'dna',
+    caption: 'DNA',
+    emoji: '🧬',
+  },
+  {
+    id: 'linkedin',
+    caption: 'LinkedIn profile',
+    emoji: '👔',
+  },
+  {
+    id: 'job',
+    caption: 'Craft-a-job',
+    emoji: '🧪',
+  },
+] as const;
 
-export type AnySection = Section<boolean>;
+export type SectionConfig = typeof sectionConfigs[number];
 
-export function isChatBased(section: AnySection): section is Section<true> {
-  return isAmong(chatTypes)(section.id);
-}
+export const sections = computed( () => _.map(sectionConfigs, config => {
 
+  return {
+    ...config,
+    builder: getPromptBuilder(config.id),
+    disabled: !getPromptBuilder(config.id).isBuildableWithAssets(activeAssets.value),
+  }
 
-// Add your sections here
-export const sections = computed<AnySection[]>(() => {
-
-  const disableAllButDna = !data.dna && 'Please complete the interview and pick a DNA first to unlock this section';
-
-  return [
-    {
-      id: 'dna',
-      caption: 'DNA',
-      emoji: '🧬'
-    },
-    {
-      id: 'linkedin',
-      caption: 'LinkedIn profile',
-      emoji: '👔',
-      disabled: disableAllButDna,
-    },
-    {
-      id: 'job',
-      caption: 'Craft-a-job',
-      emoji: '🧪',
-      disabled: disableAllButDna,
-    },
-    {
-      id: 'company',
-      caption: 'Pitch-a-company',
-      emoji: '🏢',
-      disabled: disableAllButDna,
-    }
-  ];
-});
+} ) );

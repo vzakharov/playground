@@ -1,6 +1,6 @@
 import { $throw, Class } from "vovas-utils";
 import { AppChatMessage, ChatType, areLeftoversForMessage } from "~/lib/jobgenie";
-import { state } from "../refs";
+import { state } from "../state";
 import { BaseChatController } from "./controller";
 
 export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatController<T>>) {

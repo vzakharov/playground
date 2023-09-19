@@ -1,4 +1,5 @@
-import { generating, msExpected, state } from '~/components/jobgenie/refs';
+import { generating, msExpected } from '~/components/jobgenie/refs';
+import { state } from "../state";
 import { AppChatMessage, ChatType, generateResponse } from '~/lib/jobgenie';
 import { GenerateException } from '~/lib/vovas-openai';
 import { data } from '../data';

@@ -8,9 +8,9 @@
   import { isBy } from '~/lib/vovas-openai';
   import { renewChatController } from './controller';
   import { data } from '../data';
-  import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions } from '~/lib/jobgenie'
-  import { userMessage, generating, userInput, msExpected, leftovers } from '../refs';
-  import { activeAssets } from '../activeAssets';
+  import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions, getActiveAssets } from '~/lib/jobgenie'
+  import { userMessage, generating, userInput, msExpected } from '../refs';
+  import { leftovers } from '../state';
 
   const { type } = defineProps<{
     type: T;
@@ -49,7 +49,7 @@
             tooltip="Edit"
             @click="c.editMessage(message)"
           />
-          <Button v-if="message.assets && message.assets !== activeAssets[c.type]" rounded small outline gray class="mx-1"
+          <Button v-if="message.assets && message.assets !== getActiveAssets(data)" rounded small outline gray class="mx-1"
             caption="Use this"
             tooltip="Set this asset globally for any relevant generations"
             @click="message.assetsPickedAt = Date.now()"

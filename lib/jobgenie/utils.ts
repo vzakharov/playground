@@ -51,3 +51,29 @@ export function withUniqueId() {
     id: _.uniqueId(`${new Date().toISOString()}_`)
   } as WithId;
 };
+
+
+export function create<C extends new (...args: any[]) => any>(Class: C) {
+  
+  return {
+
+    with: <U extends any[]>(...args: U) => {
+      return new Class(...args) as InstanceType<C>;
+    },
+
+    withConfig: (config: ConstructorParameters<C>[0]) => {
+      return new Proxy(new Class(config), {
+        get: (target, prop) => {
+          if (prop in target) {
+            return target[prop];
+          }
+          if (prop in target.config) {
+            return target.config[prop];
+          }
+        },
+      }) as InstanceType<C> & ConstructorParameters<C>[0];
+    }
+
+  };
+
+};

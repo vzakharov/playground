@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import { forEach, mixinable } from 'vovas-utils';
-import { AppChatMessage, ChatType, defaultData, findBy, says, withUniqueId } from '~/lib/jobgenie';
+import { AppChatMessage, ChatType, defaultData, defaultState, findBy, says, withUniqueId } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
 import { dataLastLoaded, userInput, userMessage } from '../refs';
 import { LeftoverHandler } from './leftoverHandler';
 import { ChatResponder } from './responder';
+import { state } from '../state';
+import { sectionConfigs } from '../sections';
 
 export class BaseChatController<T extends ChatType> {
 
@@ -53,6 +55,7 @@ export class BaseChatController<T extends ChatType> {
       forEach(data, (value, key) => {
         data[key] = defaultData[key];
       });
+      state.selectedSectionId = sectionConfigs[0].id;
       dataLastLoaded.value = Date.now();
       // debugger
     }

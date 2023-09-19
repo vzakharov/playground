@@ -24,7 +24,7 @@ export function countJsonChars(messages: ChatMessage[], fn?: AnyChatFunction) {
 
 export type NestedArrayable<T> = T | (T | NestedArrayable<T>)[];
 
-export type StackUpable = NestedArrayable<string | false>;
+export type StackUpable = NestedArrayable<string | false | undefined>;
 
 export function stackUp(strings?: StackUpable) {
   return strings

@@ -1,7 +1,8 @@
 import { forEach, is } from 'vovas-utils';
 import { data } from './data';
 import { AppData, assertAppData, defaultData } from '~/lib/jobgenie';
-import { dataLastLoaded, state } from './refs';
+import { dataLastLoaded } from './refs';
+import { state } from "./state";
 
 export function exportData() {
   const dataStr = JSON.stringify(data, null, 2);
