@@ -19,19 +19,18 @@
 
 <script setup lang="ts">
 
-  const props = defineProps({
-    disabled: Boolean,
-    caption: String,
-    type: {
-      type: String as PropType<'button' | 'submit' | 'reset'>,
-      default: 'button'
-    },
-    rounded: Boolean,
-    small: Boolean,
-    outline: Boolean,
-    checkmarkAfterCallback: Boolean,
-    tooltip: String,
-  })
+  type ButtonProps = {
+    caption: string,
+    disabled?: boolean,
+    type?: 'button' | 'submit' | 'reset',
+    rounded?: boolean,
+    small?: boolean,
+    outline?: boolean,
+    checkmarkAfterCallback?: boolean,
+    tooltip?: string,
+  }
+  
+  const props = defineProps<ButtonProps>();
 
   const emit = defineEmits(['click'])
 

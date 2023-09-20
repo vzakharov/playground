@@ -53,13 +53,13 @@ watch(importModal, ({ text, updateData }) => {
       </template>
       <template #lower>
       <!-- Export data -->
-        <Button rounded small outline gray
+        <Button rounded small outline
           class="mb-2"
           caption="⤓ Export data"
           @click="exportData"
         />
         <!-- Import data -->
-        <Button rounded small outline gray
+        <Button rounded small outline
           caption="⤒ Import data"
           @click="importModal = { isVisible: true, text: JSON.stringify(data, null, 2), updateData: false }"
         />

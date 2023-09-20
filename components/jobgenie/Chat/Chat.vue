@@ -64,7 +64,7 @@
             tooltip="Edit"
             @click="c.editMessage(message)"
           />
-          <Button v-if="message.assets && message.assets !== getActiveAssets(data)" rounded small outline gray class="mx-1"
+          <Button v-if="message.assets && message.assets !== getActiveAssets(data)" rounded small outline class="mx-1"
             caption="Use this"
             tooltip="Set this asset globally for any relevant generations"
             @click="message.assetsPickedAt = Date.now()"
@@ -89,7 +89,7 @@
     </form>
     <div class="p-2 mt-4 fixed bottom-5 right-5 bg-white shadow rounded">
       <!-- Start over -->
-      <Button rounded small outline gray class="me-2"
+      <Button rounded small outline class="me-2"
         caption="↺ Start over"
         @click="c.startOver" 
       />

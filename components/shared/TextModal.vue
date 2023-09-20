@@ -1,5 +1,8 @@
 <script setup lang="ts">
 
+import Button from './Button.vue'
+import ButtonGroup from './ButtonGroup.vue'
+
 const props = defineProps<{
   title: string,
   description: string,
@@ -53,8 +56,12 @@ watchEffect(() => {
       <p class="modal-description">{{ props.description }}</p>
       <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ 'monospace': props.monospace }"></textarea>
       <div class="modal-buttons">
-        <button class="cancel-button" @click="cancel">Cancel</button>
-        <button class="submit-button" @click="submit">{{ buttonText }}</button>
+        <!-- <Button outline rounded caption="Cancel" @click="cancel" />
+        <Button rounded :caption="buttonText" @click="submit" /> -->
+        <ButtonGroup :buttons="[
+          { caption: 'Cancel', onClick: cancel, outline: true, rounded: true },
+          { caption: buttonText, onClick: submit, rounded: true }
+        ]" />
         <slot name="footer"></slot>
       </div>
     </div>
