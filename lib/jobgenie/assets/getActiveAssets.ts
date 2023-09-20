@@ -21,4 +21,4 @@ export function getActiveAssets(data: AppData) {
   
   return result;
 
-}
+};

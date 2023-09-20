@@ -9,7 +9,7 @@
   import { renewChatController, removeChatController } from './controller';
   import { data } from '../data';
   import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions, getActiveAssets } from '~/lib/jobgenie'
-  import { userMessage, generating, msExpected, activeAssets } from '../refs';
+  import { userMessage, generating, msExpected, activeAssets, isActiveAssetFor } from '../refs';
   import { leftovers } from '../state';
 
   const { type } = defineProps<{
@@ -40,7 +40,13 @@
   <div>
     <!-- {{ JSON.stringify(generating) }} -->
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
-      <div :class="`msg msg-${message.role}`">
+      <div 
+        :class="{
+          [`msg msg-${message.role}`]: true,
+          'msg-picked-assets': isActiveAssetFor(c, message)
+        }"
+        :title="isActiveAssetFor(c, message) ? 'This asset will be used globally for any relevant generations' : ''"
+      >
         <span v-html="Marked.parse(message.content)" />
         <div v-if="message.assets">
           <Card v-for="(content, title) in message.assets" :key="title" :="{ 
@@ -63,12 +69,14 @@
             caption="✎"
             tooltip="Edit"
             @click="c.editMessage(message)"
-          />
-          <Button v-if="message.assets && message.assets !== activeAssets[c.type]" rounded small outline class="mx-1"
-            caption="Use this"
-            tooltip="Set this asset globally for any relevant generations"
-            @click="message.assetsPickedAt = Date.now()"
-          />
+          />  
+          <template v-if="message.assets">
+            <Button v-if="!isActiveAssetFor(c, message)" rounded small outline class="mx-1"
+              caption="Use this"
+              tooltip="Set this asset globally for any relevant generations"
+              @click="message.assetsPickedAt = Date.now()"
+            />
+          </template>
         </div>
       </div>
     </div>
@@ -113,6 +121,12 @@
 
 .msg-assistant {
   @apply bg-gray-500 self-start;
+}
+
+.msg-picked-assets {
+  /* @apply bg-green-500; */
+  /* Can we make it slightly grayish-green? */
+  background-color: #357a38;
 }
 
 .input-container {

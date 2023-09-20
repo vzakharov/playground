@@ -45,7 +45,7 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
 
     const { messages, data } = input;
     const { 
-      mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs, requiredAssets 
+      mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs, requiredAssets
     } = this.config;
 
     const fn = chatFunction(...fnArgs);
