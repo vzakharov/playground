@@ -3,15 +3,15 @@
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
-import TextModal from '~/components/shared/TextModal.vue';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
-import { exportData, importData } from '~/components/jobgenie/exportImport';
-import { activeAssets, dataLastLoaded } from '~/components/jobgenie/refs';
+import { exportData, importData, stringifyData } from '~/components/jobgenie/exportImport';
+import { dataLastLoaded } from '~/components/jobgenie/refs';
 import { sections } from '~/components/jobgenie/sections';
 import { state } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
+import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 import { chatTypes } from '~/lib/jobgenie';
@@ -53,8 +53,8 @@ watch(importModal, ({ text, updateData }) => {
       </template>
       <template #lower>
         <Button rounded small outline
-          caption="Edit / export"
-          @click="importModal = { isVisible: true, text: JSON.stringify(data, null, 2), updateData: false }"
+          caption="Edit as YAML"
+          @click="importModal = { isVisible: true, text: stringifyData(), updateData: false }"
         />
         <Toggle 
           v-model="useGpt4" 
@@ -78,7 +78,7 @@ watch(importModal, ({ text, updateData }) => {
     <TextModal monospace
       v-model="importModal"
       title="Import data"
-      description="Below is the JSON code for your existing data. Edit or replace it and click Import to update your data."
+      description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
       confirmButtonText="Update"
       :extraButtons="[
         { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData }
