@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { generating, msExpected } from '~/components/jobgenie/refs';
-import { ChatType, generateResponse, ResolvablePromise } from '~/lib/jobgenie';
+import { ChatType, generateResponse, ResolvablePromise, setValue } from '~/lib/jobgenie';
 import { GenerateException, isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
 import { state } from "../state";
@@ -15,16 +15,18 @@ export async function handleResponseGeneration<T extends ChatType>(controller: B
     // TODO: Add better handling for this
   }
   const interval = setInterval(() => {
-    msExpected.value = Math.max((msExpected.value ?? 0) - 1000, 0) || null;
+    setValue(msExpected, Math.max((msExpected.value ?? 0) - 1000, 0) || null);
   }, 1000);
 
   try {
 
     const responseMessage = await (
-      generating.value = 
+      setValue(
+        generating, 
         new ResolvablePromise(
           generateResponse({ type, messages, msExpected, data }, state)
         )
+      )
     );
 
     messages.push(responseMessage);

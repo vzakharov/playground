@@ -77,3 +77,7 @@ export function create<C extends new (...args: any[]) => any>(Class: C) {
   };
 
 };
+
+export function setValue<T>(ref: RefLike<T>, value: T) {
+  return ref.value = value;
+};

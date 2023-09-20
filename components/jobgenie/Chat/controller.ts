@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { forEach, mixinable } from 'vovas-utils';
-import { AppChatMessage, ChatType, defaultData, defaultState, findBy, says, withUniqueId } from '~/lib/jobgenie';
+import { AppChatMessage, ChatType, defaultData, defaultState, findBy, says, setValue, withUniqueId } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
 import { dataLastLoaded, generating, userMessage } from '../refs';
@@ -30,7 +30,7 @@ export class BaseChatController<T extends ChatType> {
   }
 
   editMessage(message: AppChatMessage<T, 'user'>) {
-    userMessage.value = message.content;
+    setValue(userMessage, message.content);
     this.removeMessagesFrom(message);
     if ( generating.value?.inProgress ) {
       generating.value.reject(new GenerationCanceledException("Generation canceled"));
@@ -53,7 +53,7 @@ export class BaseChatController<T extends ChatType> {
     const content = userMessage.value;
     if (content.trim() !== '') {
       this.messages.push(says.user(content));
-      userMessage.value = '';
+      setValue(userMessage, '');
     }
   }
 
@@ -64,8 +64,7 @@ export class BaseChatController<T extends ChatType> {
         data[key] = defaultData[key];
       });
       state.selectedSectionId = sectionConfigs[0].id;
-      dataLastLoaded.value = Date.now();
-      // debugger
+      setValue(dataLastLoaded, Date.now());
     }
   }
 

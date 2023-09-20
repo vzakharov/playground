@@ -18,3 +18,4 @@ export class ResolvablePromise<T> extends Promise<T> {
     this.finally(() => this.inProgress = false);
   }
 }
+

@@ -4,7 +4,7 @@ import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
 import { State } from './state';
 import { AppData, ChatType } from './types';
-import { RefLike, withUniqueId } from './utils';
+import { RefLike, setValue, withUniqueId } from './utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,
@@ -29,9 +29,12 @@ export async function generateResponse<T extends ChatType>(
     || savedMsPerPromptJsonChar[model]
     || NaN;
 
-  msExpected.value = (
-    jsonChars * msPerPromptJsonChar
-  ) || null;
+  setValue(
+    msExpected, 
+    (
+      jsonChars * msPerPromptJsonChar
+    ) || null
+  );
 
   const { result, leftovers } = await generate(promptMessages, 
     {
