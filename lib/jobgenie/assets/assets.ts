@@ -4,7 +4,7 @@ export const assetCaptions = {
   dna: {
     dna: 'DNA'
   },
-  linkedin: {
+  resumé: {
     tagline: 'Tagline',
     bio: 'Bio',
     experience: 'Experience'

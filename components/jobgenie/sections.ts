@@ -10,8 +10,8 @@ export const sectionConfigs = [
     emoji: '🧬',
   },
   {
-    id: 'linkedin',
-    caption: 'LinkedIn profile',
+    id: 'resumé',
+    caption: 'Resumé',
     emoji: '👔',
   },
   {
