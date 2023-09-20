@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, watchEffect } from 'vue'
 
 const props = defineProps<{
   title: string,
   description: string,
   buttonText: string,
-  initialText?: string,
   monospace?: boolean,
-  modelValue: boolean,
+  modelValue: { isVisible: boolean, text: string },
 }>();
 
-const text = ref(props.initialText ?? '');
+const text = ref<string>();
 const textareaRef = ref<HTMLTextAreaElement>();
 
 const emit = defineEmits<{
-  'update:modelValue': [isVisible: boolean],
+  'update:modelValue': [value: { isVisible: boolean, text: string }],
   submit: [text: string],
   cancel: []
 }>();
@@ -22,18 +20,23 @@ const emit = defineEmits<{
 function submit() {
   const enteredText = text.value;
   if (enteredText) {
-    emit('submit', enteredText);
-    emit('update:modelValue', false);
+    emit('update:modelValue', { isVisible: false, text: enteredText });
   };
 };
 
 function cancel() {
-  emit('cancel');
-  emit('update:modelValue', false);
+  emit('update:modelValue', { ...props.modelValue, isVisible: false });
 };
 
+function clickOutside(event: Event) {
+  if (event.target === event.currentTarget) {
+    cancel();
+  }
+}
+
 watchEffect(() => {
-  if (props.modelValue) {
+  if (props.modelValue.isVisible) {
+    text.value = props.modelValue.text;
     nextTick(() => {
       textareaRef.value?.focus();
       textareaRef.value?.select();
@@ -44,7 +47,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div v-if="props.modelValue" class="modal-overlay">
+  <div v-if="props.modelValue.isVisible" class="modal-overlay" @click="clickOutside">
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
       <p class="modal-description">{{ props.description }}</p>
@@ -52,6 +55,7 @@ watchEffect(() => {
       <div class="modal-buttons">
         <button class="cancel-button" @click="cancel">Cancel</button>
         <button class="submit-button" @click="submit">{{ buttonText }}</button>
+        <slot name="footer"></slot>
       </div>
     </div>
   </div>
