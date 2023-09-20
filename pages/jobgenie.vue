@@ -24,7 +24,12 @@ function login(c: Credentials) {
   process.env.OPENAI_API_KEY = c.apiKey;
 }
 
-const importModal = ref({ isVisible: false, text: '' });
+const importModal = ref({ isVisible: false, text: '', updateData: false });
+watch(importModal, ({ text, updateData }) => {
+  if (updateData) {
+    importData(text);
+  }
+});
 
 </script>
 
@@ -56,7 +61,7 @@ const importModal = ref({ isVisible: false, text: '' });
         <!-- Import data -->
         <Button rounded small outline gray
           caption="⤒ Import data"
-          @click="importModal = { isVisible: true, text: JSON.stringify(data, null, 2) }"
+          @click="importModal = { isVisible: true, text: JSON.stringify(data, null, 2), updateData: false }"
         />
         <Toggle 
           v-model="useGpt4" 
@@ -77,13 +82,11 @@ const importModal = ref({ isVisible: false, text: '' });
         <!-- Add more sections here -->
       </template>
     </div>
-    <TextModal
+    <TextModal monospace
       v-model="importModal"
       title="Import data"
       description="Below is the JSON code for your existing data. Edit or replace it and click Import to update your data."
       buttonText="Import"
-      monospace
-      @submit="importData"
     />
   </div>
 </template>

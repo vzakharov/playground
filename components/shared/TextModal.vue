@@ -5,14 +5,14 @@ const props = defineProps<{
   description: string,
   buttonText: string,
   monospace?: boolean,
-  modelValue: { isVisible: boolean, text: string },
+  modelValue: { isVisible: boolean, text: string, updateData: boolean }
 }>();
 
 const text = ref<string>();
 const textareaRef = ref<HTMLTextAreaElement>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: { isVisible: boolean, text: string }],
+  'update:modelValue': [value: { isVisible: boolean, text: string, updateData: boolean }],
   submit: [text: string],
   cancel: []
 }>();
@@ -20,12 +20,12 @@ const emit = defineEmits<{
 function submit() {
   const enteredText = text.value;
   if (enteredText) {
-    emit('update:modelValue', { isVisible: false, text: enteredText });
+    emit('update:modelValue', { isVisible: false, text: enteredText, updateData: true });
   };
 };
 
 function cancel() {
-  emit('update:modelValue', { ...props.modelValue, isVisible: false });
+  emit('update:modelValue', { ...props.modelValue, isVisible: false, updateData: false });
 };
 
 function clickOutside(event: Event) {

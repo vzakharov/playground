@@ -15,14 +15,6 @@ export function exportData() {
   URL.revokeObjectURL(url);
 };
 
-export function importDataFromPrompt() {
-  // Gives a prompt to insert the JSON content
-  const jsonStr = prompt('Paste the JSON content here');
-  if ( jsonStr ) {
-    importData(jsonStr);
-  }
-};
-
 export function importData(jsonStr: string) {
   try {
     const newData = JSON.parse(jsonStr);
