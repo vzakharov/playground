@@ -45,10 +45,10 @@ watchEffect(() => {
 
 <template>
   <div v-if="props.modelValue" class="modal-overlay">
-    <div class="modal-content flex flex-col">
+    <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
       <p class="modal-description">{{ props.description }}</p>
-      <textarea ref="textareaRef" v-model="text" class="modal-textarea flex-grow" :class="{ 'monospace': props.monospace }"></textarea>
+      <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ 'monospace': props.monospace }"></textarea>
       <div class="modal-buttons">
         <button class="cancel-button" @click="cancel">Cancel</button>
         <button class="submit-button" @click="submit">{{ buttonText }}</button>
