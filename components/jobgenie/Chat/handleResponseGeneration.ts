@@ -32,7 +32,6 @@ export async function handleResponseGeneration<T extends ChatType>(controller: B
   } catch (e: any) {
 
     if ( e instanceof ResolvablePromiseCanceled ) { 
-      // debugger
       return 
     };
     if ( e instanceof GenerateException ) {

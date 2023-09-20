@@ -15,19 +15,23 @@ export function exportData() {
   URL.revokeObjectURL(url);
 };
 
-export function importData() {
+export function importDataFromPrompt() {
   // Gives a prompt to insert the JSON content
   const jsonStr = prompt('Paste the JSON content here');
   if ( jsonStr ) {
-    try {
-      const newData = JSON.parse(jsonStr);
-      assertAppData(newData);
-      forEach(data, (value, key) => {
-        data[key] = is.undefined(newData[key]) ? defaultData[key] : newData[key];
-      });
-      setValue(dataLastLoaded, Date.now());
-    } catch (e: any) {
-      alert(e.message);
-    }
+    importData(jsonStr);
+  }
+};
+
+export function importData(jsonStr: string) {
+  try {
+    const newData = JSON.parse(jsonStr);
+    assertAppData(newData);
+    forEach(data, (value, key) => {
+      data[key] = is.undefined(newData[key]) ? defaultData[key] : newData[key];
+    });
+    setValue(dataLastLoaded, Date.now());
+  } catch (e: any) {
+    alert(e.message);
   }
 };

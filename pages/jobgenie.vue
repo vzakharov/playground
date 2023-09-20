@@ -3,6 +3,7 @@
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
+import TextModal from '~/components/shared/TextModal.vue';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
 import { exportData, importData } from '~/components/jobgenie/exportImport';
@@ -22,6 +23,8 @@ function login(c: Credentials) {
   data.username = c.username;
   process.env.OPENAI_API_KEY = c.apiKey;
 }
+
+const openImportDataModal = ref(false);
 
 </script>
 
@@ -53,7 +56,12 @@ function login(c: Credentials) {
         <!-- Import data -->
         <Button rounded small outline gray
           caption="⤒ Import data"
-          @click="importData"
+          @click="openImportDataModal = true"
+        />
+        <TextModal v-if="openImportDataModal" @="{ close: () => openImportDataModal = false }" 
+          title="Import data"
+          buttonText="Import"
+          @submit="importData"
         />
         <Toggle 
           v-model="useGpt4" 
