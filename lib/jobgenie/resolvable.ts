@@ -1,24 +1,20 @@
-import { addProperties } from "vovas-utils";
+export class ResolvablePromise<T> extends Promise<T> {
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+  inProgress: boolean;
 
-export function newResolvablePromise<T>(basePromise: Promise<T> = new Promise<T>(() => {})) {
-  // I.e. if no basePromise is provided, then we create a new one that never resolves, assuming that the user will resolve it themselves
+  constructor(basePromise: Promise<T> = new Promise<T>(() => {})) {
+    let resolve: (value: T | PromiseLike<T>) => void;
+    let reject: (reason?: any) => void;
 
+    super((...args) => [resolve, reject] = args);
 
-  let resolve = (value: T | PromiseLike<T>) => {};
-  let reject = (reason?: any) => {};
+    this.resolve = resolve!;
+    this.reject = reject!;
+    this.inProgress = true;
 
-  const promise = new Promise<T>((...args) => (
-    [resolve, reject] = args
-  ));
+    basePromise.then(this.resolve, this.reject);
 
-  addProperties(promise, { resolve, reject, inProgress: true });
-
-  basePromise.then(resolve, reject);
-
-  promise.finally(() => promise.inProgress = false);
-
-  return promise;
-
-};
-
-export type ResolvablePromise<T> = ReturnType<typeof newResolvablePromise<T>>;
+    this.finally(() => this.inProgress = false);
+  }
+}

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { generating, msExpected } from '~/components/jobgenie/refs';
-import { ChatType, generateResponse, newResolvablePromise } from '~/lib/jobgenie';
+import { ChatType, generateResponse, ResolvablePromise } from '~/lib/jobgenie';
 import { GenerateException, isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
 import { state } from "../state";
@@ -22,7 +22,7 @@ export async function handleResponseGeneration<T extends ChatType>(controller: B
 
     const responseMessage = await (
       generating.value = 
-        newResolvablePromise(
+        new ResolvablePromise(
           generateResponse({ type, messages, msExpected, data }, state)
         )
     );
