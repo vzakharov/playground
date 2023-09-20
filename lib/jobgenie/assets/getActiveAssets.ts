@@ -4,7 +4,7 @@ import { AppChat, AppData, Assets, ChatType, chatTypes, findBy } from "~/lib/job
 
 export function getActiveAssets(data: AppData) {
 
-  return objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
+  const result = objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
 
     const chat = findBy({ type }, data.chats) as AppChat<T> | undefined;
 
@@ -18,5 +18,7 @@ export function getActiveAssets(data: AppData) {
   }) as {
       [T in ChatType]?: Assets<T>;
     };
+  
+  return result;
 
 }
