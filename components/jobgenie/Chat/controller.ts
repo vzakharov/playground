@@ -8,7 +8,6 @@ import { LeftoverHandler } from './leftoverHandler';
 import { ChatResponder } from './responder';
 import { state } from '../state';
 import { sectionConfigs } from '../sections';
-import { GenerationCanceledException } from './handleResponseGeneration';
 
 export type ChatControllerConfig<T extends ChatType> = {
   userInput: Ref<HTMLInputElement | null>;
@@ -33,7 +32,8 @@ export class BaseChatController<T extends ChatType> {
     setValue(userMessage, message.content);
     this.removeMessagesFrom(message);
     if ( generating.value?.inProgress ) {
-      generating.value.reject(new GenerationCanceledException("Generation canceled"));
+      // generating.value.reject(new GenerationCanceledException("Generation canceled"));
+      generating.value.cancel();
     };
     nextTick(() => {
       this.config.userInput.value?.select();

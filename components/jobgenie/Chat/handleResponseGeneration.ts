@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { generating, msExpected } from '~/components/jobgenie/refs';
-import { ChatType, generateResponse, ResolvablePromise, setValue } from '~/lib/jobgenie';
+import { ChatType, generateResponse, Resolvable, ResolvablePromiseCanceled, setValue } from '~/lib/jobgenie';
 import { GenerateException, isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
 import { state } from "../state";
@@ -21,19 +21,20 @@ export async function handleResponseGeneration<T extends ChatType>(controller: B
   try {
 
     const responseMessage = await (
-      setValue(
-        generating, 
-        new ResolvablePromise(
-          generateResponse({ type, messages, msExpected, data }, state)
-        )
+      generating.value =
+      new Resolvable(
+        generateResponse({ type, messages, msExpected, data }, state)
       )
-    );
+    ).promise;
 
     messages.push(responseMessage);
 
   } catch (e: any) {
 
-    if ( e instanceof GenerationCanceledException) { return };
+    if ( e instanceof ResolvablePromiseCanceled ) { 
+      // debugger
+      return 
+    };
     if ( e instanceof GenerateException ) {
       const lastMessage = _.last(messages);
       if ( lastMessage && isBy.user(lastMessage) ) {

@@ -1,21 +1,33 @@
-export class ResolvablePromise<T> extends Promise<T> {
+export class ResolvablePromiseCanceled extends Error { };
+
+export class Resolvable<T> {
+
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
-  inProgress: boolean;
+  cancel: () => void;
 
-  constructor(basePromise: Promise<T> = new Promise<T>(() => {})) {
-    let resolve: (value: T | PromiseLike<T>) => void;
-    let reject: (reason?: any) => void;
+  inProgress = true;
+  promise: Promise<T>;
 
-    super((...args) => [resolve, reject] = args);
+  constructor(
+    public basePromise?: Promise<T>,
+  ) {
 
-    this.resolve = resolve!;
-    this.reject = reject!;
-    this.inProgress = true;
+    let { resolve, reject, cancel } = this;
 
-    basePromise.then(this.resolve, this.reject);
+    this.promise = new Promise<T>((res, rej) => {
+      resolve = value => { this.inProgress = false; res(value); };
+      reject = error => { this.inProgress = false; rej(error); };
+      cancel = () => reject(new ResolvablePromiseCanceled());
+    });
 
-    this.finally(() => this.inProgress = false);
-  }
-}
+    this.resolve = resolve;
+    this.reject = reject;
+    this.cancel = cancel;
+    
+    basePromise?.then(this.resolve, this.reject);
+
+  };
+
+};
 

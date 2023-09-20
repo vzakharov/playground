@@ -22,6 +22,8 @@
 
   addProperties(window, { _, c, data});
 
+  console.log({ generating })
+
   
   onMounted(() => {
     // debugger
@@ -36,6 +38,7 @@
 
 <template>
   <div>
+    <!-- {{ JSON.stringify(generating) }} -->
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
       <div :class="`msg msg-${message.role}`">
         <span v-html="Marked.parse(message.content)" />
