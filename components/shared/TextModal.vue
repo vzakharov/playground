@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 
 const props = defineProps<{
   title: string,
   buttonText: string,
   initialText?: string,
+  monospace?: boolean,
 }>();
 
 const text = ref(props.initialText ?? '');
+const textareaRef = ref<HTMLTextAreaElement>();
 
 const emit = defineEmits<{
   submit: [text: string],
@@ -26,13 +28,19 @@ function cancel() {
   emit('cancel');
 };
 
+onMounted(async () => {
+  await nextTick();
+  textareaRef.value?.focus();
+  textareaRef.value?.select();
+});
+
 </script>
 
 <template>
   <div class="modal-overlay">
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
-      <textarea class="modal-textarea"></textarea>
+      <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ 'monospace': props.monospace }"></textarea>
       <div class="modal-buttons">
         <button class="cancel-button" @click="cancel">Cancel</button>
         <button class="submit-button" @click="submit">{{ buttonText }}</button>
@@ -47,7 +55,7 @@ function cancel() {
 }
 
 .modal-content {
-  @apply bg-white rounded-lg p-8;
+  @apply bg-white rounded-lg p-8 w-5/6 h-5/6 overflow-auto;
 }
 
 .modal-title {
@@ -55,7 +63,11 @@ function cancel() {
 }
 
 .modal-textarea {
-  @apply w-full border-gray-300 rounded-lg p-2 mb-4;
+  @apply w-full h-5/6 border-gray-300 rounded-lg p-2 mb-4 resize-none;
+}
+
+.modal-textarea.monospace {
+  @apply font-mono;
 }
 
 .modal-buttons {

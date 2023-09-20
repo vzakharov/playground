@@ -58,11 +58,6 @@ const openImportDataModal = ref(false);
           caption="⤒ Import data"
           @click="openImportDataModal = true"
         />
-        <TextModal v-if="openImportDataModal" @="{ close: () => openImportDataModal = false }" 
-          title="Import data"
-          buttonText="Import"
-          @submit="importData"
-        />
         <Toggle 
           v-model="useGpt4" 
           :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
@@ -82,6 +77,13 @@ const openImportDataModal = ref(false);
         <!-- Add more sections here -->
       </template>
     </div>
+    <TextModal v-if="openImportDataModal" @="{ close: () => openImportDataModal = false }" 
+      title="Import data"
+      buttonText="Import"
+      monospace
+      :initialText="JSON.stringify(data, null, 2)"
+      @submit="importData"
+    />
   </div>
 </template>
 
