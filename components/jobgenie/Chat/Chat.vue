@@ -81,7 +81,7 @@
         placeholder="Type your message here..."
         ref="userInput"
       />
-      <Button rounded small
+      <Button primary rounded small
         v-if="!!userMessage"
         type="submit" 
         caption="↑"

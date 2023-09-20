@@ -1,14 +1,15 @@
 <script setup lang="ts">
 
-import Button from './Button.vue'
-import ButtonGroup from './ButtonGroup.vue'
+import ButtonGroup from './ButtonGroup.vue';
+import { ButtonPropsForGroup } from './buttonStuff';
 
 const props = defineProps<{
   title: string,
   description: string,
-  buttonText: string,
+  confirmButtonText: string,
   monospace?: boolean,
-  modelValue: { isVisible: boolean, text: string, updateData: boolean }
+  modelValue: { isVisible: boolean, text: string, updateData: boolean },
+  extraButtons?: ButtonPropsForGroup[]
 }>();
 
 const text = ref<string>();
@@ -50,19 +51,28 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div v-if="props.modelValue.isVisible" class="modal-overlay" @click="clickOutside">
+  <div v-if="modelValue.isVisible" class="modal-overlay" @click="clickOutside">
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
-      <p class="modal-description">{{ props.description }}</p>
-      <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ 'monospace': props.monospace }"></textarea>
-      <div class="modal-buttons">
-        <!-- <Button outline rounded caption="Cancel" @click="cancel" />
-        <Button rounded :caption="buttonText" @click="submit" /> -->
-        <ButtonGroup :buttons="[
-          { caption: 'Cancel', onClick: cancel, outline: true, rounded: true },
-          { caption: buttonText, onClick: submit, rounded: true }
-        ]" />
-        <slot name="footer"></slot>
+      <p class="modal-description">{{ description }}</p>
+      <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ monospace }"></textarea>
+      <div class="modal-footer">
+        <div>
+          <ButtonGroup v-if="extraButtons" :buttons="extraButtons" />
+        </div>
+        <ButtonGroup
+          :buttons="[
+            { caption: 'Cancel', onClick: cancel, outline: true, rounded: true },
+            { 
+              caption: confirmButtonText, 
+              disabled: !text || text === modelValue.text, 
+              onClick: submit, 
+              rounded: true,
+              primary: true, 
+              tooltip: !text ? 'Please enter some text.' : text === modelValue.text ? 'Please edit the text first.' : ''
+            }
+          ]"
+        />
       </div>
     </div>
   </div>
@@ -93,8 +103,8 @@ watchEffect(() => {
   @apply font-mono;
 }
 
-.modal-buttons {
-  @apply flex justify-end;
+.modal-footer {
+  @apply flex justify-between;
 }
 
 .cancel-button {

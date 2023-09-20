@@ -16,7 +16,7 @@
         <p class="form-hint">We need your API key to make requests to OpenAI. We don’t store your API key anywhere, it’s only saved in your local storage. The app doesn’t have a server, so your API key is safe with you.</p>
       </div>
       <div class="flex items-center justify-between">
-        <Button :disabled="!username || !apiKey" type="submit" @click="startChat" caption="Start Crafting" />
+        <Button primary :disabled="!username || !apiKey" type="submit" @click="startChat" caption="Start Crafting" />
       </div>
     </form>
   </div>

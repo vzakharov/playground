@@ -52,15 +52,8 @@ watch(importModal, ({ text, updateData }) => {
         </ul>
       </template>
       <template #lower>
-      <!-- Export data -->
         <Button rounded small outline
-          class="mb-2"
-          caption="⤓ Export data"
-          @click="exportData"
-        />
-        <!-- Import data -->
-        <Button rounded small outline
-          caption="⤒ Import data"
+          caption="Edit / export"
           @click="importModal = { isVisible: true, text: JSON.stringify(data, null, 2), updateData: false }"
         />
         <Toggle 
@@ -86,7 +79,10 @@ watch(importModal, ({ text, updateData }) => {
       v-model="importModal"
       title="Import data"
       description="Below is the JSON code for your existing data. Edit or replace it and click Import to update your data."
-      buttonText="Import"
+      confirmButtonText="Update"
+      :extraButtons="[
+        { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData }
+      ]"
     />
   </div>
 </template>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 
-import { ButtonProps } from './buttonStuff';
+import { ButtonProps, ButtonPropsForGroup } from './buttonStuff';
 import Button from './Button.vue';
 
-debugger
 const props = defineProps<{
-  buttons: ButtonProps[]
+  buttons: ButtonPropsForGroup[]
 }>();
 
 </script>
