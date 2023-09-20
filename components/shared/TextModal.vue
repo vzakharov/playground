@@ -1,45 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watchEffect } from 'vue'
 
 const props = defineProps<{
   title: string,
+  description: string,
   buttonText: string,
   initialText?: string,
   monospace?: boolean,
+  modelValue: boolean,
 }>();
 
 const text = ref(props.initialText ?? '');
 const textareaRef = ref<HTMLTextAreaElement>();
 
 const emit = defineEmits<{
+  'update:modelValue': [isVisible: boolean],
   submit: [text: string],
   cancel: []
 }>();
 
 function submit() {
-  // Emit an event with the text
   const enteredText = text.value;
   if (enteredText) {
     emit('submit', enteredText);
+    emit('update:modelValue', false);
   };
 };
 
 function cancel() {
   emit('cancel');
+  emit('update:modelValue', false);
 };
 
-onMounted(async () => {
-  await nextTick();
-  textareaRef.value?.focus();
-  textareaRef.value?.select();
+watchEffect(() => {
+  if (props.modelValue) {
+    nextTick(() => {
+      textareaRef.value?.focus();
+      textareaRef.value?.select();
+    });
+  }
 });
 
 </script>
 
 <template>
-  <div class="modal-overlay">
+  <div v-if="props.modelValue" class="modal-overlay">
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
+      <p class="modal-description">{{ props.description }}</p>
       <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ 'monospace': props.monospace }"></textarea>
       <div class="modal-buttons">
         <button class="cancel-button" @click="cancel">Cancel</button>
@@ -59,11 +67,15 @@ onMounted(async () => {
 }
 
 .modal-title {
-  @apply text-lg font-medium mb-4;
+  @apply text-lg font-sans font-bold mb-2;
+}
+
+.modal-description {
+  @apply text-sm text-gray-500 mb-4;
 }
 
 .modal-textarea {
-  @apply w-full h-5/6 border-gray-300 rounded-lg p-2 mb-4 resize-none;
+  @apply w-full h-3/4 border-gray-300 rounded-lg p-2 mb-4 resize-none;
 }
 
 .modal-textarea.monospace {

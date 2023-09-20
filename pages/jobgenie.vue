@@ -77,8 +77,10 @@ const openImportDataModal = ref(false);
         <!-- Add more sections here -->
       </template>
     </div>
-    <TextModal v-if="openImportDataModal" @="{ close: () => openImportDataModal = false }" 
+    <TextModal @="{ close: () => openImportDataModal = false }" 
+      v-model="openImportDataModal"
       title="Import data"
+      description="Below is the JSON code for your existing data. Edit or replace it and click Import to update your data."
       buttonText="Import"
       monospace
       :initialText="JSON.stringify(data, null, 2)"
