@@ -61,7 +61,7 @@
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
-      <textarea class="input-box"
+      <input class="input-box"
         v-model="userMessage"
         placeholder="Type your message here..."
         ref="userInput"

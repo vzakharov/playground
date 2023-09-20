@@ -1,7 +1,6 @@
 import dedent from "dedent-js";
-import { chatFunction, stackUp } from "~/lib/vovas-openai";
-import { mainSystemMessage } from "../mainSystemMessage";
 import { PromptBuilder } from "../PromptBuilder";
+import { mainSystemMessage } from "../mainSystemMessage";
 
 export const resuméPromptBuilder = new PromptBuilder('resumé', {
 
@@ -21,11 +20,9 @@ export const resuméPromptBuilder = new PromptBuilder('resumé', {
 
 
         : dedent`
-          Once the user has provided the data to base the resumé on, you can generate the resumé. Your goal is to somehow link the wording to the user’s DNA, increasing the likelihood of them getting hired or at least noticed for the right reasons.
+          During the conversation, if there is not enough information to complete the resumé, ask additional questions (one by one, not all at once) to find out any additional information that might be useful for the resumé.
 
-          If there is not enough information to complete the resumé, ask additional questions to find out any additional information that might be useful for the resumé.
-
-          If there is enough information, call the attached function.
+          If there is enough information, call the attached function to generate the resumé. Your goal is to somehow link the wording to the user’s DNA, increasing the likelihood of them getting hired or at least noticed for the right reasons.
         `,
 
       "Speak in a friendly yet professional tone and start talking as if it’s a continuation of the interview. Be concise."
