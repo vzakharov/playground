@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <div v-if="generating.inProgress" class="msg msg-assistant animate-pulse"
+    <div v-if="generating?.inProgress" class="msg msg-assistant animate-pulse"
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">

@@ -32,8 +32,8 @@ export class BaseChatController<T extends ChatType> {
   editMessage(message: AppChatMessage<T, 'user'>) {
     userMessage.value = message.content;
     this.removeMessagesFrom(message);
-    if ( generating.inProgress ) {
-      generating.reject(new GenerationCanceledException("Generation canceled"));
+    if ( generating.value?.inProgress ) {
+      generating.value.reject(new GenerationCanceledException("Generation canceled"));
     };
     nextTick(() => {
       this.config.userInput.value?.select();
