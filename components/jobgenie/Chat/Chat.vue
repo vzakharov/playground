@@ -2,23 +2,35 @@
 
   import { Marked } from '@ts-stack/markdown';
   import _ from 'lodash';
-  import { addProperties } from 'vovas-utils';
+  import { addProperties, forEach } from 'vovas-utils';
   import Button from '~/components/shared/Button.vue';
   import Card from '~/components/shared/Card.vue';
   import { isBy } from '~/lib/vovas-openai';
-  import { renewChatController } from './controller';
+  import { renewChatController, removeChatController } from './controller';
   import { data } from '../data';
   import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions, getActiveAssets } from '~/lib/jobgenie'
-  import { userMessage, generating, userInput, msExpected } from '../refs';
+  import { userMessage, generating, msExpected } from '../refs';
   import { leftovers } from '../state';
 
   const { type } = defineProps<{
     type: T;
   }>();
 
-  const c = renewChatController(type);
+  const userInput = ref<HTMLInputElement | null>(null);
+
+  const c = renewChatController(type, { userInput });
 
   addProperties(window, { _, c, data});
+
+  
+  onMounted(() => {
+    // debugger
+    const input = userInput.value;
+    input && (
+      input.scrollIntoView(),
+      input.focus()
+    );
+  });
 
 </script>
 

@@ -1,10 +1,16 @@
 import { generating, msExpected } from '~/components/jobgenie/refs';
 import { state } from "../state";
 import { AppChatMessage, ChatType, generateResponse } from '~/lib/jobgenie';
-import { GenerateException } from '~/lib/vovas-openai';
+import { GenerateException, isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
+import _ from 'lodash';
+import { BaseChatController } from './controller';
+import { $throw } from 'vovas-utils';
 
-export async function handleResponseGeneration<T extends ChatType>(type: T, messages: AppChatMessage<T>[]) {
+export class GenerationCanceledException extends Error {}
+
+export async function handleResponseGeneration<T extends ChatType>(controller: BaseChatController<T>) {
+  const { type, messages } = controller;
   if (generating.inProgress) {
     throw new Error('Cannot generate while already generating');
     // TODO: Add better handling for this
@@ -12,18 +18,33 @@ export async function handleResponseGeneration<T extends ChatType>(type: T, mess
   const interval = setInterval(() => {
     msExpected.value = Math.max((msExpected.value ?? 0) - 1000, 0) || null;
   }, 1000);
+  const { previousResolved } = generating;
   generating.start();
   try {
     const responseMessage = await generateResponse({ type, messages, msExpected, data }, state);
+    if ( 
+      generating.rejectedWith instanceof GenerationCanceledException 
+      || previousResolved !== generating.previousResolved
+      // (i.e. if the generation was restarted while this one was in progress)
+      // TODO: Think of how to handle this better
+      // E.g.:
+      // const { result: responseMessage, isStillInProgress } = await generating.isStillInProgressAfter(
+      //   generateResponse({ type, messages, msExpected, data }, state)
+      // );
+    ) {
+      return;
+    }
     messages.push(responseMessage);
   } catch (e: any) {
-    if (e instanceof GenerateException) {
-      // Remove last message and give an alert
-      messages.pop();
-      alert(e.message);
+
+    const lastMessage = _.last(messages);
+    if ( lastMessage && isBy.user(lastMessage) ) {
+      controller.editMessage(lastMessage);
     }
+    alert(e.message);
+
   } finally {
-    generating.resolve();
+    generating.resolveIfInProgress();
     clearInterval(interval);
   }
 }

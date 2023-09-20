@@ -28,7 +28,7 @@ export function ChatResponder<T extends ChatType>(Base: Class<BaseChatController
           );
   
         if (!lastMessage || isBy.user(lastMessage)) {
-          handleResponseGeneration(type, messages);
+          handleResponseGeneration(this);
         }
 
       }, { immediate: true });

@@ -6798,10 +6798,10 @@ vite@~4.3.9:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vovas-utils@^0.5.23:
-  version "0.5.23"
-  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.5.23.tgz#84ceca3926190ebc93a99a401ddef230f7b28f6f"
-  integrity sha512-05MfaghZHOLXOed/uMknUOwMemtqq31Hqc15pUtmZtPBd924tXCT05+EfhXup1bkbPq/XGwjEB+XDaSytLCDOw==
+vovas-utils@^0.5.28:
+  version "0.5.28"
+  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.5.28.tgz#a040f1506bd2f092e1b0937a3924726b21d0152a"
+  integrity sha512-DOvKlBM4BijjH+Ke2LtvtnKChxUDCvr774N7KnZ4oNLmMxJIZMc71Es3ENfa+BzWMkwXiEl8RIJQrSc6uOcztQ==
   dependencies:
     js-yaml "^4.1.0"
     lodash "^4.17.21"
