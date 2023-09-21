@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts">
 
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
@@ -16,20 +16,34 @@ import Toggle from '~/components/shared/Toggle.vue';
 import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 import { chatTypes } from '~/lib/jobgenie';
 
-const process = useWindowProcess();
-const { usdSpent, useGpt4, selectedSectionId } = toRefs(state);
+export default {
 
-function login(c: Credentials) {
-  data.username = c.username;
-  process.env.OPENAI_API_KEY = c.apiKey;
-}
+  components: { Chat, Login, Button, Sidebar, TextModal, Toggle },
 
-const importModal = ref({ isVisible: false, text: '', updateData: false });
-watch(importModal, ({ text, updateData }) => {
-  if (updateData) {
-    importData(text);
+  setup() {
+
+    const process = useWindowProcess();
+    const { usdSpent, useGpt4, selectedSectionId } = toRefs(state);
+
+    function login(c: Credentials) {
+      data.username = c.username;
+      process.env.OPENAI_API_KEY = c.apiKey;
+    }
+
+    const importModal = ref({ isVisible: false, text: '', updateData: false });
+
+    watch(importModal, ({ text, updateData }) => {
+      if (updateData) {
+        importData(text);
+      }
+    });
+
+    return {
+      chatTypes, data, dataLastLoaded, exportData, importModal, importData, isAmong, login, process, 
+      sections, sidebarIsVisible, stringifyData, usdSpent, useGpt4, selectedSectionId
+    }
   }
-});
+}
 
 </script>
 
