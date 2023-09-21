@@ -1,12 +1,4 @@
-<script lang="ts">
-
-  import Textarea from './TextareaScript'
-
-  console.log({ Textarea })
-
-  export default Textarea
-  
-</script>
+<script lang="ts" src="./TextareaScript.ts"/>
 
 <template>
   <textarea class="textarea"
