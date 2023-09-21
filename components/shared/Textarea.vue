@@ -1,64 +1,59 @@
-<script lang="ts">
-import { ref, watch } from 'vue';
+<script setup lang="ts">
+
 import _ from 'lodash';
 import { targetedEventHandler } from './utils';
 
-export default {
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    placeholder: String,
-    submitOnEnter: {
-      type: Boolean,
-      default: false
-    },
-    minHeight: {
-      type: Number,
-      default: 50
-    },
-    maxHeight: {
-      type: Number,
-      default: 200
-    }
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
   },
-  emits: ['update:modelValue', 'submit'],
-  setup(props, { emit }) {
-    const input = ref(props.modelValue);
+  placeholder: String,
+  submitOnEnter: {
+    type: Boolean,
+    default: false
+  },
+  minHeight: {
+    type: Number,
+    default: 50
+  },
+  maxHeight: {
+    type: Number,
+    default: 200
+  }
+});
 
-    const textarea = ref<HTMLTextAreaElement>();
-    const height = ref(props.minHeight);
+const emit = defineEmits<{
+  'update:modelValue': [value: string],
+  submit: [text: string],
+}>();
 
-    const handleInput = targetedEventHandler(HTMLTextAreaElement, ({ target: { scrollHeight, value } }) => {
-      height.value = scrollHeight;
-      emit('update:modelValue', value);
-    })
+const input = ref(props.modelValue);
 
-    const handleKeydown = (key: 'enter' | 'shift+enter') => {
-      if (key === 'enter' === props.submitOnEnter) {
-        emit('submit', input.value);
-      } else {
-        emit('update:modelValue', input.value + '\n');
-      }
-    }
+const textarea = ref<HTMLTextAreaElement>();
+const height = ref(props.minHeight);
 
-    watch(textarea, (newVal) => {
-      if (newVal) {
-        height.value = newVal.scrollHeight;
-      }
-    });
+const handleInput = targetedEventHandler(HTMLTextAreaElement, ({ target: { scrollHeight, value } }) => {
+  height.value = scrollHeight;
+  emit('update:modelValue', value);
+})
 
-    return {
-      htmlElement: textarea,
-      handleInput,
-      handleKeydown,
-      input,
-      _,
-      height
-    };
+const handleKeydown = (key: 'enter' | 'shift+enter') => {
+  if (key === 'enter' === props.submitOnEnter) {
+    emit('submit', input.value);
+  } else {
+    emit('update:modelValue', input.value + '\n');
   }
 }
+
+watch(textarea, (newVal) => {
+  if (newVal) {
+    height.value = newVal.scrollHeight;
+  }
+});
+
+defineExpose({ htmlElement: textarea });
+
 </script>
 
 <template>
