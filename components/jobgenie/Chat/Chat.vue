@@ -84,6 +84,7 @@ import { refForInstance } from '~/components/shared/utils';
         v-model="userMessage"
         placeholder="Shift+Enter for a new line"
         ref="userMessageComponent"
+        @submit="c.sendMessage"
       />
       <Button primary rounded small
         v-if="!!userMessage"
@@ -126,7 +127,7 @@ import { refForInstance } from '~/components/shared/utils';
 }
 
 .input-container {
-  @apply flex justify-end items-center mt-4;
+  @apply flex justify-end items-start mt-4;
 }
 
 .input-box {

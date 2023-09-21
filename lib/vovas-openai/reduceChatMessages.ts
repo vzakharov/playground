@@ -1,4 +1,4 @@
-import { ChatMessage, says } from ".";
+import { ChatMessage, messagesBy, says } from ".";
 
 export type ReduceChatMessagesParams = {
   promptMessages: ChatMessage[];
@@ -15,16 +15,12 @@ export function reduceChatMessages(params: ReduceChatMessagesParams) {
     insertPlugMessage = says.system('...messages removed for brevity...'),
   } = params;
   const jsonChars = JSON.stringify(promptMessages).length;
-  if ( jsonChars > charLimit ) {
-    const { length } = promptMessages;
-    console.log({ length, jsonChars });
-    if (length > 2) {
-      promptMessages.splice(removeFrom, 1);
-      if ( insertPlugMessage )
-        promptMessages.splice(removeFrom, 0, insertPlugMessage);
-    } else {
-      throw new Error('Cannot reduce promptMessages to at least 3 messages of < 2000 tokens total');
-    }
+  const numResponses = messagesBy.assistant(promptMessages).length;
+  console.log({ numResponses, jsonChars });
+  if ( jsonChars > charLimit && numResponses > 2 ) {
+    promptMessages.splice(removeFrom, 1);
+    if ( insertPlugMessage )
+      promptMessages.splice(removeFrom, 0, insertPlugMessage);
     return reduceChatMessages({ 
       ...params,
       removeFrom: insertPlugMessage ? removeFrom + 1 : removeFrom,
