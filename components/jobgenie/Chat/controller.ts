@@ -42,7 +42,7 @@ export class BaseChatController<T extends ChatType> {
     return lastMessage && isBy.user(lastMessage);
   }
 
-  regenerate(message: AppChatMessage<T, 'assistant'>) {
+  regenerate(message: AppChatMessage<T, 'assistant'>) { 
     this.removeMessagesFrom(message);
   }
 

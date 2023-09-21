@@ -84,7 +84,7 @@ import { refForInstance } from '~/components/shared/utils';
         v-model="userMessage"
         placeholder="Shift+Enter for a new line"
         ref="userMessageComponent"
-        @submit="c.sendMessage"
+        @submit="c.sendMessage()"
       />
       <Button primary rounded small
         v-if="!!userMessage"
