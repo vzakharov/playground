@@ -1,15 +1,13 @@
 import _ from 'lodash';
 import { forEach, mixinable } from 'vovas-utils';
-import { AppChatMessage, ChatType, defaultData, defaultState, findBy, says, setValue, withUniqueId } from '~/lib/jobgenie';
+import { AppChatMessage, ChatType, defaultData, findBy, says, setValue } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
-import { dataLastLoaded, generating, userMessageComponent, userMessage } from '../refs';
+import { dataLastLoaded, generating, userMessage } from '../refs';
+import { sectionConfigs } from '../sections';
+import { state } from '../state';
 import { LeftoverHandler } from './leftoverHandler';
 import { ChatResponder } from './responder';
-import { state } from '../state';
-import { sectionConfigs } from '../sections';
-import Textarea from 'components/shared/TextareaScript';
-import { refForInstance } from '~/components/shared/utils';
 
 export class BaseChatController<T extends ChatType> {
 
@@ -33,7 +31,10 @@ export class BaseChatController<T extends ChatType> {
       generating.value.cancel();
     };
     nextTick(() => {
-      userMessageComponent.value?.textarea?.select();
+      // userMessageComponent.value?.textarea?.select();
+      const textarea = window.document.getElementById('userMessage');
+      if ( !(textarea instanceof HTMLTextAreaElement ) ) return;
+      textarea.select();
     });
   }
 

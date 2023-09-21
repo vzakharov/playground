@@ -5,7 +5,7 @@ import { refForInstance } from "~/components/shared/utils";
 import Textarea from "~/components/shared/TextareaScript";
 
 export const userMessage = ref('');
-export const userMessageComponent = refForInstance(Textarea);
+// export const userMessageComponent = refForInstance(Textarea);
 
 export const generating = ref<Resolvable<AppChatMessage<any, 'assistant'>>>();
 

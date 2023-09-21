@@ -8,7 +8,7 @@ import Card from '~/components/shared/Card.vue';
 import { ChatType, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
-import { generating, isActiveAssetFor, msExpected, userMessage, userMessageComponent as _userMessageComponent } from '../refs';
+import { generating, isActiveAssetFor, msExpected, userMessage } from '../refs';
 import { leftovers } from '../state';
 import { renewChatController } from './controller';
 import Textarea from '~/components/shared/Textarea.vue';
@@ -22,14 +22,18 @@ import Textarea from '~/components/shared/Textarea.vue';
 
   addProperties(window, { _, c, data});
 
-  const userMessageComponent = _userMessageComponent;
-  // This is a hacky workaround because Vue otherwise doesn’t include an imported ref in setup’s __returned__.
+  // const userMessageComponent = _userMessageComponent;
+  // // This is a hacky workaround because Vue otherwise doesn’t include an imported ref in setup’s __returned__.
 
   watchEffect(() => {
-    const { textarea } = userMessageComponent.value ?? {};
-    if ( !textarea ) return;
-    textarea.scrollIntoView();
-    textarea.focus();
+    // const { textarea } = userMessageComponent.value ?? {};
+    nextTick(() => {
+      const textarea = window.document.getElementById('userMessage');
+      // Using document ids instead of refs is hacky, but making it work with imported refs is even hackier.
+      if ( !textarea ) return;
+      textarea.scrollIntoView();
+      textarea.focus();
+    });
   });
   
 
@@ -83,6 +87,7 @@ import Textarea from '~/components/shared/Textarea.vue';
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
       <Textarea class="input-box"
+        id="userMessage"
         submit-on-enter
         v-model="userMessage"
         placeholder="Shift+Enter for a new line"
