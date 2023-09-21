@@ -8,11 +8,10 @@ import Card from '~/components/shared/Card.vue';
 import { ChatType, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
-import { generating, isActiveAssetFor, msExpected, userMessage, userMessageComponent } from '../refs';
+import { generating, isActiveAssetFor, msExpected, userMessage, userMessageComponent as _userMessageComponent } from '../refs';
 import { leftovers } from '../state';
 import { renewChatController } from './controller';
 import Textarea from '~/components/shared/Textarea.vue';
-import { refForInstance } from '~/components/shared/utils';
 
   const { type } = defineProps<{
     type: T;
@@ -23,12 +22,16 @@ import { refForInstance } from '~/components/shared/utils';
 
   addProperties(window, { _, c, data});
 
+  const userMessageComponent = _userMessageComponent;
+  // This is a hacky workaround because Vue otherwise doesn’t include an imported ref in setup’s __returned__.
+
   watchEffect(() => {
     const { textarea } = userMessageComponent.value ?? {};
     if ( !textarea ) return;
     textarea.scrollIntoView();
     textarea.focus();
   });
+  
 
 </script>
 
