@@ -1,75 +1,21 @@
 <script lang="ts">
-import { ref, watch } from 'vue';
-import _ from 'lodash';
-import { targetedEventHandler } from './utils';
 
-export default {
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    placeholder: String,
-    submitOnEnter: {
-      type: Boolean,
-      default: false
-    },
-    minHeight: {
-      type: Number,
-      default: 50
-    },
-    maxHeight: {
-      type: Number,
-      default: 200
-    }
-  },
-  emits: ['update:modelValue', 'submit'],
-  setup(props, { emit }) {
-    const input = ref(props.modelValue);
+  import Textarea from './TextareaScript'
 
-    const textarea = ref<HTMLTextAreaElement>();
-    const height = ref(props.minHeight);
+  console.log({ Textarea })
 
-    const handleInput = targetedEventHandler(HTMLTextAreaElement, ({ target: { scrollHeight, value } }) => {
-      height.value = scrollHeight;
-      emit('update:modelValue', value);
-    })
-
-    const handleKeydown = (key: 'enter' | 'shift+enter') => {
-      if (key === 'enter' === props.submitOnEnter) {
-        emit('submit', input.value);
-      } else {
-        emit('update:modelValue', input.value + '\n');
-      }
-    }
-
-    watch(textarea, (newVal) => {
-      if (newVal) {
-        height.value = newVal.scrollHeight;
-      }
-    });
-
-    return {
-      htmlElement: textarea,
-      handleInput,
-      handleKeydown,
-      input,
-      _,
-      height
-    };
-  }
-}
+  export default Textarea
+  
 </script>
 
 <template>
   <textarea class="textarea"
     ref="textarea"
     v-model="input"
-    :style="_.mapValues({ minHeight, maxHeight, height }, v => `${v}px`)"
+    :style="mapValues({ minHeight, maxHeight, height }, v => `${v}px`)"
     :="{ placeholder }"
-    @enter.prevent="handleKeydown('enter')"
-    @shift.enter="handleKeydown('shift+enter')"
-    @input="handleInput"
+    @keydown.enter.exact.prevent="handleKeydown('enter')"
+    @keydown.shift.enter.prevent="handleKeydown('shift+enter')"
   />
 </template>
 

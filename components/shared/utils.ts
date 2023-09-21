@@ -1,4 +1,6 @@
-export function eventHandler<
+import { DefineComponent } from 'vue';
+
+export function targetedEventHandler<
   T extends Event,
   K extends EventTarget
 > (
@@ -13,3 +15,11 @@ export function eventHandler<
     callback({ ...event, target });
   };
 };
+
+export function refForInstance<T extends abstract new (...args: any) => any>(
+  component: T
+) {
+  return ref<InstanceType<typeof component>>()
+};
+
+export type RefForInstance<T extends abstract new (...args: any) => any> = ReturnType<typeof refForInstance<T>>;

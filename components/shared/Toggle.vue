@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { eventHandler } from './utils';
+import { targetedEventHandler } from './utils';
 
 const props = defineProps({
   modelValue: Boolean,
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   'update:modelValue': [boolean];
 }>();
 
-const updateValue = eventHandler(HTMLInputElement, event => {
+const updateValue = targetedEventHandler(HTMLInputElement, event => {
   emit('update:modelValue', event.target.checked);
 });
 

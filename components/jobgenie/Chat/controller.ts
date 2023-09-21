@@ -3,21 +3,18 @@ import { forEach, mixinable } from 'vovas-utils';
 import { AppChatMessage, ChatType, defaultData, defaultState, findBy, says, setValue, withUniqueId } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
-import { dataLastLoaded, generating, userMessage } from '../refs';
+import { dataLastLoaded, generating, userMessageComponent, userMessage } from '../refs';
 import { LeftoverHandler } from './leftoverHandler';
 import { ChatResponder } from './responder';
 import { state } from '../state';
 import { sectionConfigs } from '../sections';
-
-export type ChatControllerConfig<T extends ChatType> = {
-  userInput: Ref<HTMLInputElement | null>;
-};
+import Textarea from 'components/shared/TextareaScript';
+import { refForInstance } from '~/components/shared/utils';
 
 export class BaseChatController<T extends ChatType> {
 
   constructor(
     public type: T,
-    public config: ChatControllerConfig<T>,
     public messages = findOrCreateChat(type).messages
   ) { 
     // debugger
@@ -36,7 +33,7 @@ export class BaseChatController<T extends ChatType> {
       generating.value.cancel();
     };
     nextTick(() => {
-      this.config.userInput.value?.select();
+      userMessageComponent.value?.textarea?.select();
     });
   }
 
@@ -70,11 +67,11 @@ export class BaseChatController<T extends ChatType> {
 
 };
 
-export function createChatController<T extends ChatType>(type: T, config: ChatControllerConfig<T>) {
+export function createChatController<T extends ChatType>(...args: ConstructorParameters<typeof BaseChatController<T>>) {
   return mixinable(BaseChatController<T>)
     .mixin(ChatResponder)
     .mixin(LeftoverHandler)
-    .create(type, config);
+    .create(...args);
 }
 
 export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
@@ -82,13 +79,14 @@ export type ChatController<T extends ChatType> = ReturnType<typeof createChatCon
 export const activeChatControllers: ChatController<any>[] = reactive([]);
 console.log({ activeChatControllers })
 
-export function renewChatController<T extends ChatType>(type: T, config: ChatControllerConfig<T>) {
+export function renewChatController<T extends ChatType>(...args: ConstructorParameters<typeof BaseChatController<T>>) {
+  const [ type ] = args;
   const chatController = findBy({ type }, activeChatControllers);
   if (chatController) {
     console.log("Deleting old chat controller:", chatController);
     _.pull(activeChatControllers, chatController);
   };
-  const newChatController = createChatController(type, config);
+  const newChatController = createChatController(...args);
   console.log("Creating new chat controller:", newChatController);
   activeChatControllers.push(newChatController);
   return newChatController;

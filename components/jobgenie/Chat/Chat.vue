@@ -1,44 +1,39 @@
 <script setup lang="ts" generic="T extends ChatType">
 
-  import { Marked } from '@ts-stack/markdown';
-  import _ from 'lodash';
-  import { addProperties, forEach } from 'vovas-utils';
-  import Button from '~/components/shared/Button.vue';
-  import Card from '~/components/shared/Card.vue';
-  import { isBy } from '~/lib/vovas-openai';
-  import { renewChatController, removeChatController } from './controller';
-  import { data } from '../data';
-  import { ChatType, areLeftoversForMessage, assetCaptions, getAssetCaptions, getActiveAssets } from '~/lib/jobgenie'
-  import { userMessage, generating, msExpected, activeAssets, isActiveAssetFor } from '../refs';
-  import { leftovers } from '../state';
+import { Marked } from '@ts-stack/markdown';
+import _ from 'lodash';
+import { addProperties } from 'vovas-utils';
+import Button from '~/components/shared/Button.vue';
+import Card from '~/components/shared/Card.vue';
+import { ChatType, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
+import { isBy } from '~/lib/vovas-openai';
+import { data } from '../data';
+import { generating, isActiveAssetFor, msExpected, userMessage, userMessageComponent } from '../refs';
+import { leftovers } from '../state';
+import { renewChatController } from './controller';
+import Textarea from '~/components/shared/Textarea.vue';
+import { refForInstance } from '~/components/shared/utils';
 
   const { type } = defineProps<{
     type: T;
   }>();
 
-  const userInput = ref<HTMLInputElement | null>(null);
-
-  const c = renewChatController(type, { userInput });
+  
+  const c = renewChatController(type);
 
   addProperties(window, { _, c, data});
 
-  console.log({ generating })
-
-  
-  onMounted(() => {
-    // debugger
-    const input = userInput.value;
-    input && (
-      input.scrollIntoView(),
-      input.focus()
-    );
+  watchEffect(() => {
+    const { textarea } = userMessageComponent.value ?? {};
+    if ( !textarea ) return;
+    textarea.scrollIntoView();
+    textarea.focus();
   });
 
 </script>
 
 <template>
   <div>
-    <!-- {{ JSON.stringify(generating) }} -->
     <div v-for="(message, index) in c.messages" :key="index" class="mb-2 msg-container">
       <div 
         :class="{
@@ -84,10 +79,11 @@
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
     <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
-      <input class="input-box"
+      <Textarea class="input-box"
+        submit-on-enter
         v-model="userMessage"
-        placeholder="Type your message here..."
-        ref="userInput"
+        placeholder="Shift+Enter for a new line"
+        ref="userMessageComponent"
       />
       <Button primary rounded small
         v-if="!!userMessage"
