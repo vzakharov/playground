@@ -10,6 +10,7 @@ import { globalState } from '../state';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 import { cycleLeftovers } from './cycleLeftovers';
+import { editMessage } from './editMessage';
 
 export type ChatControllerState<T extends ChatType> = {
   dataLastLoaded: number;
@@ -39,29 +40,16 @@ export function createChatController<T extends ChatType>(type: T, refs: ToRefs<C
     state: toReactive(refs) as ChatControllerState<T>,
     messages: findOrCreateChat(type).messages,
 
-    removeMessagesFrom(message: AppChatMessage<T>) {
-      c.messages.splice(c.messages.indexOf(message), c.messages.length - c.messages.indexOf(message));
-    },
-
-    editMessage(message: AppChatMessage<T, 'user'>) {
-      const { state, state: { generating } } = c;
-      state.userMessage = message.content;
-      c.removeMessagesFrom(message);
-      if (generating?.inProgress) {
-        generating.cancel();
-      }
-      nextTick(() => {
-        // userMessageComponent.value?.textarea?.select();
-        const textarea = window.document.getElementById('userMessage');
-        if (!(textarea instanceof HTMLTextAreaElement)) return;
-        textarea.select();
-      });
-    },
-
     get lastMessageIsFromUser() {
       const lastMessage = _.last(c.messages);
       return lastMessage && isBy.user(lastMessage);
     },
+
+    removeMessagesFrom(message: AppChatMessage<T>) {
+      c.messages.splice(c.messages.indexOf(message), c.messages.length - c.messages.indexOf(message));
+    },
+
+    editMessage,
 
     regenerate(message: AppChatMessage<T, 'assistant'>) {
       c.removeMessagesFrom(message);
