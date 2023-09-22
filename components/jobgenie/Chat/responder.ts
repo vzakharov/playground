@@ -1,19 +1,15 @@
 import _ from 'lodash';
-import { Class, also } from 'vovas-utils';
-import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { ChatType, debugAnd } from '~/lib/jobgenie';
+import { also } from 'vovas-utils';
+import { ChatType } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
-import { data, findOrCreateChat } from '../data';
 import { autoMessage } from './autoMessage';
 import { BaseChatController } from './controller';
 import { handleResponseGeneration } from './handleResponseGeneration';
 
 
-export function ChatResponder<T extends ChatType>(Base: Class<BaseChatController<T>>) {
+export class ChatResponder<T extends ChatType> extends BaseChatController<T> {
 
-  return class R extends Base {
-
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof BaseChatController<T>>) {
 
       super(...args);
 
@@ -35,7 +31,5 @@ export function ChatResponder<T extends ChatType>(Base: Class<BaseChatController
     
     };
 
-  }
-
-}
+};
 

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { forEach, mixinable } from 'vovas-utils';
+import { forEach } from 'vovas-utils';
 import { AppChatMessage, ChatType, defaultData, findBy, says, setValue } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data, findOrCreateChat } from '../data';
@@ -7,16 +7,13 @@ import { dataLastLoaded, generating, userMessage } from '../refs';
 import { sectionConfigs } from '../sections';
 import { state } from '../state';
 import { LeftoverHandler } from './leftoverHandler';
-import { ChatResponder } from './responder';
 
 export class BaseChatController<T extends ChatType> {
 
   constructor(
     public type: T,
     public messages = findOrCreateChat(type).messages
-  ) { 
-    // debugger
-  }
+  ) { }
 
 
   private removeMessagesFrom(message: AppChatMessage<T>) {
@@ -68,29 +65,22 @@ export class BaseChatController<T extends ChatType> {
 
 };
 
-export function createChatController<T extends ChatType>(...args: ConstructorParameters<typeof BaseChatController<T>>) {
-  return mixinable(BaseChatController<T>)
-    .mixin(ChatResponder)
-    .mixin(LeftoverHandler)
-    .create(...args);
-}
-
-export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
+export class ChatController<T extends ChatType> extends LeftoverHandler<T> { }
 
 export const activeChatControllers: ChatController<any>[] = reactive([]);
-console.log({ activeChatControllers })
 
 export function renewChatController<T extends ChatType>(...args: ConstructorParameters<typeof BaseChatController<T>>) {
   const [ type ] = args;
-  const chatController = findBy({ type }, activeChatControllers);
-  if (chatController) {
-    console.log("Deleting old chat controller:", chatController);
-    _.pull(activeChatControllers, chatController);
+  const oldController = findBy({ type }, activeChatControllers);
+  if (oldController) {
+    console.log("Deleting old chat controller:", oldController);
+    _.pull(activeChatControllers, oldController);
   };
-  const newChatController = createChatController(...args);
-  console.log("Creating new chat controller:", newChatController);
-  activeChatControllers.push(newChatController);
-  return newChatController;
+  // const newChatController = createChatController(...args);
+  const newController = new ChatController(...args);
+  console.log("Creating new chat controller:", newController);
+  activeChatControllers.push(newController);
+  return newController;
 }
 
 export function removeChatController(chatController: ChatController<any>) {

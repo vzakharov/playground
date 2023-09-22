@@ -1,11 +1,9 @@
-import { $throw, Class } from "vovas-utils";
+import { $throw } from "vovas-utils";
 import { AppChatMessage, ChatType, areLeftoversForMessage } from "~/lib/jobgenie";
 import { state } from "../state";
-import { BaseChatController } from "./controller";
+import { ChatResponder } from "./responder";
 
-export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatController<T>>) {
-
-  return class R extends Base {
+export class LeftoverHandler<T extends ChatType> extends ChatResponder<T> {
 
     loopLeftovers(message: AppChatMessage<T>) {
 
@@ -26,8 +24,6 @@ export function LeftoverHandler<T extends ChatType>(Base: Class<BaseChatControll
 
       this.messages.splice(this.messages.indexOf(message), 1, leftover);
 
-    }
-
-  }
+    };
 
 };
