@@ -5,20 +5,29 @@ import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Card from '~/components/shared/Card.vue';
-import { ChatType, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
+import Textarea from '~/components/shared/Textarea.vue';
+import { AppChatMessage, ChatType, Resolvable, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
-import { generating, isActiveAssetFor, msExpected, userMessage } from '../refs';
+import { isActiveAssetFor } from '../refs';
 import { leftovers } from '../state';
 import { renewChatController } from './controller';
-import Textarea from '~/components/shared/Textarea.vue';
 
   const { type } = defineProps<{
     type: T;
   }>();
 
-  
-  const c = renewChatController(type);
+  const generating = ref<Resolvable<AppChatMessage<T, 'assistant'>>>();
+  const dataLastLoaded = ref(Date.now());
+  const userMessage = ref('');
+  const msExpected = ref<number>();
+
+  const c = renewChatController(type, {
+    dataLastLoaded,
+    generating,
+    userMessage,
+    msExpected
+  });
 
   addProperties(window, { _, c, data});
 
@@ -60,7 +69,7 @@ import Textarea from '~/components/shared/Textarea.vue';
           <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="mx-1"
             :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
             tooltip="Loop through alternatives"
-            @click="c.loopLeftovers(message)"
+            @click="c.cycleLeftovers(message)"
           />
           <Button v-if="isBy.assistant(message)" small rounded outline class="mx-1" 
             caption="↺"

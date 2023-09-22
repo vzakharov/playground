@@ -2,7 +2,7 @@ import { AnyGenerateResult, AnyPostProcessed, ChatMessage, Model } from "lib/vov
 import { ChatType } from "./types";
 import { AppChatMessage } from "./AppChatMessage";
 
-export const defaultState = {
+export const defaultGlobalState = {
   usdSpent: 0,
   useGpt4: true,
   savedMsPerPromptJsonChar: {
@@ -22,7 +22,7 @@ export type Leftovers<T extends ChatType> = {
   selectedIndex: number,
 };
 
-export type State = typeof defaultState;
+export type GlobalState = typeof defaultGlobalState;
 
 export function areLeftoversForMessage<T extends ChatType>(
   leftovers: Leftovers<any>,

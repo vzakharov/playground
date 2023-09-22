@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { Ref, ShallowUnwrapRef } from "vue";
 
 export type RefLike<T> = { value: T };
 
@@ -81,3 +82,22 @@ export function create<C extends new (...args: any[]) => any>(Class: C) {
 export function setValue<T>(ref: RefLike<T>, value: T) {
   return ref.value = value;
 };
+
+export function toReactive<T extends Record<string, Ref<any>>>(refObject: T) {
+  const reactiveObject = {};
+
+  for (const key in refObject) {
+    if (refObject.hasOwnProperty(key)) {
+      Object.defineProperty(reactiveObject, key, {
+        get: () => refObject[key].value,
+        set: (newValue) => { refObject[key].value = newValue; },
+      });
+    }
+  }
+
+  return reactive(reactiveObject) as ShallowUnwrapRef<T>;
+};
+
+// export type UnwrapRefs<T extends Record<string, Ref<any>>> = {
+//   [K in keyof T]: T[K]['value']
+// };

@@ -2,23 +2,25 @@ import { is, mutate } from 'vovas-utils';
 import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
-import { State } from './state';
+import { GlobalState } from './state';
 import { AppData, ChatType } from './types';
 import { RefLike, setValue, withUniqueId } from './utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,
   messages: AppChatMessage<T>[],
-  msExpected: RefLike<number | null>;
+  state: {
+    msExpected: number | undefined
+  },
   data: AppData
 };
 
 export async function generateResponse<T extends ChatType>(
   params: GenerateResponseParams<T>,
-  state: State
+  globalState: GlobalState
 ): Promise<AppChatMessage<T, 'assistant'>> {
-  const { type, messages, data, msExpected } = params;
-  const { useGpt4, savedMsPerPromptJsonChar } = state;
+  const { type, messages, data, state } = params;
+  const { useGpt4, savedMsPerPromptJsonChar } = globalState;
   const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
@@ -29,12 +31,7 @@ export async function generateResponse<T extends ChatType>(
     || savedMsPerPromptJsonChar[model]
     || NaN;
 
-  setValue(
-    msExpected, 
-    (
-      jsonChars * msPerPromptJsonChar
-    ) || null
-  );
+  state.msExpected = ( jsonChars * msPerPromptJsonChar ) || undefined;
 
   const { result, leftovers } = await generate(promptMessages, 
     {
@@ -49,8 +46,8 @@ export async function generateResponse<T extends ChatType>(
     }
   );
 
-  state.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
-  state.usdSpent += globalUsageContainer.cost.totalUsd;
+  globalState.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
+  globalState.usdSpent += globalUsageContainer.cost.totalUsd;
 
   const fromRawMessage = (raw: typeof result) => ({
     ...withUniqueId(),
@@ -64,7 +61,7 @@ export async function generateResponse<T extends ChatType>(
 
   const responseMessage = fromRawMessage(result);
 
-  mutate(state, { 
+  mutate(globalState, { 
     leftovers: {
       results: leftovers.map(fromRawMessage),
       baseId: responseMessage.id,

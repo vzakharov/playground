@@ -1,11 +1,11 @@
 import { useLocalReactive } from "use-vova";
-import { defaultState } from "~/lib/jobgenie";
+import { defaultGlobalState } from "~/lib/jobgenie";
 import { SectionConfig, sectionConfigs } from "./sections";
 
 
-export const state = useLocalReactive('jobgenie-state', {
-  ...defaultState,
+export const globalState = useLocalReactive('jobgenie-state', {
+  ...defaultGlobalState,
   selectedSectionId: sectionConfigs[0].id as SectionConfig['id']
 });
 
-export const { leftovers } = toRefs(state);
+export const { leftovers } = toRefs(globalState);

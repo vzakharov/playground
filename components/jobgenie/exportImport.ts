@@ -3,7 +3,7 @@ import { forEach, is } from 'vovas-utils';
 import { data } from './data';
 import { AppData, assertAppData, defaultData, setValue } from '~/lib/jobgenie';
 import { dataLastLoaded } from './refs';
-import { state } from "./state";
+import { globalState } from "./state";
 
 export function stringifyData() {
   return yaml.dump(data);

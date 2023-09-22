@@ -1,29 +1,31 @@
+import { globalState } from 'components/jobgenie/state';
 import _ from 'lodash';
-import { generating, msExpected } from '~/components/jobgenie/refs';
-import { ChatType, generateResponse, Resolvable, ResolvablePromiseCanceled, setValue } from '~/lib/jobgenie';
+import { ChatType, generateResponse, Resolvable, ResolvablePromiseCanceled } from '~/lib/jobgenie';
 import { GenerateException, isBy } from '~/lib/vovas-openai';
-import { data } from '../data';
-import { state } from "../state";
-import { BaseChatController } from './controller';
+import { data } from '../../data';
+import { ChatController } from '../controller';
 
 export class GenerationCanceledException extends Error {}
 
-export async function handleResponseGeneration<T extends ChatType>(controller: BaseChatController<T>) {
-  const { type, messages } = controller;
-  if (generating.value?.inProgress) {
+export async function handleResponseGeneration<T extends ChatType>(this: ChatController<T>) {
+
+  const { type, messages, state } = this;
+
+  if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
     // TODO: Add better handling for this
-  }
+  };
+
   const interval = setInterval(() => {
-    setValue(msExpected, Math.max((msExpected.value ?? 0) - 1000, 0) || null);
+    state.msExpected = Math.max((state.msExpected ?? 0) - 1000, 0);
   }, 1000);
 
   try {
 
     const responseMessage = await (
-      generating.value =
+      state.generating =
       new Resolvable(
-        generateResponse({ type, messages, msExpected, data }, state)
+        generateResponse({ type, messages, state, data }, globalState)
       )
     ).promise;
 
@@ -37,7 +39,7 @@ export async function handleResponseGeneration<T extends ChatType>(controller: B
     if ( e instanceof GenerateException ) {
       const lastMessage = _.last(messages);
       if ( lastMessage && isBy.user(lastMessage) ) {
-        controller.editMessage(lastMessage);
+        this.editMessage(lastMessage);
       }
     };
 
