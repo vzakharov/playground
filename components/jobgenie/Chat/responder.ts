@@ -9,27 +9,27 @@ import { handleResponseGeneration } from './handleResponseGeneration';
 
 export class ChatResponder<T extends ChatType> extends BaseChatController<T> {
 
-    constructor(...args: ConstructorParameters<typeof BaseChatController<T>>) {
+  constructor(...args: ConstructorParameters<typeof BaseChatController<T>>) {
 
-      super(...args);
+    super(...args);
 
-      watch(this.messages, () => {
+    watch(this.messages, () => {
 
-        const { type, messages } = this;
-  
-        const lastMessage = _.last(messages)
-          ?? also(
-            autoMessage[type]?.(),
-            m => m && messages.push(m)
-          );
-  
-        if (!lastMessage || isBy.user(lastMessage)) {
-          handleResponseGeneration(this);
-        }
+      const { type, messages } = this;
 
-      }, { immediate: true });
-    
-    };
+      const lastMessage = _.last(messages)
+        ?? also(
+          autoMessage[type]?.(),
+          m => m && messages.push(m)
+        );
+
+      if (!lastMessage || isBy.user(lastMessage)) {
+        handleResponseGeneration(this);
+      }
+
+    }, { immediate: true });
+
+  };
 
 };
 
