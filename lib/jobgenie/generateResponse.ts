@@ -12,14 +12,14 @@ export type GenerateResponseParams<T extends ChatType> = {
   state: {
     msExpected: number | undefined
   },
+  globalState: GlobalState,
   data: AppData
 };
 
 export async function generateResponse<T extends ChatType>(
-  params: GenerateResponseParams<T>,
-  globalState: GlobalState
+  params: GenerateResponseParams<T>
 ): Promise<AppChatMessage<T, 'assistant'>> {
-  const { type, messages, data, state } = params;
+  const { type, messages, data, state, globalState } = params;
   const { useGpt4, savedMsPerPromptJsonChar } = globalState;
   const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';

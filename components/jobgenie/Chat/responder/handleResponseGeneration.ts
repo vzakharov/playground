@@ -25,7 +25,7 @@ export async function handleResponseGeneration<T extends ChatType>(this: ChatCon
     const responseMessage = await (
       state.generating =
       new Resolvable(
-        generateResponse({ type, messages, state, data }, globalState)
+        generateResponse({ type, messages, state, data, globalState })
       )
     ).promise;
 
