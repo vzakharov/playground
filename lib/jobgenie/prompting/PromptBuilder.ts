@@ -14,7 +14,7 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
   buildSystemMessages: (params: PromptBuilderInput<T, RequiredAssets> & { 
-    isFirstResponse: boolean; 
+    numResponses: number;
     requestFunctionCall: boolean;
     assets: PickAssets<RequiredAssets>;
   }) => Record<'pre' | 'post', StackUpable>;
@@ -51,7 +51,6 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
     const fn = chatFunction(...fnArgs);
 
     const numResponses = messagesBy.assistant(messages).length;
-    const isFirstResponse = numResponses === 0;
     const requestFunctionCall = numResponses >= requestFunctionCallAfter;
 
     const assets = getActiveAssets(data);
@@ -66,7 +65,7 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
     const { 
       pre: preMessage, 
       post: postMessage 
-    } = buildSystemMessages({ isFirstResponse, requestFunctionCall, assets, ...input });
+    } = buildSystemMessages({ numResponses, requestFunctionCall, assets, ...input });
 
 
     return {

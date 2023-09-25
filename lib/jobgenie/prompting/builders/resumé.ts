@@ -8,13 +8,13 @@ export const resuméPromptBuilder = new PromptBuilder('resumé', {
   requestFunctionCallAfter: 0,
   requiredAssets: ['dna'],
 
-  buildSystemMessages({ isFirstResponse }) { return {
+  buildSystemMessages({ numResponses }) { return {
 
     pre: 'In this specific flow, you help the user build or improve their resumé based on their DNA (a summary description that you prepared during initial interview, see below)',
 
     post: [
       
-      isFirstResponse
+      !numResponses
 
         ? 'In the first question, you briefly explain the user what the goal is, i.e. to either improve or build their resumé based on their “DNA” and existing resumé/CV, if any. Tell them that they can either copy and paste it from somewhere right into the input field, or you can go through the questions together. Don’t greet them again, make it sound as if you’re continuing the conversation.'
 

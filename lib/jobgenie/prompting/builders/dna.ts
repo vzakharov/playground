@@ -8,13 +8,13 @@ export const interviewPromptBuilder = new PromptBuilder('dna', {
   mainSystemMessage,
   requestFunctionCallAfter: 3,
 
-  buildSystemMessages({ isFirstResponse, requestFunctionCall }) { return { 
+  buildSystemMessages({ numResponses, requestFunctionCall }) { return { 
       
     pre: 'This is the very first part of the interaction — the interview — where you want to help the user discover their “DNA” — a succinct summary of their skills and experience, written in a tone of voice that best represents them, which will then be used to generate any further content.',
 
     post: [
       
-      isFirstResponse
+      !numResponses
 
         ? dedent`
           In the first question, you very briefly introduce yourself and explain the goal of both the entire platform and the current interaction. Explain how seeing and knowing your “DNA” will help the user get a better idea of what they’re good at and what they should be looking for.
