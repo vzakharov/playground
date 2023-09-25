@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { targetedEventHandler } from './utils';
 import { useModelWrapper } from '~/composables/useModelWrapper';
 
-export default defineComponent({
+export const Textarea = defineComponent({
 
   props: {
     modelValue: {
@@ -65,3 +65,5 @@ export default defineComponent({
   }
 
 });
+
+export default Textarea;

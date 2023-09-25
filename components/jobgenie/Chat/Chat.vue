@@ -12,6 +12,7 @@ import { data } from '../data';
 import { isActiveAssetFor } from '../refs';
 import { leftovers, globalState } from '../state';
 import { renewChatController } from './controller';
+import { refForInstance } from '~/components/shared/utils';
 
   const { type } = defineProps<{
     type: T;
@@ -23,23 +24,21 @@ import { renewChatController } from './controller';
 
 
   const { userMessage } = toRefs(globalState);
+  const userMessageComponent = refForInstance(Textarea);
 
   const c = renewChatController(type, {
     generating,
     userMessage,
+    userMessageComponent,
     msExpected
   });
 
-  addProperties(window, { _, c, data});
+  addProperties(window, { _, c, data, userMessageComponent });
 
-  // const userMessageComponent = _userMessageComponent;
-  // // This is a hacky workaround because Vue otherwise doesn’t include an imported ref in setup’s __returned__.
-
-  watchEffect(() => {
-    // const { textarea } = userMessageComponent.value ?? {};
+  watch(userMessageComponent, component => {
+    if ( !component ) return;
+    const { textarea } = component;
     nextTick(() => {
-      const textarea = window.document.getElementById('userMessage');
-      // Using document ids instead of refs is hacky, but making it work with imported refs is even hackier.
       if ( !textarea ) return;
       textarea.scrollIntoView();
       textarea.focus();

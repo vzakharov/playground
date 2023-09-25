@@ -8,10 +8,12 @@ import { cycleLeftovers } from './cycleLeftovers';
 import { editMessage } from './editMessage';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
+import Textarea from '~/components/shared/TextareaScript';
 
 export type ChatControllerState<T extends ChatType> = {
   generating: Resolvable<AppChatMessage<T, 'assistant'>> | undefined;
   userMessage: string;
+  userMessageComponent: InstanceType<typeof Textarea> | undefined;
   msExpected: number | undefined;
 };
 

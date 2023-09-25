@@ -3,15 +3,14 @@ import { ChatController } from "./controller";
 
 export function editMessage<T extends ChatType>(this: ChatController<T>, message: AppChatMessage<T, 'user'>) {
 
-  const { state, state: { generating } } = this;
+  const { state, state: { generating, userMessageComponent } } = this;
   state.userMessage = message.content;
   this.removeMessagesFrom(message);
   if (generating?.inProgress) {
     generating.cancel();
   }
   nextTick(() => {
-    // userMessageComponent.value?.textarea?.select();
-    const textarea = window.document.getElementById('userMessage');
+    const { textarea } = userMessageComponent ?? {};
     if (!(textarea instanceof HTMLTextAreaElement)) return;
     textarea.select();
   });
