@@ -21,7 +21,7 @@ export function useModelWrapper(
 ) {
   return computed({
     get: () => {
-      return  props[name]
+      return props[name]
     },
     set: (value) => {
       emit(`update:${name}`, value)

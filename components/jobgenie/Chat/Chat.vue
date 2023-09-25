@@ -10,7 +10,7 @@ import { AppChatMessage, ChatType, Resolvable, areLeftoversForMessage, getAssetC
 import { isBy } from '~/lib/vovas-openai';
 import { data } from '../data';
 import { isActiveAssetFor } from '../refs';
-import { leftovers } from '../state';
+import { leftovers, globalState } from '../state';
 import { renewChatController } from './controller';
 
   const { type } = defineProps<{
@@ -19,8 +19,10 @@ import { renewChatController } from './controller';
 
   const generating = ref<Resolvable<AppChatMessage<T, 'assistant'>>>();
   const dataLastLoaded = ref(Date.now());
-  const userMessage = ref('');
   const msExpected = ref<number>();
+
+
+  const { userMessage } = toRefs(globalState);
 
   const c = renewChatController(type, {
     generating,

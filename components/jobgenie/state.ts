@@ -5,7 +5,8 @@ import { SectionConfig, sectionConfigs } from "./sections";
 
 export const globalState = useLocalReactive('jobgenie-state', {
   ...defaultGlobalState,
-  selectedSectionId: sectionConfigs[0].id as SectionConfig['id']
+  selectedSectionId: sectionConfigs[0].id as SectionConfig['id'],
+  userMessage: '',
 });
 
 export const { leftovers } = toRefs(globalState);
