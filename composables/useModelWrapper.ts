@@ -1,16 +1,16 @@
 import { StringKey } from "vovas-utils";
 import { WritableComputedRef } from 'vue';
 
-export function useModelWrapper<T, K extends StringKey<T>>(
+export function useModelWrapper<U, K extends string>(
   props: {
-    [K in keyof T]: T[K];
+    [Key in K]: U
   }, 
-  emit: (event: `update:${K}`, value: T[K]) => void, 
+  emit: (event: `update:${K}`, value: U) => void, 
   name: K
-): WritableComputedRef<{ [K in keyof T]: T[K]; }[K]>;
+): WritableComputedRef<U>
 
-export function useModelWrapper<T extends { modelValue: U }, U>(
-  props: T, 
+export function useModelWrapper<U>(
+  props: { modelValue: U }, 
   emit: (event: 'update:modelValue', value: U) => void
 ): WritableComputedRef<U>;
 
