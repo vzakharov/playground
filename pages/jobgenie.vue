@@ -83,8 +83,8 @@ export default {
       description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
       confirmButtonText="Update"
       :extraButtons="[
-        { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData },
-        { caption: 'Reset', rounded: true, outline: true, danger: true,
+        { caption: '⤓ Download', outline: true, onClick: exportData },
+        { caption: 'Reset', outline: true, danger: true,
           onClick: () => importModal!.text = stringifyData(defaultData)
         }
       ]"

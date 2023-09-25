@@ -63,16 +63,20 @@ defineExpose({ text, ...visibility });
       <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ monospace }"></textarea>
       <div class="modal-footer">
         <div>
-          <ButtonGroup v-if="extraButtons" :buttons="extraButtons" />
+          <ButtonGroup 
+            v-if="extraButtons" 
+            :default-props="{ rounded: true}"
+            :buttons="extraButtons" 
+          />
         </div>
         <ButtonGroup
+          :default-props="{ rounded: true }"
           :buttons="[
-            { caption: 'Cancel', onClick: cancel, outline: true, rounded: true },
+            { caption: 'Cancel', onClick: cancel },
             { 
               caption: confirmButtonText, 
               disabled: !text || text === modelValue, 
               onClick: submit, 
-              rounded: true,
               primary: true, 
               tooltip: !text ? 'Please enter some text.' : text === modelValue ? 'Please edit the text first.' : ''
             }
