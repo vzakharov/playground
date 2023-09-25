@@ -14,6 +14,9 @@ export const assetCaptions = {
     description: 'Job description',
     whyMe: 'Why me?',
     whyJob: 'Why this job?'
+  },
+  pitch: {
+    pitch: 'Pitch'
   }
 };
 

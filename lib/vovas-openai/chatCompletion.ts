@@ -71,18 +71,19 @@ export async function chatCompletion<Fn extends AnyChatFunction>(
 
   };
 
-  const results = choices.map(
+  const results = _.compact(choices.map(
     ({ message }) => {
-      // return (message ?? $throw(`No message in response: ${JSON.stringify(choices)}`))
-      //   .content ??
-      //   $throw(`No content in response message: ${JSON.stringify(message)}`);
       if ( !message ) throw new Error(`No message in response: ${JSON.stringify(choices)}`);
       const { content, function_call: functionCall } = message;
       if ( content ) return content;
       if ( !functionCall ) throw new Error(`No content or function_call in response message: ${JSON.stringify(message)}`);
-      return JSON.parse(functionCall.arguments) as ChatFunctionReturns<Fn>;
+      try {
+        return JSON.parse(functionCall.arguments) as ChatFunctionReturns<Fn>;
+      } catch (e) {
+        return null
+      }
     },
-  ) as ChatCompletionResultItem<Fn>[];
+  )) as ChatCompletionResultItem<Fn>[];
 
   return results;
     

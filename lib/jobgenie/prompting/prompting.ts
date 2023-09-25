@@ -8,6 +8,7 @@ import { StringKey, findBy } from "..";
 import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
+import { pitchPromptBuilder } from "./builders/pitch";
 
 export type FnPropsFor<T extends ChatType> =
   StringKey<Assets<T>> | 'content';
@@ -17,7 +18,8 @@ export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, StringKey<As
 export const promptBuilders = [
   interviewPromptBuilder,
   resuméPromptBuilder,
-  jobPromptBuilder
+  jobPromptBuilder,
+  pitchPromptBuilder
 ] as const;
 
 export function getPromptBuilder<U extends ChatType>(type: U){

@@ -16,6 +16,7 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
   buildSystemMessages: (params: PromptBuilderInput<T, RequiredAssets> & { 
     numResponses: number;
     requestFunctionCall: boolean;
+    functionCalled: boolean;
     assets: PickAssets<RequiredAssets>;
   }) => Record<'pre' | 'post', StackUpable>;
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
@@ -25,11 +26,6 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
 export type PromptBuilderInput<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
   type: T;
   messages: AppChatMessage<T>[];
-  // data: A extends ChatType[] ? AppData & { 
-  //   assets: {
-  //     [K in A[number]]: Assets<K>
-  //   }
-  // } : AppData;
   data: AppData;
 
 };
@@ -52,6 +48,10 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
 
     const numResponses = messagesBy.assistant(messages).length;
     const requestFunctionCall = numResponses >= requestFunctionCallAfter;
+    const rawMessages = messages.map(toRawMessage(fn));
+
+    // Check if there are already function calls in the messages
+    const functionCalled = rawMessages.some(message => message.function_call);
 
     const assets = getActiveAssets(data);
 
@@ -61,12 +61,10 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
           ?? $throw('requiredAssets is undefined (this should not happen)')
       ).join(', ')}`);
 
-    
     const { 
       pre: preMessage, 
       post: postMessage 
-    } = buildSystemMessages({ numResponses, requestFunctionCall, assets, ...input });
-
+    } = buildSystemMessages({ functionCalled, numResponses, requestFunctionCall, assets, ...input });
 
     return {
       promptMessages: [
@@ -80,7 +78,7 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
             ]
           ])
         ),
-        ...messages.map(toRawMessage(fn)),
+        ...rawMessages,
         says.system(stackUp(postMessage))
       ],
       fn: requestFunctionCall ? fn : undefined

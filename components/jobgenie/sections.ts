@@ -19,6 +19,11 @@ export const sectionConfigs = [
     caption: 'Craft-a-job',
     emoji: '🧪',
   },
+  {
+    id: 'pitch',
+    caption: 'Pitch-a-company',
+    emoji: '📈',
+  }
 ] as const;
 
 export type SectionConfig = typeof sectionConfigs[number];

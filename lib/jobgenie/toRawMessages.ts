@@ -25,7 +25,8 @@ export function toRawMessage<T extends ChatType>(fn?: ChatFunctionFor<T>) {
           },
         },
       role
-    } 
+    } as ChatMessage
+
   };
 
 }
