@@ -51,22 +51,6 @@ export default {
 
 <template>
   <div class="container">
-    <!-- <Sidebar ref="sidebar">
-      <template #upper>
-        <ul>
-          <li v-for="section in sections" :key="section.id" 
-            :class="{
-              'menu-item': true,
-              selected: section.id === selectedSectionId,
-              disabled: section.disabled
-            }"
-            @click="!section.disabled && ( selectedSectionId = section.id ) && sidebar?.hide() "
-            :title="section.disabled ? 'Please complete the previous sections first.' : ''"
-          >
-            <span v-text="`${section.emoji} ${section.caption}`" />
-          </li>
-        </ul>
-      </template> -->
     <Sidebar ref="sidebar"
       :menu="{
         items: sections,
