@@ -29,9 +29,10 @@ export type InstanceOrFactoryCreation = (abstract new (...args: any) => any) | (
 
 export type RefForInstance<T extends 
   InstanceOrFactoryCreation
-> = 
+> = (
   T extends abstract new (...args: any) => any
     ? InstanceType<T>
   : T extends (...args: any) => any
     ? ReturnType<T>
   : never
+) | undefined;

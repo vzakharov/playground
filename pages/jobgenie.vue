@@ -5,7 +5,7 @@ import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
-import { exportData, importData, stringifyData } from '~/components/jobgenie/exportImport';
+import { exportData, importData, stringifyData, stringifiedData } from '~/components/jobgenie/exportImport';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
 import { sections } from '~/components/jobgenie/sections';
 import { globalState } from '~/components/jobgenie/state';
@@ -30,20 +30,13 @@ export default {
       process.env.OPENAI_API_KEY = c.apiKey;
     }
 
-    const importModal = ref({ isVisible: false, text: '', updateData: false });
-    const importModalRef = refForInstance(TextModal);
-
-    watch(importModal, ({ text, updateData }) => {
-      if (updateData) {
-        importData(text);
-      }
-    });
+    const importModal = refForInstance(TextModal);
 
     const sidebar = refForInstance(Sidebar<ChatType>);
 
     return {
-      chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importModalRef, importData, isAmong, login, process, 
-      sections, stringifyData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState
+      chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importData, isAmong, login, process, 
+      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState
     }
   }
 }
@@ -62,7 +55,7 @@ export default {
       <template #lower>
         <Button rounded small outline
           caption="Edit as YAML"
-          @click="importModal = { isVisible: true, text: stringifyData(), updateData: false }"
+          @click="importModal!.show()"
         />
         <Toggle 
           v-model="useGpt4" 
@@ -84,15 +77,15 @@ export default {
       </template>
     </div>
     <TextModal monospace
-      ref="importModalRef"
-      v-model="importModal"
+      ref="importModal"
+      v-model="stringifiedData"
       title="Import data"
       description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
       confirmButtonText="Update"
       :extraButtons="[
         { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData },
         { caption: 'Reset', rounded: true, outline: true, danger: true,
-          onClick: () => importModalRef.text = stringifyData(defaultData)
+          onClick: () => importModal!.text = stringifyData(defaultData)
         }
       ]"
     />

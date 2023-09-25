@@ -1,13 +1,17 @@
 import yaml from 'js-yaml';
 import { forEach, is } from 'vovas-utils';
-import { data } from './data';
 import { AppData, assertAppData, defaultData, setValue } from '~/lib/jobgenie';
+import { data } from './data';
 import { dataLastLoaded } from './refs';
-import { globalState } from "./state";
 
 export function stringifyData(d: AppData = data) {
   return yaml.dump(d);
 };
+
+export const stringifiedData = computed({
+  get: () => stringifyData(),
+  set: (jsonStr: string) => importData(jsonStr)
+});
 
 export function exportData() {
   // const dataStr = JSON.stringify(data, null, 2);

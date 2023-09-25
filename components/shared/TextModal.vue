@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { useVisibility } from '~/composables/useVisibility';
 import ButtonGroup from './ButtonGroup.vue';
 import { ButtonPropsForGroup } from './buttonStuff';
 
@@ -8,15 +9,16 @@ const props = defineProps<{
   description: string,
   confirmButtonText: string,
   monospace?: boolean,
-  modelValue: { isVisible: boolean, text: string, updateData: boolean },
+  modelValue: string,
   extraButtons?: ButtonPropsForGroup[]
 }>();
 
 const text = ref<string>();
 const textareaRef = ref<HTMLTextAreaElement>();
+const visibility = useVisibility();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: { isVisible: boolean, text: string, updateData: boolean }],
+  'update:modelValue': [value: string],
   submit: [text: string],
   cancel: []
 }>();
@@ -24,12 +26,13 @@ const emit = defineEmits<{
 function submit() {
   const enteredText = text.value;
   if (enteredText) {
-    emit('update:modelValue', { isVisible: false, text: enteredText, updateData: true });
+    emit('update:modelValue', enteredText);
+    visibility.hide();
   };
 };
 
 function cancel() {
-  emit('update:modelValue', { ...props.modelValue, isVisible: false, updateData: false });
+  visibility.hide();
 };
 
 function clickOutside(event: Event) {
@@ -39,8 +42,8 @@ function clickOutside(event: Event) {
 }
 
 watchEffect(() => {
-  if (props.modelValue.isVisible) {
-    text.value = props.modelValue.text;
+  if (visibility.on) {
+    text.value = props.modelValue;
     nextTick(() => {
       textareaRef.value?.focus();
       textareaRef.value?.select();
@@ -48,12 +51,12 @@ watchEffect(() => {
   }
 });
 
-defineExpose({ text });
+defineExpose({ text, ...visibility });
 
 </script>
 
 <template>
-  <div v-if="modelValue.isVisible" class="modal-overlay" @click="clickOutside">
+  <div v-if="visibility.on" class="modal-overlay" @click="clickOutside">
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
       <p class="modal-description">{{ description }}</p>
@@ -67,11 +70,11 @@ defineExpose({ text });
             { caption: 'Cancel', onClick: cancel, outline: true, rounded: true },
             { 
               caption: confirmButtonText, 
-              disabled: !text || text === modelValue.text, 
+              disabled: !text || text === modelValue, 
               onClick: submit, 
               rounded: true,
               primary: true, 
-              tooltip: !text ? 'Please enter some text.' : text === modelValue.text ? 'Please edit the text first.' : ''
+              tooltip: !text ? 'Please enter some text.' : text === modelValue ? 'Please edit the text first.' : ''
             }
           ]"
         />
