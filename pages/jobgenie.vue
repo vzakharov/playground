@@ -1,6 +1,6 @@
 <script lang="ts">
 
-import { refForInstance } from 'components/shared/utils';
+import { refForInstance } from '~/components/shared/utils';
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
