@@ -21,7 +21,7 @@ export const pitchPromptBuilder = new PromptBuilder('pitch', {
       : !functionCalled
       
         ? dedent`
-          After the first exchange, call the attached function to generate the pitch. Structure it as follows:
+          After the first exchange, call the attached function to generate the pitch. Unless the user’s request requires otherwise, use the following structure:
 
           1. Greet the recipient by name. If you don’t know their name, use a <placeholder>.
           2. Acknowledge the company and its successes.

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { targetedEventHandler } from './utils';
+import { useModelWrapper } from '~/composables/useModelWrapper';
 
 export default defineComponent({
 
@@ -30,23 +31,16 @@ export default defineComponent({
 
   setup(props, { emit }) {
 
-    const input = ref(props.modelValue);
+    const input = useModelWrapper(props, emit);
 
     const textarea = ref<HTMLTextAreaElement>();
     const height = ref(props.minHeight);
 
-    // const handleInput = targetedEventHandler(HTMLTextAreaElement, ({ target }) => {
-    //   height.value = props.minHeight; // reset the height, otherwise it won’t shrink
-    //   nextTick(() => height.value = target.scrollHeight); // recalculate the height
-    //   emit('update:modelValue', target.value);
-    // })
-
-    watch(input, value => {
-      emit('update:modelValue', value)
-      const input = textarea.value;
-      if (input) {
+    watch(input, () => {
+      const inputElement = textarea.value;
+      if (inputElement) {
         height.value = props.minHeight; // reset the height, otherwise it won’t shrink
-        nextTick(() => height.value = input.scrollHeight); // recalculate the height
+        nextTick(() => height.value = inputElement.scrollHeight); // recalculate the height
       }
     });
 
