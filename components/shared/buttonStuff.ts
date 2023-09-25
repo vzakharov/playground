@@ -5,6 +5,7 @@ export const buttonProps = {
   },
   disabled: Boolean,
   primary: Boolean,
+  danger: Boolean,
   type: String as PropType<'button' | 'submit' | 'reset'>,
   rounded: Boolean,
   small: Boolean,

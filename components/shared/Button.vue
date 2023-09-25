@@ -3,11 +3,8 @@
     :disabled="disabled"
     :class="{
       btn: true,
+      [variantClass]: true,
       'btn-disabled': disabled,
-      'btn-primary': !disabled && !outline && primary,
-      'btn-outline-primary': !disabled && outline && primary,
-      'btn-secondary': !disabled && !outline && !primary,
-      'btn-outline-secondary': !disabled && outline && !primary,
       'btn-rounded': rounded,
       'px-2 py-1': small,
       'px-4 py-2': !small
@@ -22,11 +19,18 @@
 
 <script setup lang="ts">
 
+  import _ from 'lodash';
   import { buttonProps } from './buttonStuff';
 
   const props = defineProps(buttonProps);
 
   const emit = defineEmits(['click'])
+
+  const variantClass = computed(() => _.compact([
+    'btn',
+    props.outline && 'outline',
+    props.primary ? 'primary' : props.danger ? 'danger' : 'secondary',
+  ]).join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
 
   const onClick = () => {
     if ( !props.disabled ) {
@@ -49,6 +53,10 @@
   @apply bg-gray-500 hover:bg-gray-700;
 }
 
+.btn-danger {
+  @apply bg-red-500 hover:bg-red-700;
+}
+
 .btn-disabled {
   @apply bg-gray-300 cursor-not-allowed;
 }
@@ -62,6 +70,12 @@
 .btn-outline-primary {
   @apply border border-blue-400 text-blue-400 font-medium;
   @apply hover:bg-blue-500 hover:text-white;
+  @apply focus:outline-none;
+}
+
+.btn-outline-danger {
+  @apply border border-red-400 text-red-400 font-medium;
+  @apply hover:bg-red-500 hover:text-white;
   @apply focus:outline-none;
 }
 
