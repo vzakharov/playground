@@ -41,7 +41,8 @@ export const pitchPromptBuilder = new PromptBuilder('pitch', {
     'Adds the pitch to the user data',
     {
       content: 'Accompanying comment for the user to introduce the pitch and your reasoning behind it',
-      pitch: 'The pitch to add, in Markdown format'
+      headline: 'Headline for the pitch (e.g. subject line of an email)',
+      pitch: 'The body of the pitch, in Markdown format'
     }
   ]
 

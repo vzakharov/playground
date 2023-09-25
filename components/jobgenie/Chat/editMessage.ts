@@ -11,7 +11,7 @@ export function editMessage<T extends ChatType>(this: ChatController<T>, message
   }
   nextTick(() => {
     const { textarea } = userMessageComponent ?? {};
-    if (!(textarea instanceof HTMLTextAreaElement)) return;
+    if ( !textarea ) return;
     textarea.select();
   });
 
