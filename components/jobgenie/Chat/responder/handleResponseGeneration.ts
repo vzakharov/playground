@@ -1,4 +1,4 @@
-import { globalState } from 'components/jobgenie/state';
+import { globalState } from '~/components/jobgenie/state';
 import _ from 'lodash';
 import { ChatType, generateResponse, Resolvable, ResolvablePromiseCanceled } from '~/lib/jobgenie';
 import { GenerateException, isBy } from '~/lib/vovas-openai';

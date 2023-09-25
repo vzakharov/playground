@@ -16,7 +16,15 @@
 
 <script setup lang="ts">
 
-import { isVisible } from './refs';
+const isVisible = ref(false);
+const setVisibility = ( value: boolean ) => () => isVisible.value = value;
+
+defineExpose({
+  setVisibility,
+  hide: setVisibility(false),
+  show: setVisibility(true),
+  toggle: () => isVisible.value = !isVisible.value
+});
 
 </script>
 

@@ -10,7 +10,7 @@ import Textarea from "~/components/shared/TextareaScript";
 // export const generating = ref<Resolvable<AppChatMessage<any, 'assistant'>>>();
 
 // export const msExpected = ref<number | null>(null);
-// export const dataLastLoaded = ref(Date.now());
+export const dataLastLoaded = ref(Date.now());
 
 export const activeAssets = computed(() =>
   getActiveAssets(data)

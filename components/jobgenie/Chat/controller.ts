@@ -1,19 +1,15 @@
 import _ from 'lodash';
-import { forEach } from 'vovas-utils';
 import { ToRefs } from 'vue';
-import { AppChatMessage, ChatType, Resolvable, defaultData, findBy, says, toReactive } from '~/lib/jobgenie';
+import { AppChatMessage, ChatType, Resolvable, findBy, says, toReactive } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
-import { data, findOrCreateChat } from '../data';
+import { findOrCreateChat } from '../data';
 // import { dataLastLoaded, generating, userMessage } from '../refs';
-import { sectionConfigs } from '../sections';
-import { globalState } from '../state';
-import { handleResponseGeneration } from './responder/handleResponseGeneration';
-import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 import { cycleLeftovers } from './cycleLeftovers';
 import { editMessage } from './editMessage';
+import { handleResponseGeneration } from './responder/handleResponseGeneration';
+import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 
 export type ChatControllerState<T extends ChatType> = {
-  dataLastLoaded: number;
   generating: Resolvable<AppChatMessage<T, 'assistant'>> | undefined;
   userMessage: string;
   msExpected: number | undefined;
@@ -61,17 +57,6 @@ export function createChatController<T extends ChatType>(type: T, refs: ToRefs<C
       if (content.trim() !== '') {
         c.messages.push(says.user(content));
         state.userMessage = '';
-      }
-    },
-
-    startOver() {
-      if (window.confirm("Are you sure you want to start over? All current data will be lost.")) {
-        // exportData();
-        forEach(data, (value, key) => {
-          data[key] = defaultData[key];
-        });
-        globalState.selectedSectionId = sectionConfigs[0].id;
-        c.state.dataLastLoaded = Date.now();
       }
     },
 

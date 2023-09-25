@@ -1,5 +1,6 @@
 <script lang="ts">
 
+import { refForInstance } from 'components/shared/utils';
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
@@ -8,12 +9,11 @@ import { data } from '~/components/jobgenie/data';
 import { exportData, importData, stringifyData } from '~/components/jobgenie/exportImport';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
 import { sections } from '~/components/jobgenie/sections';
-import { state } from '~/components/jobgenie/state';
+import { globalState } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { isVisible as sidebarIsVisible } from '~/components/shared/refs';
 import { chatTypes } from '~/lib/jobgenie';
 
 export default {
@@ -23,7 +23,7 @@ export default {
   setup() {
 
     const process = useWindowProcess();
-    const { usdSpent, useGpt4, selectedSectionId } = toRefs(state);
+    const { usdSpent, useGpt4, selectedSectionId } = toRefs(globalState);
 
     function login(c: Credentials) {
       data.username = c.username;
@@ -38,9 +38,11 @@ export default {
       }
     });
 
+    const sidebar = refForInstance(Sidebar);
+
     return {
       chatTypes, data, dataLastLoaded, exportData, importModal, importData, isAmong, login, process, 
-      sections, sidebarIsVisible, stringifyData, usdSpent, useGpt4, selectedSectionId
+      sections, stringifyData, usdSpent, useGpt4, selectedSectionId, sidebar
     }
   }
 }
@@ -49,7 +51,7 @@ export default {
 
 <template>
   <div class="container">
-    <Sidebar>
+    <Sidebar ref="sidebar">
       <template #upper>
         <ul>
           <li v-for="section in sections" :key="section.id" 
@@ -58,7 +60,7 @@ export default {
               ${section.id === selectedSectionId && 'selected'}
               ${section.disabled && 'disabled'}
             `"
-            @click="!section.disabled && ( selectedSectionId = section.id ) && ( sidebarIsVisible = false )"
+            @click="!section.disabled && ( selectedSectionId = section.id ) && sidebar?.hide() "
             :title="section.disabled ? 'Please complete the previous sections first.' : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />

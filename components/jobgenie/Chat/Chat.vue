@@ -23,7 +23,6 @@ import { renewChatController } from './controller';
   const msExpected = ref<number>();
 
   const c = renewChatController(type, {
-    dataLastLoaded,
     generating,
     userMessage,
     msExpected
@@ -109,13 +108,6 @@ import { renewChatController } from './controller';
         caption="↑"
       />
     </form>
-    <div class="p-2 mt-4 fixed bottom-5 right-5 bg-white shadow rounded">
-      <!-- Start over -->
-      <Button rounded small outline class="me-2"
-        caption="↺ Start over"
-        @click="c.startOver" 
-      />
-    </div>
   </div>
 </template>
 
