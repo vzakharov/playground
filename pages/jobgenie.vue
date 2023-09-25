@@ -14,7 +14,7 @@ import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { ChatType, chatTypes } from '~/lib/jobgenie';
+import { ChatType, chatTypes, defaultData } from '~/lib/jobgenie';
 
 export default {
 
@@ -31,6 +31,7 @@ export default {
     }
 
     const importModal = ref({ isVisible: false, text: '', updateData: false });
+    const importModalRef = refForInstance(TextModal);
 
     watch(importModal, ({ text, updateData }) => {
       if (updateData) {
@@ -41,7 +42,7 @@ export default {
     const sidebar = refForInstance(Sidebar<ChatType>);
 
     return {
-      chatTypes, data, dataLastLoaded, exportData, importModal, importData, isAmong, login, process, 
+      chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importModalRef, importData, isAmong, login, process, 
       sections, stringifyData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState
     }
   }
@@ -83,12 +84,16 @@ export default {
       </template>
     </div>
     <TextModal monospace
+      ref="importModalRef"
       v-model="importModal"
       title="Import data"
       description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
       confirmButtonText="Update"
       :extraButtons="[
-        { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData }
+        { caption: '⤓ Download', rounded: true, outline: true, onClick: exportData },
+        { caption: 'Reset', rounded: true, outline: true, danger: true,
+          onClick: () => importModalRef.text = stringifyData(defaultData)
+        }
       ]"
     />
   </div>

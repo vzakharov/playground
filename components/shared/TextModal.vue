@@ -48,6 +48,8 @@ watchEffect(() => {
   }
 });
 
+defineExpose({ text });
+
 </script>
 
 <template>

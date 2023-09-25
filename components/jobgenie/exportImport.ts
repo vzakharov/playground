@@ -5,8 +5,8 @@ import { AppData, assertAppData, defaultData, setValue } from '~/lib/jobgenie';
 import { dataLastLoaded } from './refs';
 import { globalState } from "./state";
 
-export function stringifyData() {
-  return yaml.dump(data);
+export function stringifyData(d: AppData = data) {
+  return yaml.dump(d);
 };
 
 export function exportData() {
