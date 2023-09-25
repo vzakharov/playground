@@ -16,10 +16,22 @@ export function targetedEventHandler<
   };
 };
 
-export function refForInstance<T extends abstract new (...args: any) => any>(
-  component: T
+export function refForInstance<T extends abstract new (...args: any) => any>(component: T): RefForInstance<T>;
+export function refForInstance<T extends (...args: any) => any>(factory: T): RefForInstance<T>;
+
+export function refForInstance<T extends InstanceOrFactoryCreation>(
+  _component: T
 ) {
-  return ref<InstanceType<typeof component>>()
+  return ref() as RefForInstance<T>;
 };
 
-export type RefForInstance<T extends abstract new (...args: any) => any> = ReturnType<typeof refForInstance<T>>;
+export type InstanceOrFactoryCreation = (abstract new (...args: any) => any) | ((...args: any) => any);
+
+export type RefForInstance<T extends 
+  InstanceOrFactoryCreation
+> = 
+  T extends abstract new (...args: any) => any
+    ? InstanceType<T>
+  : T extends (...args: any) => any
+    ? ReturnType<T>
+  : never

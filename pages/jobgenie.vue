@@ -1,6 +1,5 @@
 <script lang="ts">
 
-import { refForInstance } from '~/components/shared/utils';
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
@@ -14,7 +13,8 @@ import Button from '~/components/shared/Button.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { chatTypes } from '~/lib/jobgenie';
+import { refForInstance } from '~/components/shared/utils';
+import { ChatType, chatTypes } from '~/lib/jobgenie';
 
 export default {
 
@@ -38,11 +38,11 @@ export default {
       }
     });
 
-    const sidebar = refForInstance(Sidebar);
+    const sidebar = refForInstance(Sidebar<ChatType>);
 
     return {
       chatTypes, data, dataLastLoaded, exportData, importModal, importData, isAmong, login, process, 
-      sections, stringifyData, usdSpent, useGpt4, selectedSectionId, sidebar
+      sections, stringifyData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState
     }
   }
 }
@@ -51,22 +51,29 @@ export default {
 
 <template>
   <div class="container">
-    <Sidebar ref="sidebar">
+    <!-- <Sidebar ref="sidebar">
       <template #upper>
         <ul>
           <li v-for="section in sections" :key="section.id" 
-            :class="`
-              menu-item
-              ${section.id === selectedSectionId && 'selected'}
-              ${section.disabled && 'disabled'}
-            `"
+            :class="{
+              'menu-item': true,
+              selected: section.id === selectedSectionId,
+              disabled: section.disabled
+            }"
             @click="!section.disabled && ( selectedSectionId = section.id ) && sidebar?.hide() "
             :title="section.disabled ? 'Please complete the previous sections first.' : ''"
           >
             <span v-text="`${section.emoji} ${section.caption}`" />
           </li>
         </ul>
-      </template>
+      </template> -->
+    <Sidebar ref="sidebar"
+      :menu="{
+        items: sections,
+        selectedId: selectedSectionId,
+        onSelect: id => selectedSectionId = id,
+      }"
+    >
       <template #lower>
         <Button rounded small outline
           caption="Edit as YAML"
@@ -115,24 +122,6 @@ export default {
 
 .sidebar {
   @apply md:w-full shadow md:w-1/6 md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto;
-}
-
-.menu-item {
-  @apply cursor-pointer p-2 rounded text-gray-700 hover:text-gray-900;
-  filter: grayscale(100%)
-}
-
-.menu-item.selected {
-  @apply bg-gray-200;
-  filter: grayscale(0%);
-}
-
-.menu-item.disabled {
-  @apply opacity-50 cursor-default;
-}
-
-.menu-item:hover {
-  @apply bg-gray-100;
 }
 
 .content {

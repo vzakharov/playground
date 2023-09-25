@@ -6,6 +6,18 @@
   </button>
   <div class="sidebar" :class="{ 'hidden lg:block': !isVisible, 'block': isVisible }">
     <div class="upper">
+      <ul v-if="menu">
+        <li v-for="item in menu.items" :key="item.id" 
+          :class="{
+            'menu-item': true,
+            selected: item.id === menu.selectedId,
+            disabled: item.disabled
+          }"
+          @click="!item.disabled && ( menu.onSelect(item.id), isVisible = false )"
+        >
+          <span v-text="`${item.emoji} ${item.caption}`" />
+        </li>
+      </ul>
       <slot name="upper"/>
     </div>
     <div class="lower">
@@ -14,17 +26,18 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="Id extends string = string">
+
+defineProps<{
+  menu?: {
+    items: { id: Id, emoji: string, caption: string, disabled?: boolean }[],
+    selectedId: Id,
+    onSelect: (id: Id) => void
+  }
+}>();
+
 
 const isVisible = ref(false);
-const setVisibility = ( value: boolean ) => () => isVisible.value = value;
-
-defineExpose({
-  setVisibility,
-  hide: setVisibility(false),
-  show: setVisibility(true),
-  toggle: () => isVisible.value = !isVisible.value
-});
 
 </script>
 
@@ -45,6 +58,24 @@ defineExpose({
 
 .lower {
   @apply absolute bottom-10 lg:bottom-0 w-full text-sm p-2 text-gray-400;
+}
+
+.menu-item {
+  @apply cursor-pointer p-2 rounded text-gray-700 hover:text-gray-900;
+  filter: grayscale(100%)
+}
+
+.menu-item.selected {
+  @apply bg-gray-200;
+  filter: grayscale(0%);
+}
+
+.menu-item.disabled {
+  @apply opacity-50 cursor-default;
+}
+
+.menu-item:hover {
+  @apply bg-gray-100;
 }
 
 </style>
