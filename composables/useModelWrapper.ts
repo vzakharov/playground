@@ -19,14 +19,11 @@ export function useModelWrapper(
   emit: any,
   name = 'modelValue'
 ) {
-  debugger
   return computed({
     get: () => {
-      debugger
       return  props[name]
     },
     set: (value) => {
-      debugger
       emit(`update:${name}`, value)
     }
   });
