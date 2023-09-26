@@ -3,7 +3,7 @@
 import { Marked } from '@ts-stack/markdown';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Card from '~/components/shared/Card.vue';
-import { AppChatMessage, ChatType, allTrue, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
+import { AppChatMessage, ChatType, allTrue, getAssetCaptions, areLeftoversForMessage, getLeftovers } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { isActiveAssetFor } from '../refs';
 import { globalState as state } from '../state';
@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const buttons = computed(() => {
   
-  const { leftovers } = state;
+  const leftovers = getLeftovers(state, props.c.type)
   const { message, c } = props;
 
   return [

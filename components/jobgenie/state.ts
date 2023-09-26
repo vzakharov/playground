@@ -8,5 +8,3 @@ export const globalState = useLocalReactive('jobgenie-state', {
   selectedSectionId: sectionConfigs[0].id as SectionConfig['id'],
   userMessage: '',
 });
-
-export const { leftovers } = toRefs(globalState);
