@@ -6,6 +6,7 @@ export const temperatureDescriptors = ['boring', 'normal', 'spicy', 'crazy'] as 
 export type TemperatureDescriptor = typeof temperatureDescriptors[number];
 
 export const defaultGlobalState = {
+  openaiKey: '',
   usdSpent: 0,
   useGpt4: true,
   savedMsPerPromptJsonChar: {

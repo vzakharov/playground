@@ -41,7 +41,7 @@ export async function chatCompletion<Fn extends AnyChatFunction>(
 
   const {
     choices, usage,
-  } = await openai().chat.completions.create({
+  } = await openai(apiKey).chat.completions.create({
     model,
     messages,
     functions,

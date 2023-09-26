@@ -24,11 +24,11 @@ export default {
   setup() {
 
     const process = useWindowProcess();
-    const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor } = toRefs(globalState);
+    const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
     function login(c: Credentials) {
       data.username = c.username;
-      process.env.OPENAI_API_KEY = c.apiKey;
+      openaiKey.value = c.apiKey;
     }
 
     const importModal = refForInstance(TextModal);
@@ -37,7 +37,7 @@ export default {
 
     return {
       chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importData, isAmong, login, process, 
-      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState, temperatureDescriptor, temperatureDescriptors
+      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState, openaiKey, temperatureDescriptor, temperatureDescriptors
     }
   }
 }
@@ -68,7 +68,7 @@ export default {
       </template>
     </Sidebar>
     <div class="content">
-      <Login v-if="!data.username || !process.env.OPENAI_API_KEY" @="{ login }" />
+      <Login v-if="!data.username || !openaiKey" @="{ login }" />
       <template v-else>
         <Chat
           v-if="isAmong(chatTypes)(selectedSectionId)"
