@@ -3,10 +3,11 @@
 import _ from 'lodash';
 import { ButtonProps, ButtonPropsForGroup } from './buttonStuff';
 import Button from './Button.vue';
+import { Falsible } from '~/lib/jobgenie';
 
 const props = defineProps<{
   defaultProps?: Partial<ButtonProps>,
-  buttons: ButtonPropsForGroup[]
+  buttons: Falsible<ButtonPropsForGroup>[]
 }>();
 
 </script>
@@ -14,7 +15,7 @@ const props = defineProps<{
 <template>
   <div class="flex space-x-1.5">
     <Button 
-      v-for="button in buttons" 
+      v-for="button in _.compact(buttons)"
       :key="button.caption" 
       :="{
         ...defaultProps,

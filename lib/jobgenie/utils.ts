@@ -101,3 +101,17 @@ export function toReactive<T extends Record<string, Ref<any>>>(refObject: T) {
 // export type UnwrapRefs<T extends Record<string, Ref<any>>> = {
 //   [K in keyof T]: T[K]['value']
 // };
+
+export function setAllTo<T>(value: T) {
+  return <K extends string>(...keys: K[]) => {
+    const result = {};
+    for ( const key of keys ) {
+      Object.assign(result, { [key]: value })
+    }
+    return result as Record<K, T>;
+  }
+};
+
+export const allTrue = setAllTo(true as const);
+
+export type Falsible<T> = T | false | null | undefined | 0 | '';

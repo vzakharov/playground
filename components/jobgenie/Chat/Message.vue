@@ -7,14 +7,44 @@ import Button from '~/components/shared/Button.vue';
 import Card from '~/components/shared/Card.vue';
 import { isActiveAssetFor } from '../refs';
 import { ChatController } from './controller';
-import { leftovers } from '../state';
+import { globalState as state } from '../state';
+import ButtonGroup from '~/components/shared/ButtonGroup.vue';
+import { allTrue } from '~/lib/jobgenie'
 
 const props = defineProps<{
   message: AppChatMessage<T>,
   c: ChatController<T>
 }>();
 
-const { message, c } = toRefs(props);
+const buttons = computed(() => {
+  
+  const { leftovers } = state;
+  const { message, c } = props;
+
+  return [
+    leftovers.results.length && areLeftoversForMessage(leftovers, message) && {
+      caption: `${leftovers.selectedIndex}/${leftovers.results.length + 1}`,
+      tooltip: 'Loop through alternatives',
+      onClick: () => c.cycleLeftovers(message)
+    },
+    isBy.assistant(message) && {
+      caption: '↺',
+      tooltip: 'Regenerate',
+      onClick: () => c.regenerate(message)
+    },
+    isBy.user(message) && {
+      caption: '✎',
+      tooltip: 'Edit',
+      onClick: () => c.editMessage(message)
+    },
+    message.assets && !isActiveAssetFor(c, message) && {
+      caption: 'Use this',
+      tooltip: 'Set this asset globally for any relevant generations',
+      onClick: () => message.assetsPickedAt = Date.now()
+    }
+  ]
+
+});
 
 </script>
 
@@ -35,28 +65,9 @@ const { message, c } = toRefs(props);
         }"/>
       </div>
       <div :class="`flex justify-${isBy.user(message) ? 'end' : 'start'}`">
-        <Button v-if="leftovers.results.length && areLeftoversForMessage(leftovers, message)" small rounded outline class="mx-1"
-          :caption="`${leftovers.selectedIndex}/${leftovers.results.length + 1}`"
-          tooltip="Loop through alternatives"
-          @click="c.cycleLeftovers(message)"
+        <ButtonGroup :default-props="allTrue('rounded', 'small', 'outline')"
+          :="{ buttons }"
         />
-        <Button v-if="isBy.assistant(message)" small rounded outline class="mx-1" 
-          caption="↺"
-          tooltip="Regenerate"
-          @click="c.regenerate(message)"
-        />
-        <Button v-if="isBy.user(message)" small rounded outline class="mx-1" 
-          caption="✎"
-          tooltip="Edit"
-          @click="c.editMessage(message)"
-        />  
-        <template v-if="message.assets">
-          <Button v-if="!isActiveAssetFor(c, message)" rounded small outline class="mx-1"
-            caption="Use this"
-            tooltip="Set this asset globally for any relevant generations"
-            @click="message.assetsPickedAt = Date.now()"
-          />
-        </template>
       </div>
     </div>
   </div>
