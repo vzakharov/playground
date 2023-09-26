@@ -14,16 +14,17 @@ import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { ChatType, chatTypes, defaultData } from '~/lib/jobgenie';
+import { ChatType, chatTypes, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
+import Dropdown from '~/components/shared/Dropdown.vue';
 
 export default {
 
-  components: { Chat, Login, Button, Sidebar, TextModal, Toggle },
+  components: { Chat, Login, Button, Sidebar, TextModal, Toggle, Dropdown },
 
   setup() {
 
     const process = useWindowProcess();
-    const { usdSpent, useGpt4, selectedSectionId } = toRefs(globalState);
+    const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor } = toRefs(globalState);
 
     function login(c: Credentials) {
       data.username = c.username;
@@ -36,7 +37,7 @@ export default {
 
     return {
       chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importData, isAmong, login, process, 
-      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState
+      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState, temperatureDescriptor, temperatureDescriptors
     }
   }
 }
@@ -57,6 +58,7 @@ export default {
           caption="Edit as YAML"
           @click="importModal!.show()"
         />
+        <Dropdown label="Temperature" :options="temperatureDescriptors" v-model="temperatureDescriptor" />
         <Toggle 
           v-model="useGpt4" 
           :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"

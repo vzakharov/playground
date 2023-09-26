@@ -3,7 +3,7 @@ import { is, mutate } from 'vovas-utils';
 import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
-import { GlobalState } from './state';
+import { GlobalState, temperatureForDescriptor } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
 import { AppData, ChatType } from './types';
 import { withUniqueId } from './utils';
@@ -22,7 +22,7 @@ export type GenerateResponseParams<T extends ChatType> = {
 export async function generateResponse<T extends ChatType>(
   { type, messages, data, state, globalState, previousGeneration }: GenerateResponseParams<T>
 ): Promise<AppChatMessage<T, 'assistant'>> {
-  const { useGpt4, savedMsPerPromptJsonChar, leftoversByChatType } = globalState;
+  const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor } = globalState;
   const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
@@ -39,6 +39,7 @@ export async function generateResponse<T extends ChatType>(
     {
       model,
       pickFrom: 3,
+      temperature: temperatureForDescriptor[temperatureDescriptor],
       ...shortestFirst,
       evaluate: result => 
         itselfOrIts('content')(result).length,

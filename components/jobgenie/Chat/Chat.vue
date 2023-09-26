@@ -30,7 +30,7 @@ import { renewChatController } from './controller';
     msExpected
   });
 
-  addProperties(window, { _, c, data, userMessageComponent });
+  addProperties(window, { _, c, data, userMessageComponent, globalState });
 
   watch(userMessageComponent, component => {
     if ( !component ) return;

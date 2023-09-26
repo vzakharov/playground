@@ -57,7 +57,7 @@ const isVisible = ref(false);
 }
 
 .lower {
-  @apply absolute bottom-10 lg:bottom-0 w-full text-sm p-2 text-gray-400;
+  @apply absolute flex flex-col gap-y-2.5 bottom-10 lg:bottom-0 w-11/12 self-center text-sm p-2 text-gray-400;
 }
 
 .menu-item {
