@@ -7,6 +7,6 @@ export default defineNuxtConfig({
   ],
   app: {
     baseURL: '/playground/',
-    // buildAssetsDir: 'assets',
+    buildAssetsDir: 'assets',
   }
 })
