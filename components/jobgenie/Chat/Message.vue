@@ -1,15 +1,13 @@
 <script setup lang="ts" generic="T extends ChatType">
 
 import { Marked } from '@ts-stack/markdown';
-import { isBy } from '~/lib/vovas-openai';
-import { getAssetCaptions, areLeftoversForMessage, ChatType, AppChatMessage } from '~/lib/jobgenie';
-import Button from '~/components/shared/Button.vue';
-import Card from '~/components/shared/Card.vue';
-import { isActiveAssetFor } from '../refs';
-import { ChatController } from './controller';
-import { globalState as state } from '../state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
-import { allTrue } from '~/lib/jobgenie'
+import Card from '~/components/shared/Card.vue';
+import { AppChatMessage, ChatType, allTrue, areLeftoversForMessage, getAssetCaptions } from '~/lib/jobgenie';
+import { isBy } from '~/lib/vovas-openai';
+import { isActiveAssetFor } from '../refs';
+import { globalState as state } from '../state';
+import { ChatController } from './controller';
 
 const props = defineProps<{
   message: AppChatMessage<T>,
@@ -22,7 +20,7 @@ const buttons = computed(() => {
   const { message, c } = props;
 
   return [
-    leftovers.results.length && areLeftoversForMessage(leftovers, message) && {
+    leftovers.results.length && isBy.assistant(message) && areLeftoversForMessage(leftovers, message) && {
       caption: `${leftovers.selectedIndex}/${leftovers.results.length + 1}`,
       tooltip: 'Loop through alternatives',
       onClick: () => c.cycleLeftovers(message)

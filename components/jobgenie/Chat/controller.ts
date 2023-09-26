@@ -4,11 +4,11 @@ import { AppChatMessage, ChatType, Resolvable, findBy, says, toReactive } from '
 import { isBy } from '~/lib/vovas-openai';
 import { findOrCreateChat } from '../data';
 // import { dataLastLoaded, generating, userMessage } from '../refs';
+import Textarea from '~/components/shared/TextareaScript';
 import { cycleLeftovers } from './cycleLeftovers';
 import { editMessage } from './editMessage';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
-import Textarea from '~/components/shared/TextareaScript';
 
 export type ChatControllerState<T extends ChatType> = {
   generating: Resolvable<AppChatMessage<T, 'assistant'>> | undefined;
@@ -29,14 +29,12 @@ export type ChatControllerState<T extends ChatType> = {
 
 export function createChatController<T extends ChatType>(type: T, refs: ToRefs<ChatControllerState<T>>) {
 
-  // state: UnwrapRefs<ToRefs<S>>;
-  // messages: AppChatMessage<T>[];
-
   const c = {
 
     type,
     state: toReactive(refs) as ChatControllerState<T>,
     messages: findOrCreateChat(type).messages,
+    previousGeneration: undefined as AppChatMessage<T, 'assistant'> | undefined,
 
     get lastMessageIsFromUser() {
       const lastMessage = _.last(c.messages);
@@ -50,6 +48,7 @@ export function createChatController<T extends ChatType>(type: T, refs: ToRefs<C
     editMessage,
 
     regenerate(message: AppChatMessage<T, 'assistant'>) {
+      c.previousGeneration = message;
       c.removeMessagesFrom(message);
     },
 

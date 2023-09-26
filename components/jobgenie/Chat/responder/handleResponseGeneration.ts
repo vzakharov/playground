@@ -9,7 +9,7 @@ export class GenerationCanceledException extends Error {}
 
 export async function handleResponseGeneration<T extends ChatType>(this: ChatController<T>) {
 
-  const { type, messages, state } = this;
+  const { type, messages, state, previousGeneration } = this;
 
   if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
@@ -25,7 +25,7 @@ export async function handleResponseGeneration<T extends ChatType>(this: ChatCon
     const responseMessage = await (
       state.generating =
       new Resolvable(
-        generateResponse({ type, messages, state, data, globalState })
+        generateResponse({ type, messages, state, data, globalState, previousGeneration })
       )
     ).promise;
 
