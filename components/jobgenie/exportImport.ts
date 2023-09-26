@@ -20,7 +20,7 @@ export function exportData() {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `jobgenie-${data.username}.json`; // replace with actual username
+  link.download = `jobgenie-${data.username}.yaml`; // replace with actual username
   link.click();
   URL.revokeObjectURL(url);
 };
