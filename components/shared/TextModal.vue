@@ -109,7 +109,7 @@ defineExpose({ text, ...visibility });
 }
 
 .modal-textarea.monospace {
-  @apply font-mono;
+  @apply font-mono bg-gray-800 text-gray-300;
 }
 
 .modal-footer {

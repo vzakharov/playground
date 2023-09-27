@@ -8,6 +8,8 @@ import { isBy } from '~/lib/vovas-openai';
 import { isActiveAssetFor } from '../refs';
 import { globalState as state } from '../state';
 import { ChatController } from './controller';
+import TextModal from '~/components/shared/TextModal.vue';
+import { refForInstance } from '~/components/shared/utils';
 
 const props = defineProps<{
   message: AppChatMessage<T>,
@@ -44,6 +46,8 @@ const buttons = computed(() => {
 
 });
 
+const editMessageModal = refForInstance(TextModal);
+
 </script>
 
 <template>
@@ -55,7 +59,10 @@ const buttons = computed(() => {
       }"
       :title="isActiveAssetFor(c, message) ? 'This asset will be used globally for any relevant generations' : ''"
     >
-      <span v-html="Marked.parse(message.content)" />
+      <span 
+        v-html="Marked.parse(message.content)" 
+        @dblclick="editMessageModal!.show()"
+      />
       <div v-if="message.assets">
         <Card v-for="(content, title) in message.assets" :key="title" :="{ 
           title: getAssetCaptions(c.type)[title],
@@ -69,6 +76,13 @@ const buttons = computed(() => {
       </div>
     </div>
   </div>
+  <TextModal
+    ref="editMessageModal"
+    v-model="message.content"
+    title="Edit message"
+    description="You can edit the message here. You can also use Markdown."
+    confirmButtonText="Update"
+  />
 </template>
 
 <style scoped lang="postcss">

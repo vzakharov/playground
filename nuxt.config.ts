@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   ],
   ...process.env.NODE_ENV === 'production' && {
     app: {
-      baseURL: '/playground',
+      baseURL: '/playground/',
       buildAssetsDir: 'assets',
     },
   }
