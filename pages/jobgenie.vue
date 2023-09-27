@@ -1,13 +1,12 @@
 <script setup lang="ts">
 
-import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { sections, getSection, getChatType } from '~/components/jobgenie/sections';
+import { getChatType, sections } from '~/components/jobgenie/sections';
 import { globalState } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
@@ -16,7 +15,7 @@ import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { ChatType, chatTypes, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
+import { ChatType, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 

@@ -1,9 +1,6 @@
 import { forEach } from "vovas-utils";
 import { AppChatMessage } from "./AppChatMessage";
-
-export const chatTypes = ['dna', 'resumé', 'job', 'pitch'] as const;
-
-export type ChatType = typeof chatTypes[number];
+import { ChatType } from "./ChatType";
 
 export type AppChat<T extends ChatType> = {
   type: T;

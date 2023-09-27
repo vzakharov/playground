@@ -1,7 +1,6 @@
-import { AppChat, AppData, ChatType, defaultData, findBy } from "~/lib/jobgenie";
 import _ from "lodash";
-import { useLocalReactive, useLocalRef } from "use-vova";
-import { also } from "vovas-utils";
+import { useLocalReactive } from "use-vova";
+import { AppChat, ChatType, defaultData, findBy } from "~/lib/jobgenie";
 
 export const data = useLocalReactive('jobgenie-data', defaultData);
 

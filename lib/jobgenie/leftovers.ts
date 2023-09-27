@@ -1,5 +1,5 @@
 import { AppChatMessage } from "./AppChatMessage";
-import { ChatType } from "./types";
+import { ChatType } from "./ChatType";
 import { GlobalState } from "./state";
 
 

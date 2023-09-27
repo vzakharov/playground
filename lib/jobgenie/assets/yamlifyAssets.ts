@@ -1,5 +1,5 @@
 import yaml from "js-yaml";
-import { chatTypes } from "../types";
+import { chatTypes } from "../ChatType";
 import { isAmong } from "vovas-utils";
 import { AssetsMap, getAssetCaptions } from "./assets";
 

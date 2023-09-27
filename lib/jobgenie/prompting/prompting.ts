@@ -1,10 +1,11 @@
 import { ChatFunction, ChatFunctionReturns, ChatMessage } from "~/lib/vovas-openai";
 import { interviewPromptBuilder } from "./builders/dna";
-import { AppData, ChatType } from "../types";
+import { AppData } from "../types";
+import { ChatType } from "../ChatType";
 import { AppChatMessage } from "../AppChatMessage";
 import { resuméPromptBuilder } from "./builders/resumé";
 import { Assets, AssetsMap } from "../assets/assets";
-import { StringKey, findBy } from "..";
+import { StringKey, challengePromptBuilder, findBy } from "..";
 import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
@@ -19,7 +20,8 @@ export const promptBuilders = [
   interviewPromptBuilder,
   resuméPromptBuilder,
   jobPromptBuilder,
-  pitchPromptBuilder
+  pitchPromptBuilder,
+  challengePromptBuilder
 ] as const;
 
 export function getPromptBuilder<U extends ChatType>(type: U){

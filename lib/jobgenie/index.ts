@@ -1,4 +1,5 @@
 export * from './AppChatMessage';
+export * from './ChatType';
 export * from './assets';
 export * from './generateResponse';
 export * from './leftovers';

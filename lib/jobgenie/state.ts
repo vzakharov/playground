@@ -1,5 +1,5 @@
 import { Leftovers } from "./leftovers";
-import { ChatType } from "./types";
+import { ChatType } from "./ChatType";
 
 export const temperatureDescriptors = ['boring', 'normal', 'spicy', 'crazy'] as const;
 

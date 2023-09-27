@@ -28,6 +28,11 @@ export const sectionConfigs = [
     id: 'pitch',
     caption: 'Pitch-a-company',
     emoji: '📈',
+  },
+  {
+    id: 'challenge',
+    caption: 'Challenge me!',
+    emoji: '🤨'
   }
 ] as SectionConfig[];
 

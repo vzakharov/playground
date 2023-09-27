@@ -4,10 +4,11 @@ import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
 import {
-  AppChatMessage, AppData, AssetsMap, ChatType, FnPropsFor, PickAssets,
+  AppChatMessage, AppData, AssetsMap, Falsible, FnPropsFor, PickAssets,
   assetsDefinedForChatTypes,
   getActiveAssets, toRawMessage, yamlifyAssets
 } from "..";
+import { ChatType } from "../ChatType";
 
 
 export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
@@ -18,6 +19,7 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
     requestFunctionCall: boolean;
     functionCalled: boolean;
     assets: PickAssets<RequiredAssets>;
+    username: Falsible<string>;
   }) => Record<'pre' | 'post', StackUpable>;
   fnArgs: SimplifiedChatFunction<string, FnPropsFor<T>, never>
   requiredAssets?: RequiredAssets;
@@ -61,10 +63,16 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
           ?? $throw('requiredAssets is undefined (this should not happen)')
       ).join(', ')}`);
 
+    const { username } = data;
+
     const { 
       pre: preMessage, 
       post: postMessage 
-    } = buildSystemMessages({ functionCalled, numResponses, requestFunctionCall, assets, ...input });
+    } = buildSystemMessages({ 
+      functionCalled, numResponses, requestFunctionCall, assets, 
+      username,
+      ...input
+    });
 
     return {
       promptMessages: [

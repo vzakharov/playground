@@ -1,4 +1,4 @@
-import { ChatType } from "../types";
+import { ChatType } from "../ChatType";
 
 export const assetCaptions = {
   dna: {
@@ -18,6 +18,10 @@ export const assetCaptions = {
   pitch: {
     headline: 'Headline',
     pitch: 'Pitch'
+  },
+  challenge: {
+    question: 'Question',
+    answer: 'Answer'
   }
 };
 

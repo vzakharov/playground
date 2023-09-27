@@ -1,7 +1,7 @@
 import { ChatRole, ChatMessage as RawChatMessage, chatRoles, says as rawSays } from "~/lib/vovas-openai";
 import { Assets, WithId, withUniqueId } from ".";
 import { objectWithKeys } from "vovas-utils";
-import { ChatType } from "./types";
+import { ChatType } from "./ChatType";
 
 
 export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
