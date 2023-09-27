@@ -4,8 +4,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev --port 30910",
-    "generate": "nuxt generate",
-    "generate:pages": "BASE_URL='/playground/' nuxt generate && rm -rf docs/* && cp -r .output/public/* docs/",
+    "generate": "BASE_URL='/playground/' nuxt generate && rm -rf docs/* && cp -r .output/public/* docs/ && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
