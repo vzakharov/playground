@@ -4,7 +4,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev --port 30910",
-    "generate": "BASE_URL='/playground/' nuxt generate && rm -rf docs/* && cp -r .output/public/* docs/",
+    "generate": "NODE_ENV='production' nuxt generate && rm -rf docs/* && cp -r .output/public/* docs/",
     "test": "nuxt generate && npx serve -l 30910 .output/public",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
