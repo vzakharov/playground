@@ -70,7 +70,7 @@ const sidebar = refForInstance(Sidebar<ChatType>);
       v-model="stringifiedData"
       title="Import data"
       description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
-      confirmButtonText="Update"
+      updateButtonText="Update"
       :extraButtons="[
         { caption: '⤓ Download', outline: true, onClick: exportData },
         { caption: 'Reset', outline: true, danger: true,

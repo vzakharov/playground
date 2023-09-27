@@ -7,7 +7,7 @@ import { ButtonPropsForGroup } from './buttonStuff';
 const props = defineProps<{
   title: string,
   description: string,
-  confirmButtonText: string,
+  updateButtonText?: string,
   monospace?: boolean,
   modelValue: string,
   extraButtons?: ButtonPropsForGroup[]
@@ -60,7 +60,7 @@ defineExpose({ text, ...visibility });
     <div class="modal-content">
       <h2 class="modal-title">{{ title }}</h2>
       <p class="modal-description">{{ description }}</p>
-      <textarea ref="textareaRef" v-model="text" class="modal-textarea" :class="{ monospace }"></textarea>
+      <textarea ref="textareaRef" v-model="text" :class="{ monospace }"></textarea>
       <div class="modal-footer">
         <div>
           <ButtonGroup 
@@ -74,7 +74,7 @@ defineExpose({ text, ...visibility });
           :buttons="[
             { caption: 'Cancel', onClick: cancel },
             { 
-              caption: confirmButtonText, 
+              caption: updateButtonText ?? 'Update',
               disabled: !text || text === modelValue, 
               onClick: submit, 
               primary: true, 
@@ -93,7 +93,7 @@ defineExpose({ text, ...visibility });
 }
 
 .modal-content {
-  @apply bg-white rounded-lg p-8 w-5/6 h-5/6 overflow-auto flex flex-col;
+  @apply bg-white rounded-lg p-8 w-5/6 h-5/6 overflow-auto flex flex-col text-gray-800;
 }
 
 .modal-title {
@@ -104,11 +104,11 @@ defineExpose({ text, ...visibility });
   @apply text-sm text-gray-500 mb-4;
 }
 
-.modal-textarea {
+textarea {
   @apply w-full border-gray-300 rounded-lg p-2 mb-4 resize-none flex-grow;
 }
 
-.modal-textarea.monospace {
+textarea.monospace {
   @apply font-mono bg-gray-800 text-gray-300;
 }
 

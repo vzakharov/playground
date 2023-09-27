@@ -2,8 +2,17 @@
   <div class="card-container">
     <div class="card">
       <div class="card-title">{{ title }}</div>
-      <div class="card-content" v-html="Marked.parse(content)" />
-      <!-- If footer template is provided, render it -->
+      <div class="card-content" 
+        v-html="Marked.parse(content)" 
+        @dblclick="editOnDoubleClick && editModal!.show()"
+      />
+      <TextModal
+        v-if="editOnDoubleClick"
+        ref="editModal"
+        v-model="content"
+        title="Edit content"
+        description="You can edit the content here."
+      />
       <div v-if="$slots.footer" class="card-footer">
         <slot name="footer" />
       </div>
@@ -12,14 +21,27 @@
 </template>
 
 <script setup lang="ts">
-  import { Marked } from '@ts-stack/markdown';
 
-  const { title, content } = defineProps<{
+  import { Marked } from '@ts-stack/markdown';
+  import TextModal from './TextModal.vue';
+  import { refForInstance } from './utils';
+
+  const props = defineProps<{
     title: string;
-    content: string;
+    modelValue: string; // content
+    editOnDoubleClick?: boolean;
   }>();
 
-  // Define slots
+  const emit = defineEmits<{
+    'update:modelValue': [value: string];
+  }>();
+
+  const { title } = props;
+
+  const content = useModelWrapper(props, emit);
+
+  const editModal = refForInstance(TextModal);
+
   defineSlots<{
     footer: void;
   }>();

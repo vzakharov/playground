@@ -64,10 +64,16 @@ const editMessageModal = refForInstance(TextModal);
         @dblclick="editMessageModal!.show()"
       />
       <div v-if="message.assets">
-        <Card v-for="(content, title) in message.assets" :key="title" :="{ 
-          title: getAssetCaptions(c.type)[title],
-          content 
-        }"/>
+        <Card 
+          v-for="(content, title) in message.assets" :key="title"
+          :="{ 
+            title: getAssetCaptions(c.type)[title],
+            modelValue: content,
+            editOnDoubleClick: true
+          }"
+          @update:model-value="content => message.assets![title] = content"
+        />
+        <!-- TODO: Make it possible to use v-model -->
       </div>
       <div :class="`flex justify-${isBy.user(message) ? 'end' : 'start'}`">
         <ButtonGroup :default-props="allTrue('rounded', 'small', 'outline')"
@@ -81,7 +87,6 @@ const editMessageModal = refForInstance(TextModal);
     v-model="message.content"
     title="Edit message"
     description="You can edit the message here. You can also use Markdown."
-    confirmButtonText="Update"
   />
 </template>
 
