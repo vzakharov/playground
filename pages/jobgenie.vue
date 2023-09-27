@@ -1,46 +1,34 @@
-<script lang="ts">
+<script setup lang="ts">
 
 import { isAmong } from 'vovas-utils';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
-import { exportData, importData, stringifyData, stringifiedData } from '~/components/jobgenie/exportImport';
+import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { sections } from '~/components/jobgenie/sections';
+import { sections, getSection, getChatType } from '~/components/jobgenie/sections';
 import { globalState } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
+import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
+import { useHashRoute } from '~/composables/useHashRoute';
 import { ChatType, chatTypes, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
-import Dropdown from '~/components/shared/Dropdown.vue';
 
-export default {
+const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
-  components: { Chat, Login, Button, Sidebar, TextModal, Toggle, Dropdown },
+useHashRoute(selectedSectionId);
 
-  setup() {
-
-    const process = useWindowProcess();
-    const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
-
-    function login(c: Credentials) {
-      data.username = c.username;
-      openaiKey.value = c.apiKey;
-    }
-
-    const importModal = refForInstance(TextModal);
-
-    const sidebar = refForInstance(Sidebar<ChatType>);
-
-    return {
-      chatTypes, data, dataLastLoaded, defaultData, exportData, importModal, importData, isAmong, login, process, 
-      sections, stringifyData, stringifiedData, usdSpent, useGpt4, selectedSectionId, sidebar, globalState, openaiKey, temperatureDescriptor, temperatureDescriptors
-    }
-  }
+function login(c: Credentials) {
+  data.username = c.username;
+  openaiKey.value = c.apiKey;
 }
+
+const importModal = refForInstance(TextModal);
+const sidebar = refForInstance(Sidebar<ChatType>);
 
 </script>
 
@@ -71,9 +59,8 @@ export default {
       <Login v-if="!data.username || !openaiKey" @="{ login }" />
       <template v-else>
         <Chat
-          v-if="isAmong(chatTypes)(selectedSectionId)"
           :key="`${selectedSectionId}-${dataLastLoaded}`"
-          :type="selectedSectionId"
+          :type="getChatType(selectedSectionId)"
         />
         <!-- Add more sections here -->
       </template>

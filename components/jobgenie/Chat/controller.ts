@@ -17,16 +17,6 @@ export type ChatControllerState<T extends ChatType> = {
   msExpected: number | undefined;
 };
 
-// export class BaseChatController<T extends ChatType, S extends BaseChatControllerState<T>> {
-
-//   constructor(
-//     public type: T,
-//     refs: ToRefs<S>,
-//   ) { 
-//     this.state = toReactive(refs),
-//     this.messages = findOrCreateChat(type).messages
-//   }
-
 export function createChatController<T extends ChatType>(type: T, refs: ToRefs<ChatControllerState<T>>) {
 
   const c = {

@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
   ],
   app: {
-    baseURL: '/playground/',
+    baseURL: process.env.BASE_URL ?? '/',
     buildAssetsDir: 'assets',
   },
 })
