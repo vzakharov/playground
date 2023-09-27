@@ -9,11 +9,13 @@ import {
   getActiveAssets, toRawMessage, yamlifyAssets
 } from "..";
 import { ChatType } from "../ChatType";
+import dedent from "dedent-js";
 
 
 export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
+  addAssetsAfter?: number;
   buildSystemMessages: (params: PromptBuilderInput<T, RequiredAssets> & { 
     numResponses: number;
     requestFunctionCall: boolean;
@@ -43,7 +45,8 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
 
     const { messages, data } = input;
     const { 
-      mainSystemMessage, requestFunctionCallAfter, buildSystemMessages, fnArgs, requiredAssets
+      mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
+      buildSystemMessages, fnArgs, requiredAssets
     } = this.config;
 
     const fn = chatFunction(...fnArgs);
@@ -80,10 +83,13 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
           stackUp([
             mainSystemMessage,
             preMessage, 
-            requiredAssets && [
-              "For reference:",
-               yamlifyAssets(_.pick(assets, ...requiredAssets))
-            ]
+            requiredAssets && numResponses >= addAssetsAfter && dedent`
+              User data reference:
+
+              ===
+              ${yamlifyAssets(_.pick(assets, ...requiredAssets))}
+              ===
+            `
           ])
         ),
         ...rawMessages,

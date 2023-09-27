@@ -1,11 +1,13 @@
+import dedent from "dedent-js";
 import { PromptBuilder } from "../PromptBuilder"
 import { mainSystemMessage } from "../mainSystemMessage";
 
 export const challengePromptBuilder = new PromptBuilder('challenge', {
 
   mainSystemMessage,
-  requestFunctionCallAfter: 2,
-  requiredAssets: ['resumé'],
+  requestFunctionCallAfter: 1,
+  addAssetsAfter: 1,
+  requiredAssets: ['dna', 'resumé', 'job'],
 
   buildSystemMessages({ numResponses, requestFunctionCall, functionCalled, username }) { return {
 
@@ -15,17 +17,17 @@ export const challengePromptBuilder = new PromptBuilder('challenge', {
 
       !numResponses
 
-        ? 'In the first question, you explain what you’re going to do and suggest the most challenging question you can come up with based on the user’s resumé. Take the weakest point of their professional profile and ask a question that hits that point (highlight the question in *italics*). Make sure you let them know it’s not personal and that you’re just trying to help them prepare for the worst. Don’t greet the user as it’s a continuation of a previous conversation.'
-
-      : !requestFunctionCall
-
-        ? 'After the user answers, analyze their response and give your honest opinion on it. Be concrete yet polite. Then ask them if they want you to come up with a Q&A card for that question.'
+        ? 'First of all, explain what you’re going to do and ask if they already have a challenging question they want to answer, or if they want you to come up with one. Be concise and clear. Don’t greet the user, start writing as if you’re continuing a previous conversation (something like “Okay, now that...”).'
 
       : !functionCalled
 
-        ? 'If the user asks, call the attached function to add a Q&A assets to their data. Don’t just repeat the question and answer, but rephrase them in a way that’s as concise and reusable as possible.'
+        ? dedent`
+          If the user provides a question, think of the best way to answer it and call the attached function.
+          
+          If they don’t, suggest the most challenging question you can come up with based on the user’s data. Take the weakest point of their professional profile and ask a question that hits that point. Then call the attached function with an answer to that question.
+        `
 
-      : 'From here on, you respond to user feedback and adapt the Q&A generation to the user’s needs.'
+      : 'From here on, respond to user’s feedback and adapt the Q&A generation to the user’s needs.'
 
   } },
 
@@ -33,8 +35,8 @@ export const challengePromptBuilder = new PromptBuilder('challenge', {
     'addQA',
     'Adds the Q&A to the user data',
     {
-      content: 'Some short comment introducing the Q&A',
-      question: 'The question to add, rephrased in a way to be as general and reusable as possible',
+      content: 'Some short comment introducing the Q&A, in the same tone as your previous messages.',
+      question: 'The question to add, rephrased in a way to be as concise and reusable as possible',
       answer: 'The answer to add, in first person and future tense, as if the user is answering the question during the interview',
     }
   ]

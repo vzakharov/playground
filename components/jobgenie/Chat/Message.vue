@@ -38,7 +38,7 @@ const buttons = computed(() => {
       ] : [],
       {
         caption: '↺',
-        tooltip: 'Regenerate',
+        tooltip: 'More alternatives',
         onClick: () => c.regenerate(message)
       },
       message.assets && !isActiveAssetFor(c, message) && {
