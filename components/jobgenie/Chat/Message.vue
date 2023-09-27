@@ -114,4 +114,10 @@ const buttons = computed(() => {
   .msg li {
     @apply pb-2;
   }
+
+  code {
+    @apply overflow-auto bg-gray-800 text-gray-300 rounded-lg p-3 block whitespace-pre-wrap m-3 p-5;
+    max-height: 20rem;
+}
+
 </style>
