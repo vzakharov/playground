@@ -22,26 +22,37 @@ const buttons = computed(() => {
   const { message, c } = props;
 
   return [
-    leftovers.results.length && isBy.assistant(message) && areLeftoversForMessage(leftovers, message) && {
-      caption: `${leftovers.selectedIndex}/${leftovers.results.length + 1}`,
-      tooltip: 'Loop through alternatives',
-      onClick: () => c.cycleLeftovers(message)
-    },
-    isBy.assistant(message) && {
-      caption: '↺',
-      tooltip: 'Regenerate',
-      onClick: () => c.regenerate(message)
-    },
-    isBy.user(message) && {
-      caption: '✎',
-      tooltip: 'Edit',
-      onClick: () => c.editMessage(message)
-    },
-    message.assets && !isActiveAssetFor(c, message) && {
-      caption: 'Use this',
-      tooltip: 'Set this asset globally for any relevant generations',
-      onClick: () => message.assetsPickedAt = Date.now()
-    }
+    ...isBy.assistant(message) ? [
+      ...leftovers.results.length && areLeftoversForMessage(leftovers, message) ? [
+        {
+          caption: `${leftovers.selectedIndex}/${leftovers.results.length + 1}`,
+          tooltip: 'Loop through alternatives',
+          onClick: () => c.cycleLeftovers(message)
+        },
+        {
+          caption: '🗑',
+          tooltip: 'Delete this alternative',
+          onClick: () => c.deleteLeftover(message)
+        }
+
+      ] : [],
+      {
+        caption: '↺',
+        tooltip: 'Regenerate',
+        onClick: () => c.regenerate(message)
+      },
+      message.assets && !isActiveAssetFor(c, message) && {
+        caption: 'Use this',
+        tooltip: 'Set this asset globally for any relevant generations',
+        onClick: () => message.assetsPickedAt = Date.now()
+      }
+    ] : isBy.user(message) ? [
+      {
+        caption: '✎',
+        tooltip: 'Edit',
+        onClick: () => c.editMessage(message)
+      },
+    ] : []
   ]
 
 });

@@ -19,11 +19,11 @@ export const challengePromptBuilder = new PromptBuilder('challenge', {
 
       : !requestFunctionCall
 
-        ? 'After the user answers, analyze their response and give your honest opinion on it. Be concrete yet   polite. Then ask them if they want you to come up with a Q&A card for that question.'
+        ? 'After the user answers, analyze their response and give your honest opinion on it. Be concrete yet polite. Then ask them if they want you to come up with a Q&A card for that question.'
 
       : !functionCalled
 
-        ? 'If the user asks, call the attached function to add a Q&A assets to their data. From then on, you respond to user feedback and adapt those to the user’s needs.'
+        ? 'If the user asks, call the attached function to add a Q&A assets to their data. Don’t just repeat the question and answer, but rephrase them in a way that’s as concise and reusable as possible.'
 
       : 'From here on, you respond to user feedback and adapt the Q&A generation to the user’s needs.'
 

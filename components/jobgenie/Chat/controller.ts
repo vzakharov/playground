@@ -5,7 +5,7 @@ import { isBy } from '~/lib/vovas-openai';
 import { findOrCreateChat } from '../data';
 // import { dataLastLoaded, generating, userMessage } from '../refs';
 import Textarea from '~/components/shared/TextareaScript';
-import { cycleLeftovers } from './cycleLeftovers';
+import { cycleLeftovers, deleteLeftover } from './leftovers';
 import { editMessage } from './editMessage';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
@@ -53,7 +53,9 @@ export function createChatController<T extends ChatType>(type: T, refs: ToRefs<C
 
     watchForResponseGeneration,
     handleResponseGeneration,
-    cycleLeftovers
+    
+    cycleLeftovers,
+    deleteLeftover
 
   };
 
