@@ -1,6 +1,14 @@
 import _ from 'lodash';
 import { targetedEventHandler } from './utils';
 import { useModelWrapper } from '~/composables/useModelWrapper';
+import { $throw } from 'vovas-utils';
+
+function addNewline(input: HTMLTextAreaElement) {
+  const { selectionStart, selectionEnd, value } = input;
+  const newValue = `${value.slice(0, selectionStart)}\n${value.slice(selectionEnd)}`;
+  input.value = newValue;
+  input.selectionStart = input.selectionEnd = selectionStart + 1;
+};
 
 export const Textarea = defineComponent({
 
@@ -44,11 +52,11 @@ export const Textarea = defineComponent({
       }
     });
 
-    const handleKeydown = (key: 'enter' | 'shift+enter') => {
+    function handleKeydown(key: 'enter' | 'shift+enter') {
       if (key === 'enter' === props.submitOnEnter) {
         emit('submit', input.value);
       } else {
-        input.value += '\n';
+        addNewline(textarea.value ?? $throw('Textarea element not found'));
       }
     }
 
