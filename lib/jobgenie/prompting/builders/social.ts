@@ -25,7 +25,15 @@ export const socialPromptBuilder = new PromptBuilder('social', {
 
         ? 'If you have enough information, call the attached function with the content of the post. If you don’t, ask more questions to find out more about the user’s stance and tone.'
 
-      : 'From here on, respond to user’s feedback and adapt the post generation to the user’s needs (or write another post on another topic, if they want to, following the same approach).'
+      // : 'From here on, respond to user’s feedback to adapt the post to the user’s needs. If they come up with a new topic or piece of content, start the process again, asking questions to find out their stance and tone. Once you have the answers, call the attached function with the content of the post. To be clear, do NOT call the function until you’ve asked your questions and have the answers.'
+
+      : dedent`
+        From here on, there are two options:
+
+        1. If the user comes up with a new topic or piece of content, start the process again, asking questions to find out their stance and tone. Once you have the answers, call the attached function with the content of the post. To be clear, do NOT call the function until you’ve asked your questions and have the answers.
+
+        2. If the user requests to adapt your generation in some way, call the function again with an updated version of the post.
+      `
 
 
   } },
@@ -33,7 +41,7 @@ export const socialPromptBuilder = new PromptBuilder('social', {
     'addSocial',
     'Adds a social post to the user data',
     {
-      content: 'Some short comment introducing the post, in the same tone as your previous messages.',
+      content: 'Some short comment introducing the post (to the user, not the audience), in the same tone as the previous `content`.',
       post: 'The body of the post, written to reflect both the user’s personality and their tone on social media'
     }
   ]

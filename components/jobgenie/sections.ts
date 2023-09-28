@@ -3,7 +3,7 @@ import { activeAssets } from './refs';
 import _ from 'lodash';
 import { map } from 'vovas-utils';
 
-export const sectionIds = [ 'dna', 'resume', 'job', 'pitch' ] as const;
+export const sectionIds = [ 'dna', 'resume', 'job', 'pitch', 'social' ] as const;
 
 export type SectionId = typeof sectionIds[number];
 
