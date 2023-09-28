@@ -65,4 +65,4 @@ export const temperatureForDescriptor: Record<TemperatureDescriptor, number> = {
   crazy: 1,
 };
 
-export type GlobalState = typeof defaultGlobalState;
+export type GlobalState = InferDefaultTypes<typeof defaultGlobalState>;
