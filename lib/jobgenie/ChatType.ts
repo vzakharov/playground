@@ -4,7 +4,8 @@ export const chatTypes = [
   'resumé', 
   'job', 
   'pitch', 
-  'challenge'
+  'challenge',
+  'social'
 ] as const;
 
 export type ChatType = (typeof chatTypes)[number];

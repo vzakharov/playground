@@ -10,6 +10,7 @@ import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
 import { pitchPromptBuilder } from "./builders/pitch";
+import { socialPromptBuilder } from "./builders/social";
 
 export type FnPropsFor<T extends ChatType> =
   StringKey<Assets<T>> | 'content';
@@ -21,7 +22,8 @@ export const promptBuilders = [
   resuméPromptBuilder,
   jobPromptBuilder,
   pitchPromptBuilder,
-  challengePromptBuilder
+  challengePromptBuilder,
+  socialPromptBuilder
 ] as const;
 
 export function getPromptBuilder<U extends ChatType>(type: U){

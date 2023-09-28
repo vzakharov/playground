@@ -22,6 +22,9 @@ export const assetCaptions = {
   challenge: {
     question: 'Question',
     answer: 'Answer'
+  },
+  social: {
+    post: 'Post body'
   }
 };
 

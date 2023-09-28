@@ -33,6 +33,11 @@ export const sectionConfigs = [
     id: 'challenge',
     caption: 'Challenge me!',
     emoji: '🤨'
+  },
+  {
+    id: 'social',
+    caption: 'Social presence',
+    emoji: '📢'
   }
 ] as SectionConfig[];
 
