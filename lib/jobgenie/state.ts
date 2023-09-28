@@ -19,7 +19,7 @@ export const defaultGlobalState = {
     [T in ChatType]?: Leftovers<T>
   },
   temperatureDescriptor: itselfIf(is.among(temperatureDescriptors)).else('normal'),
-} as const satisfies Defaults;
+} satisfies Defaults;
 
 export function typeOf(value: any) {
   return Array.isArray(value)
@@ -37,6 +37,10 @@ export function isSameTypeAs<S>(sample: S) {
 
 export type Defaults = Record<string, Jsonable | ((value: Jsonable) => any)>;
 
+export type InferDefaultTypes<D extends Defaults> = {
+  [K in keyof D]: D[K] extends (value: any) => infer T ? T : D[K];
+};
+
 export function defaultable<D extends Defaults>(
   object: JsonableObject, 
   defaults: D
@@ -50,8 +54,9 @@ export function defaultable<D extends Defaults>(
         : isSameTypeAs(defaultValueOrInitializer)(value)
           ? value
           : defaultValueOrInitializer;
-  }) as D;
+  }) as InferDefaultTypes<D>;
 };
+
 
 export const temperatureForDescriptor: Record<TemperatureDescriptor, number> = {
   boring: 0,

@@ -6,8 +6,8 @@ import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { getChatType, sections } from '~/components/jobgenie/sections';
-import { globalState } from '~/components/jobgenie/state';
+import { SectionId, getChatType, sections } from '~/components/jobgenie/sections';
+import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
@@ -19,7 +19,7 @@ import { ChatType, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
-useHashRoute(selectedSectionId);
+useHashRoute(selectedSectionId, initSelectedSectionId);
 
 function login(c: Credentials) {
   data.username = c.username;
