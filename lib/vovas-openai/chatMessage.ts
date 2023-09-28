@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { ChatCompletionMessageParam } from "openai/resources/chat";
 import { Inferrable } from "./utils";
-import { objectWithKeys } from "vovas-utils";
+import { ReifyInterface, objectWithKeys } from "vovas-utils";
 
 export const chatRoles = ['user', 'assistant', 'system'] as const;
 
@@ -14,7 +14,7 @@ export type ChatMessage<R extends ChatRole = ChatRole> =
   & {
     content: R extends 'assistant' ? string | null : string;
   }
-  & Omit<ChatCompletionMessageParam, 'role' | 'content'>;
+  & ReifyInterface<Omit<ChatCompletionMessageParam, 'role' | 'content'>>;
 
 export function chatMessage<R extends ChatRole>(role: R, content: string): ChatMessage<R> {
   return {

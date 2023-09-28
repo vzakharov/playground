@@ -6670,10 +6670,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-vova@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/use-vova/-/use-vova-0.1.2.tgz#3b4c10a93f42379e0c2fe4b655a6e6c537c67d5f"
-  integrity sha512-Xg/ilBFUT2Y23Iy1km4SHsUl7/N+K4aM0qKXxUbChOJzaNGhDCJ++gOkzbU5IItck2YAFtRD3FaRDdfgvbWupw==
+use-vova@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/use-vova/-/use-vova-0.2.0.tgz#9554443b3137be82ed87e5355d239c8bc497596c"
+  integrity sha512-mwXU+M0y6KbovIFPoDJMSQEHMftLgU+DvSU1CrFVwvQQwo5JhaUjftu7u5LoEg5glXC8Po1gX8dPgeURkvauVQ==
   dependencies:
     nuxt "^3.2.3"
 
@@ -6798,10 +6798,10 @@ vite@~4.3.9:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vovas-utils@^0.5.31:
-  version "0.5.31"
-  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.5.31.tgz#f2878435a4d7e9ffc01cf531e433aa701202aa61"
-  integrity sha512-xaatib2tjax/P4KUefFuHescuZMCtww6TaL1BKLFqwBqOSjnpcekf6eaTjoSkkgXUdHFIFvCY/BYp5QKqpku2w==
+vovas-utils@^0.5.36:
+  version "0.5.36"
+  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.5.36.tgz#6ad9b9b8d0f01b3b64e8d357bf57b4a04a317307"
+  integrity sha512-pnQ4e9sGDVNKxIbY0D2VjqEWs31Tz0Z75mYKInsR4U09muzgZnemDF1aNtb/d2ozk2qK0EbJUlTmFqH0K3rqUg==
   dependencies:
     js-yaml "^4.1.0"
     lodash "^4.17.21"

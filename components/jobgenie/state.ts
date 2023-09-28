@@ -1,10 +1,11 @@
-import { useLocalReactive } from "use-vova";
+import { is, itselfIf } from "vovas-utils";
+import { useLocalReactive } from "~/composables/useLocalReactive";
 import { defaultGlobalState } from "~/lib/jobgenie";
-import { SectionConfig, sectionConfigs } from "./sections";
+import { sectionIds } from "./sections";
 
 
 export const globalState = useLocalReactive('jobgenie-state', {
   ...defaultGlobalState,
-  selectedSectionId: sectionConfigs[0].id as SectionConfig['id'],
+  selectedSectionId: itselfIf(is.among(sectionIds)).else(sectionIds[0]),
   userMessage: '',
 });
