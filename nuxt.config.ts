@@ -1,3 +1,14 @@
+const appConfig = {
+  app: {
+    baseURL: '/playground/',
+    buildAssetsDir: 'assets',
+  },
+};
+
+const { NUXT_ENV } = process.env;
+
+console.log({ NUXT_ENV, appConfig })
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
@@ -5,10 +16,5 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
   ],
-  ...process.env.NODE_ENV === 'production' && {
-    app: {
-      baseURL: '/playground/',
-      buildAssetsDir: 'assets',
-    },
-  }
+  ...NUXT_ENV === 'production' && appConfig
 })
