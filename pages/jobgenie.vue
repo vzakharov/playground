@@ -29,6 +29,9 @@ function login(c: Credentials) {
 const importModal = refForInstance(TextModal);
 const sidebar = refForInstance(Sidebar<ChatType>);
 
+const win = window;
+// A hack to use window methods in template
+
 </script>
 
 <template>
@@ -51,7 +54,12 @@ const sidebar = refForInstance(Sidebar<ChatType>);
           :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
           title="This is around 10x more expensive if turned on." 
         />
-        Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
+        <div
+          title="Just an estimate — make sure to double-check your OpenAI billing page; double-click to reset."
+          @dblclick="win.confirm('Are you sure you want to reset your spending?') && (usdSpent = 0)"
+        >
+          Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
+        </div>
       </template>
     </Sidebar>
     <div class="content">

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
-import { generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
+import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
 import { GlobalState, temperatureForDescriptor } from './state';
@@ -35,6 +35,7 @@ export async function generateResponse<T extends ChatType>(
     || NaN;
 
   state.msExpected = ( jsonChars * msPerPromptJsonChar ) || undefined;
+  const usageContainer = new UsageContainer();
 
   const { result, leftovers } = await generate(promptMessages, 
     {
@@ -48,11 +49,12 @@ export async function generateResponse<T extends ChatType>(
         // is.string(result) ? result.length : result.content.length,
       throwIfNone: true,
       fn,
+      usageContainer
     }
   );
 
   globalState.savedMsPerPromptJsonChar[model] = globalUsageContainer.msPerPromptJsonChar(model);
-  globalState.usdSpent += globalUsageContainer.cost.totalUsd;
+  globalState.usdSpent += usageContainer.cost.totalUsd;
 
   const fromRawMessage = (raw: typeof result) => ({
     ...withUniqueId(),
