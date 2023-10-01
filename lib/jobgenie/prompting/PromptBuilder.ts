@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { $throw } from "vovas-utils";
+import { $if, $throw } from "vovas-utils";
 import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
@@ -61,10 +61,7 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
     const assets = getActiveAssets(data);
 
     if ( !this.isBuildableWithAssets(assets) )
-      throw new Error(`The following assets are missing: ${(
-        requiredAssets
-          ?? $throw('requiredAssets is undefined (this should not happen)')
-      ).join(', ')}`);
+      throw new Error(`The following assets are missing: ${this.getMissingAssets(assets)}`);
 
     const { username } = data;
 
@@ -100,11 +97,12 @@ export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[]
   }
 
   isBuildableWithAssets<A extends Partial<AssetsMap>>(assets: A): assets is A & PickAssets<RequiredAssets> {
-    return assetsDefinedForChatTypes(assets, this.config.requiredAssets);
+    return !this.getMissingAssets(assets);
   };
 
-  missingAssets(assets: Partial<AssetsMap>) {
-    return this.config.requiredAssets?.filter(type => !assets[type]) ?? [];
+  getMissingAssets(assets: Partial<AssetsMap>) {
+    const missingAssets = this.config.requiredAssets?.filter(type => !assets[type]);
+    return missingAssets?.length ? missingAssets : undefined;
   };
 
 };

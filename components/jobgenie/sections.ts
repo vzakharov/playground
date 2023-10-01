@@ -1,7 +1,7 @@
 import { ChatType, create, getPromptBuilder } from '~/lib/jobgenie';
 import { activeAssets } from './refs';
 import _ from 'lodash';
-import { map } from 'vovas-utils';
+import { $throw, map } from 'vovas-utils';
 
 export const sectionIds = [ 'dna', 'resume', 'job', 'pitch', 'social' ] as const;
 
@@ -63,16 +63,29 @@ export function getSection(id: SectionId) {
 export function getChatType(id: SectionId): ChatType {  
   const section = getSection(id);
   return section.chatType ?? section.id;
-}
+};
+
+export function getSectionConfigForChatType(chatType: ChatType) {
+  return _.find(sectionConfigs, 
+    section => section.chatType === chatType || section.id === chatType
+  ) ?? $throw(`No section config for chat type ${chatType}`);
+};
 
 export const sections = computed( () => _.map(sectionConfigs, config => {
   
   const builder = getPromptBuilder(config.chatType ?? config.id);
+  const missingAssets = builder.getMissingAssets(activeAssets.value);
 
   return {
     ...config,
     builder,
-    disabled: !builder.isBuildableWithAssets(activeAssets.value),
+    disabled: !!missingAssets,
+    disabledTooltip: missingAssets 
+      && `Please first go through the following sections: ${
+        missingAssets.map(
+          asset => getSectionConfigForChatType(asset).caption
+        ).join(', ')
+      }`
   }
 
 } ) );

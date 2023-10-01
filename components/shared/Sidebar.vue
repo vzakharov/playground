@@ -13,6 +13,7 @@
             selected: item.id === menu.selectedId,
             disabled: item.disabled
           }"
+          :title="item.disabled ? item.disabledTooltip : ''"
           @click="!item.disabled && ( menu.onSelect(item.id), isVisible = false )"
         >
           <span v-text="`${item.emoji} ${item.caption}`" />
@@ -30,7 +31,13 @@
 
 defineProps<{
   menu?: {
-    items: { id: Id, emoji: string, caption: string, disabled?: boolean }[],
+    items: { 
+      id: Id,
+      emoji: string,
+      caption: string,
+      disabled?: boolean,
+      disabledTooltip?: string
+    }[],
     selectedId: Id,
     onSelect: (id: Id) => void
   }
