@@ -5,7 +5,7 @@ import { AppChatMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
 import { GlobalState, temperatureForDescriptor } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
-import { AppData } from './types';
+import { AppData } from "./AppData";
 import { ChatType } from "./ChatType";
 import { withUniqueId } from './utils';
 
