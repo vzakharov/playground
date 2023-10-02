@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { ToRefs } from 'vue';
 import { AppChatMessage, ChatType, Resolvable, findBy, says, toReactive } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
-import { findOrCreateChat } from '../data';
+import { findOrCreateChat } from "../findOrCreateChat";
 // import { dataLastLoaded, generating, userMessage } from '../refs';
 import Textarea from '~/components/shared/TextareaScript';
 import { cycleLeftovers, deleteLeftover } from './leftovers';
