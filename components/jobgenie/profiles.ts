@@ -3,7 +3,7 @@ import { data } from "./data";
 import { $throw } from "vovas-utils";
 import { replace } from "lodash";
 import { dataLastLoaded } from "./refs";
-import { uniqueId } from "~/lib/utils";
+import { concat, uniqueId } from "~/lib/utils";
 import _ from "lodash";
 
 export const localProfilesPrefix = 'jobgenie-data-';
@@ -19,10 +19,11 @@ export function useProfiles() {
     ])
   );
 
-  const storageKey = (slug: string) => localProfilesPrefix.concat(slug);
+  const storageKey = (slug: string) => concat(localProfilesPrefix, slug);
 
-  function loadProfile(slug: string) {
-    saveCurrentProfile();
+  function loadProfile(slug: string, dontSaveCurrentProfile = false) {
+    if ( !dontSaveCurrentProfile )
+      saveCurrentProfile();
     const localValue = localStorage.getItem(storageKey(slug))
       ?? $throw(`Profile ${slug} (key ${storageKey(slug)}) not found in localStorage`);
     const newData = JSON.parse(localValue);
@@ -46,11 +47,17 @@ export function useProfiles() {
     }, dataLastLoaded);
   }
 
+  function deleteCurrentProfile() {
+    localStorage.removeItem(storageKey(data.profileSlug));
+    loadProfile('default', true);
+  };
+
   return {
     slugs,
     loadProfile,
     saveCurrentProfile,
-    newProfile
+    newProfile,
+    deleteCurrentProfile,
   };
 
 }

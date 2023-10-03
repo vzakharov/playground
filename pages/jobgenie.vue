@@ -34,7 +34,7 @@ const win = window;
 // A hack to use window methods in template
 
 const profiles = useProfiles();
-const { slugs: profileSlugs, newProfile, loadProfile } = profiles;
+const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = profiles;
 
 </script>
 
@@ -48,14 +48,20 @@ const { slugs: profileSlugs, newProfile, loadProfile } = profiles;
       }"
     >
       <template #lower>
-        <Dropdown v-if="profileSlugs.length" label="Profiles" :options="profileSlugs"
-          :modelValue="data.profileSlug || 'Untitled profile'"
-          @update:modelValue="loadProfile($event)"
-        />
+        <template v-if="profileSlugs.length > 1">
+          <Dropdown label="Profiles" :options="profileSlugs"
+            :modelValue="data.profileSlug || 'Untitled profile'"
+            @update:modelValue="loadProfile($event)"
+          />
+          <Button rounded small outline danger
+            caption="Delete profile"
+            @click="win.confirm('Are you sure you want to delete this profile?') && deleteCurrentProfile()"
+          />
+        </template>
         <Button rounded small outline
-          caption="New profile"
-          @click="newProfile(win.prompt('Enter a name for your new profile (optional):'))"
-        />
+            caption="New profile"
+            @click="newProfile(win.prompt('Enter a name for your new profile (optional):'))"
+          />
         <Button rounded small outline
           caption="Edit as YAML"
           @click="importModal!.show()"
