@@ -1,7 +1,9 @@
 <template>
   <div class="card-container">
     <div class="card">
-      <div class="card-title">{{ title }}</div>
+      <div class="card-title">
+        {{ title }}
+      </div>
       <div class="card-content" 
         v-html="Marked.parse(content)" 
         @dblclick="editOnDoubleClick && editModal!.show()"

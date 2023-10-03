@@ -2,6 +2,7 @@
 
 import { Marked } from '@ts-stack/markdown';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
+import Button from '~/components/shared/Button.vue';
 import Card from '~/components/shared/Card.vue';
 import { AppChatMessage, ChatType, allTrue, getAssetCaptions, areLeftoversForMessage, getLeftovers } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
@@ -64,6 +65,13 @@ const buttons = computed(() => {
 
 const editMessageModal = refForInstance(TextModal);
 
+const justCopied = ref<string>();
+function copyToClipboard(content: string) {
+  navigator.clipboard.writeText(content);
+  justCopied.value = content;
+  setTimeout(() => justCopied.value = '', 1000);
+};
+
 </script>
 
 <template>
@@ -88,8 +96,16 @@ const editMessageModal = refForInstance(TextModal);
             editOnDoubleClick: true
           }"
           @update:model-value="content => message.assets![title] = content"
-        />
+        >
         <!-- TODO: Make it possible to use v-model -->
+        <!-- Copy to clipboard -->
+          <template #footer>
+            <Button rounded small outline
+              :caption="justCopied === content ? '✓' : '⧉'"
+              @click="copyToClipboard(content)"
+            />
+          </template>
+        </Card>
       </div>
       <div :class="`flex justify-${isBy.user(message) ? 'end' : 'start'}`">
         <ButtonGroup :default-props="allTrue('rounded', 'small', 'outline')"
