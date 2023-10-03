@@ -28,10 +28,8 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
 };
 
 export type PromptBuilderInput<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
-  type: T;
   messages: AppChatMessage<T>[];
   data: AppData;
-
 };
 
 export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[] | undefined> {

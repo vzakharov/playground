@@ -9,4 +9,5 @@ export const globalState = useLocalReactive('jobgenie-state', {
   ...defaultGlobalState,
   selectedSectionId: initSelectedSectionId,
   userMessage: '',
+  showIrrelevantMessages: false as boolean,
 });

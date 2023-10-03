@@ -24,7 +24,7 @@ export async function generateResponse<T extends ChatType>(
   { type, messages, data, state, globalState, previousGeneration }: GenerateResponseParams<T>
 ): Promise<AppChatMessage<T, 'assistant'>> {
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
-  const { promptMessages, fn } = getPromptBuilder(type).build({ type, messages, data });
+  const { promptMessages, fn } = getPromptBuilder(type).build({ messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });

@@ -71,7 +71,7 @@ const editMessageModal = refForInstance(TextModal);
     <div 
       :class="{
         [`msg msg-${message.role}`]: true,
-        'msg-picked-assets': isActiveAssetFor(c, message)
+        'msg-picked-assets': isActiveAssetFor(c, message),
       }"
       :title="isActiveAssetFor(c, message) ? 'This asset will be used globally for any relevant generations' : ''"
     >
@@ -128,6 +128,7 @@ const editMessageModal = refForInstance(TextModal);
 .msg-picked-assets {
   background-color: #357a38;
 }
+
 </style>
 
 <style lang="postcss">

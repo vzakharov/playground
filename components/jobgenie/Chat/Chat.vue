@@ -40,13 +40,43 @@ import { renewChatController } from './controller';
       textarea.focus();
     });
   });
-  
+
+  const countIrrelevantMessages = computed(() => {
+    return c.countIrrelevantMessages();
+  });
+
+  const showIrrelevantMessages = ref(false);
+  const irrelevanceNote = ref<[HTMLDivElement]>();
+  // (Tuple because we technically create multiple notes due to v-for)
+  function toggleIrrelevantMessages() {
+    showIrrelevantMessages.value = !showIrrelevantMessages.value;
+    nextTick(() => {
+      irrelevanceNote.value?.[0].scrollIntoView();
+    });
+  }
 
 </script>
 
 <template>
   <div>
-    <Message v-for="message in c.messages" :key="message.id" :="{ c, message }"/>
+    <div v-for="( message, index ) in c.messages" :key="message.id"
+      :class="{ 
+        'flex flex-col': true,
+        'msg-irrelevant': index < countIrrelevantMessages,
+        hidden: !showIrrelevantMessages && index < countIrrelevantMessages
+      }"
+    >
+      <div v-if="index === countIrrelevantMessages" class="irrelevance-note"
+        ref="irrelevanceNote"
+        v-text="
+          showIrrelevantMessages
+           ? 'Messages above this line are not taken into account when generating the response (click to hide)'
+           : 'Messages not taken into account when generating the response are hidden (click to show)'
+        "
+        @click="toggleIrrelevantMessages"
+      />
+      <Message :="{ c, message }"/>
+    </div>
     <div v-if="generating?.inProgress" class="msg msg-assistant animate-pulse"
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
@@ -85,6 +115,14 @@ import { renewChatController } from './controller';
 
 .input-box {
   @apply border border-gray-300 rounded p-2 flex-grow mr-2;
+}
+
+.msg-irrelevant {
+  @apply opacity-70;
+}
+
+.irrelevance-note {
+  @apply text-xs text-gray-400 mt-4 mb-5 self-center cursor-pointer;
 }
 
 </style>
