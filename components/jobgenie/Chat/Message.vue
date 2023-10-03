@@ -10,6 +10,7 @@ import { globalState as state } from '../state';
 import { ChatController } from './controller';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
+import _ from 'lodash';
 
 const props = defineProps<{
   message: AppChatMessage<T>,
@@ -50,7 +51,11 @@ const buttons = computed(() => {
       {
         caption: '✎',
         tooltip: 'Edit',
-        onClick: () => c.editMessage(message)
+        onClick: () =>
+          (
+            message === _.last(c.messages)
+            || window.confirm('This will delete all messages after this one. Are you sure?') 
+          ) && c.editMessage(message)
       },
     ] : []
   ]
