@@ -19,7 +19,6 @@ import { renewChatController } from './controller';
   const dataLastLoaded = ref(Date.now());
   const msExpected = ref<number>();
 
-
   const { userMessage } = toRefs(globalState);
   const userMessageComponent = refForInstance(Textarea);
 

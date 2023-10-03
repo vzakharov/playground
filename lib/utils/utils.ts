@@ -115,3 +115,13 @@ export function setAllTo<T>(value: T) {
 export const allTrue = setAllTo(true as const);
 
 export type Falsible<T> = T | false | null | undefined | 0 | '';
+
+export function assert<T, G>(
+  value: T | G,
+  typeguard: (value: T | G) => value is T,
+  errorMessage?: string
+): asserts value is T {
+  if (!typeguard(value)) {
+    throw new Error(errorMessage ?? `Value ${value} did not pass typeguard ${typeguard.name}.`);
+  }
+}

@@ -5,8 +5,9 @@ import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
+import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { SectionId, getChatType, sections } from '~/components/jobgenie/sections';
+import { getChatType, sections } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
@@ -32,6 +33,9 @@ const sidebar = refForInstance(Sidebar<ChatType>);
 const win = window;
 // A hack to use window methods in template
 
+const profiles = useProfiles();
+const { slugs: profileSlugs, newProfile, loadProfile } = profiles;
+
 </script>
 
 <template>
@@ -44,6 +48,14 @@ const win = window;
       }"
     >
       <template #lower>
+        <Dropdown v-if="profileSlugs.length" label="Profiles" :options="profileSlugs"
+          :modelValue="data.profileSlug || 'Untitled profile'"
+          @update:modelValue="loadProfile($event)"
+        />
+        <Button rounded small outline
+          caption="New profile"
+          @click="newProfile(win.prompt('Enter a name for your new profile (optional):'))"
+        />
         <Button rounded small outline
           caption="Edit as YAML"
           @click="importModal!.show()"

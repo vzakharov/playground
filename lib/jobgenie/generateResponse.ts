@@ -7,7 +7,7 @@ import { GlobalState, temperatureForDescriptor } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
 import { AppData } from "./AppData";
 import { ChatType } from "./ChatType";
-import { withUniqueId } from './utils';
+import { withUniqueId } from '../utils/utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,

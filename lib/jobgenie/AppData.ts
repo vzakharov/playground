@@ -1,23 +1,37 @@
 import { forEach } from "vovas-utils";
 import { ChatType } from "./ChatType";
 import { AppChat } from "./types";
+import { RefLike } from "../utils/utils";
 
+// export type AppData = {
+//   username: string | null;
+//   chats: AppChat<ChatType>[];
+// };
 
-export type AppData = {
-  username: string | null;
-  chats: AppChat<ChatType>[];
+export const defaultData = {
+  chats: [] as AppChat<ChatType>[],
+  username: '',
+  profileSlug: 'default',
 };
 
-export const defaultData: AppData = {
-  chats: [],
-  username: null,
-};
+export type AppData = typeof defaultData;
 
-export function assertAppData(data: any): asserts data is AppData {
+export function assertPartialAppData(data: any): asserts data is Partial<AppData> {
   forEach(defaultData, (value, key) => {
-    // return key in data && typeof data[key] === typeof value;
-    if (!(key in data)) {
-      throw new Error(`${key} missing`);
+    if ( key in data && typeof data[key] !== typeof value ) {
+      throw new Error(`Data key ${key} is of type ${typeof data[key]} but should be of type ${typeof value}`);
     }
   });
+};
+
+export function replaceAppDataWithUknown(data: AppData, newData: unknown, dataLastLoaded: RefLike<number>) {
+  assertPartialAppData(newData);
+  resetAppData(data, newData, dataLastLoaded);
+};
+
+export function resetAppData(data: AppData, newData: Partial<AppData>, dataLastLoaded: RefLike<number>) {
+  forEach(defaultData, (defaultValue, key) => {
+    data[key] = newData[key] ?? defaultValue;
+  });
+  dataLastLoaded.value = Date.now();
 };

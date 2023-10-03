@@ -9,4 +9,4 @@ export * from './resolvable';
 export * from './state';
 export * from './toRawMessages';
 export * from './types';
-export * from './utils';
+export * from '../utils/utils';

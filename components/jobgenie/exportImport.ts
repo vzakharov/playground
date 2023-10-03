@@ -1,11 +1,14 @@
 import yaml from 'js-yaml';
-import { forEach, is } from 'vovas-utils';
-import { AppData, assertAppData, defaultData, setValue } from '~/lib/jobgenie';
+import { AppData, replaceAppDataWithUknown } from '~/lib/jobgenie';
 import { data } from './data';
 import { dataLastLoaded } from './refs';
 
 export function stringifyData(d: AppData = data) {
   return yaml.dump(d);
+};
+
+export function parseData(jsonStr: string) {
+  return yaml.load(jsonStr);
 };
 
 export const stringifiedData = computed({
@@ -14,7 +17,6 @@ export const stringifiedData = computed({
 });
 
 export function exportData() {
-  // const dataStr = JSON.stringify(data, null, 2);
   const dataStr = stringifyData();
   const dataBlob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(dataBlob);
@@ -25,15 +27,10 @@ export function exportData() {
   URL.revokeObjectURL(url);
 };
 
-export function importData(jsonStr: string) {
+export function importData(stringified: string) {
   try {
-    // const newData = JSON.parse(jsonStr);
-    const newData = yaml.load(jsonStr);
-    assertAppData(newData);
-    forEach(data, (value, key) => {
-      data[key] = is.undefined(newData[key]) ? defaultData[key] : newData[key];
-    });
-    setValue(dataLastLoaded, Date.now());
+    const newData = parseData(stringified);
+    replaceAppDataWithUknown(data, newData, dataLastLoaded);
   } catch (e: any) {
     alert(e.message);
   }
