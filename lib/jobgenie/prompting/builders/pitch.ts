@@ -16,20 +16,18 @@ export const pitchPromptBuilder = new PromptBuilder('pitch', {
 
       !numResponses
 
-        ? 'In the first question, you explain what you’re going to do and ask what company they’re interested in. They can either describe it in their words or copy and paste their description from somewhere. Don’t greet the user as it’s a continuation of a previous conversation.'
+        ? 'In the first question, you explain what you’re going to do and ask what company they’re interested in. They can either describe it in their words or copy and paste their description from somewhere. Don’t greet the user as it’s a continuation of a previous conversation, so start with something like “Okay, now that...” (not verbatim, in your own words).'
 
       : !functionCalled
       
         ? dedent`
           After the first exchange, call the attached function to generate the pitch. Unless the user’s request requires otherwise, use the following structure:
 
-          1. Greet the recipient by name. If you don’t know their name, use a <placeholder>.
-          2. Acknowledge the company and its successes.
-          3. Introduce yourself (as the user) and explain why you would be happy to work for the company.
-          4. Go into some more detail about your background and how it relates to the company, but don’t make it sound like a resume.
-          5. End with an open-ended question to encourage the recipient to continue the conversation.
+          1. Acknowledge the company and its successes.
+          2. Introduce yourself (as the user) and explain why you could be useful for the company.
+          3. End with an open question to encourage the recipient to continue the conversation.
 
-          All in all, the pitch must sound conversational and natural and avoid any kind of boasting or marketing speak.
+          Each part shouldn’t be longer than one or two sentences.
         `
 
         : 'Once you’ve already generated the pitch, use the user’s feedback to improve it as needed.'
