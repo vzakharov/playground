@@ -10,13 +10,14 @@ import { dataLastLoaded } from '~/components/jobgenie/refs';
 import { getChatType, sections } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import Button from '~/components/shared/Button.vue';
+import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebar from '~/components/shared/Sidebar.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { ChatType, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
+import { ChatType, allTrue, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
@@ -53,18 +54,22 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
             :modelValue="data.profileSlug || 'Untitled profile'"
             @update:modelValue="loadProfile($event)"
           />
-          <Button rounded small outline
-            caption="Delete profile"
-            @click="win.confirm('Are you sure you want to delete this profile?') && deleteCurrentProfile()"
-          />
         </template>
-        <Button rounded small outline
-            caption="New profile"
-            @click="newProfile(win.prompt('Enter a name for your new profile (optional):'))"
-          />
-        <Button rounded small outline
-          caption="Edit as YAML"
-          @click="importModal!.show()"
+        <ButtonGroup :defaultProps="allTrue('rounded', 'small', 'outline')"
+          :buttons="[
+            {
+              caption: 'New',
+              onClick: () => newProfile(win.prompt('Enter a name for your new profile (optional):'))
+            },
+            {
+              caption: 'Edit',
+              onClick: () => importModal!.show()
+            },
+            profileSlugs.length > 1 && {
+              caption: 'Delete',
+              onClick: () => win.confirm('Are you sure you want to delete this profile?') && deleteCurrentProfile()
+            },
+          ]"
         />
         <Dropdown label="Temperature" :options="temperatureDescriptors" v-model="temperatureDescriptor" />
         <Toggle 
