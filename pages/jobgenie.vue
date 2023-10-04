@@ -53,7 +53,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
             :modelValue="data.profileSlug || 'Untitled profile'"
             @update:modelValue="loadProfile($event)"
           />
-          <Button rounded small outline danger
+          <Button rounded small outline
             caption="Delete profile"
             @click="win.confirm('Are you sure you want to delete this profile?') && deleteCurrentProfile()"
           />
