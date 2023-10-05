@@ -1,5 +1,4 @@
 import yaml, { YAMLException } from "js-yaml";
-// import { Configuration, OpenAIApi } from "openai";
 import OpenAI from 'openai';
 import { $throw, Jsonable, JsonableObject, mutate } from "vovas-utils";
 import { GenerateException } from "./GenerateException";
@@ -23,12 +22,6 @@ export async function generate<O extends Specs, I extends Inputs>(
     openaiApiKey, examples, debug, description, meta = defaultMeta, throwOnFailure, 
     postProcess, ...openaiOptions 
   } = options ?? {};
-
-  // const openai = new OpenAIApi(new Configuration({ apiKey:
-  //   options?.openaiApiKey ??
-  //   process.env.OPENAI_API_KEY ??
-  //   $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
-  // }));
 
   const openai = new OpenAI({
     apiKey: openaiApiKey ??
