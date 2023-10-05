@@ -1,5 +1,6 @@
 import yaml, { YAMLException } from "js-yaml";
-import { Configuration, OpenAIApi } from "openai";
+// import { Configuration, OpenAIApi } from "openai";
+import OpenAI from 'openai';
 import { $throw, Jsonable, JsonableObject, mutate } from "vovas-utils";
 import { GenerateException } from "./GenerateException";
 import { GenerateMeta } from "./GenerateMeta";
@@ -23,11 +24,17 @@ export async function generate<O extends Specs, I extends Inputs>(
     postProcess, ...openaiOptions 
   } = options ?? {};
 
-  const openai = new OpenAIApi(new Configuration({ apiKey:
-    options?.openaiApiKey ??
-    process.env.OPENAI_API_KEY ??
-    $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
-  }));
+  // const openai = new OpenAIApi(new Configuration({ apiKey:
+  //   options?.openaiApiKey ??
+  //   process.env.OPENAI_API_KEY ??
+  //   $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
+  // }));
+
+  const openai = new OpenAI({
+    apiKey: openaiApiKey ??
+      process.env.OPENAI_API_KEY ??
+      $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
+  });
 
   const messages = composeChatPrompt(
     outputSpecs, 
@@ -44,9 +51,11 @@ export async function generate<O extends Specs, I extends Inputs>(
     messages
   };
 
-  const response = await openai.createChatCompletion(requestData);
+  // const response = await openai.createChatCompletion(requestData);
+  // const { data: { choices: [{ message }] }} = response;
 
-  const { data: { choices: [{ message }] }} = response;
+  const response = await openai.chat.completions.create(requestData);
+  const { choices: [{ message }] } = response;
 
   const { content } = message ?? {};
 
