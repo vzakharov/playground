@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { $throw, Jsonable, JsonableObject, mutate } from "vovas-utils";
 import { GenerateException } from "./GenerateException";
 import { GenerateMeta } from "./GenerateMeta";
-import { GenerateOptions } from "./GenerateOptions";
+import { GenerateOptions, GenerateOptionsBase } from "./GenerateOptions";
 import { composeChatPrompt } from "./composeChatPrompt";
 import { Inputs } from "./specs/Inputs";
 import { Specs } from "./specs/Specs";
@@ -11,6 +11,12 @@ import { makeOutputMatchSpecs } from "./specs/outputMatchesSpecs";
 import { MatchingOutput } from "./specs";
 
 export const defaultMeta = new GenerateMeta();
+
+export const defaultOptions: GenerateOptionsBase = {};
+
+export function setDefaultOptions(options: GenerateOptionsBase) {
+  Object.assign(defaultOptions, options);
+};
 
 export async function generate<O extends Specs, I extends Inputs>(
   outputSpecs: O,
@@ -21,7 +27,10 @@ export async function generate<O extends Specs, I extends Inputs>(
   const { 
     openaiApiKey, examples, debug, description, meta = defaultMeta, throwOnFailure, 
     postProcess, ...openaiOptions 
-  } = options ?? {};
+  } = {
+    ...defaultOptions,
+    ...options
+  };
 
   const openai = new OpenAI({
     apiKey: openaiApiKey ??
