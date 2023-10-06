@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import * as Magic from '~/lib/almostmagic2';
+import * as Magic from '~/lib/almostmagic';
 import { addProperties } from 'vovas-utils';
 import { useLocalRef } from 'use-vova';
 import yaml from 'js-yaml';

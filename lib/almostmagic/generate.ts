@@ -26,7 +26,8 @@ export async function generate<O extends Specs, I extends Inputs>(
   const openai = new OpenAI({
     apiKey: openaiApiKey ??
       process.env.OPENAI_API_KEY ??
-      $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`')
+      $throw('OpenAI API key is required either as `options.openaiApiKey` or as `process.env.OPENAI_API_KEY`'),
+    dangerouslyAllowBrowser: true
   });
 
   const messages = composeChatPrompt(
