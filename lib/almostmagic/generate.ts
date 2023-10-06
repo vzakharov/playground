@@ -14,7 +14,7 @@ export const defaultMeta = new GenerateMeta();
 
 export const defaultOptions: GenerateOptionsBase = {};
 
-export function setDefaultOptions(options: GenerateOptionsBase) {
+export function addDefaultOptions(options: GenerateOptionsBase) {
   Object.assign(defaultOptions, options);
 };
 
