@@ -1,7 +1,4 @@
-import { IsNever } from "lib/jobgenie";
 import _ from "lodash";
-
-export type Keyable = keyof any;
 
 export type ChatFunction<Name extends string, Props extends string, Optional extends Props> = {
   name: Name,
@@ -47,12 +44,10 @@ export function chatFunction<Name extends string, Props extends string, Optional
 
 };
 
-
 export type ChatFunctionProp = {
   type: 'string',
   description: string,
 };
-
 
 export type ChatFunctionReturns<F extends AnyChatFunction> =
   F extends ChatFunction<any, infer Props, infer Optional> ? {
@@ -87,10 +82,12 @@ type ExampleChatFunctionReturns = ChatFunctionReturns<ExampleChatFunction>;
 // type ExampleChatFunctionReturns = {
 //   city: string;
 //   date: string | undefined;
+//   language: string | undefined;
 // }
 
 const callback = (r: ExampleChatFunctionReturns) => { }
 // (parameter) r: {
 //   city: string;
 //   date: string | undefined;
+//   language: string | undefined;
 // }

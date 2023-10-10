@@ -1,12 +1,12 @@
 import yaml from "js-yaml";
-import { Jsonable, check, is, $throw, give } from "vovas-utils";
-import { SpecTypes, SpecTypeKey } from ".";
+import { Jsonable, check, is, $throw, give, asTypeguard } from "vovas-utils";
+import { SpecTypes, SpecTypeName } from ".";
 
 /**
  * Tries to convert a value to a given type.
  * 
  * @param value - The value to convert.
- * @param type - The type to convert the value to, expressed as a string from the `SpecTypes` type.
+ * @param type - The type to convert the value to, expressed as a {@link SpecTypeName}.
  * @returns The converted value, or undefined if the conversion failed.
  * 
  * Note: We can convert most values to strings, and strings to most other types.
@@ -15,7 +15,7 @@ import { SpecTypes, SpecTypeKey } from ".";
 export const tryConvert = <T extends keyof SpecTypes>(value: Exclude<Jsonable, SpecTypes[T]>, type: T) => (
   type === 'string'
     ? check(value as Jsonable)
-      .if( is.array, items =>
+      .if( asTypeguard<Jsonable[]>(is.array), items =>
         items.every(item => typeof item === 'number' || (typeof item === 'string' && /^[^\s]+$/.test(item)))
           ? items.join(', ')
           : yaml.dump(items)
@@ -24,7 +24,7 @@ export const tryConvert = <T extends keyof SpecTypes>(value: Exclude<Jsonable, S
       .else( String )
     : check(value as Jsonable)
       .if( is.string, string =>
-        check(type as SpecTypeKey)
+        check(type as SpecTypeName)
           .if( is.exactly('number' as const), () => !isNaN(Number(string)) ? Number(string) : undefined )
           .if( is.exactly('boolean' as const), () => /^true|false$/.test(string) ? string === 'true' : undefined )
           .if( is.exactly('string[]' as const), () => {

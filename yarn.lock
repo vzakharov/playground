@@ -1535,6 +1535,19 @@ ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+almostmagic@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/almostmagic/-/almostmagic-0.2.1.tgz#0fb7f2afd820fbc44fcb4d9ef941cc2aeb98512c"
+  integrity sha512-s/we+gQQm7hjQJZjAcOo5MHl6HchHN3uukQ75zU7LVJo3EO8xhxe10/1/BKqQP2g3aQWB7JDln7izKI+fmj+mw==
+  dependencies:
+    "@types/js-yaml" "^4.0.5"
+    dedent-js "^1.0.1"
+    dotenv "^16.3.1"
+    js-yaml "^4.1.0"
+    lodash "^4.17.21"
+    openai "^4.11.1"
+    vovas-utils "^0.6.0"
+
 ansi-align@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/ansi-align/-/ansi-align-3.0.1.tgz"
@@ -5002,6 +5015,20 @@ open@^9.1.0:
     is-inside-container "^1.0.0"
     is-wsl "^2.2.0"
 
+openai@^4.11.1:
+  version "4.11.1"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-4.11.1.tgz#c2ed9b5e58c3c626b8d43e4eae0cfdbcd44cc844"
+  integrity sha512-GU0HQWbejXuVAQlDjxIE8pohqnjptFDIm32aPlNT1H9ucMz1VJJD0DaTJRQsagNaJ97awWjjVLEG7zCM6sm4SA==
+  dependencies:
+    "@types/node" "^18.11.18"
+    "@types/node-fetch" "^2.6.4"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.2.1"
+    digest-fetch "^1.3.0"
+    form-data-encoder "1.7.2"
+    formdata-node "^4.3.2"
+    node-fetch "^2.6.7"
+
 openai@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/openai/-/openai-4.6.0.tgz#0335111cf71c608b68dbdca19f8ccbd9cfb0cd97"
@@ -6798,10 +6825,10 @@ vite@~4.3.9:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vovas-utils@^0.5.37:
-  version "0.5.37"
-  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.5.37.tgz#4d2a80cb96f14f0c92cd609825d159bcd1dd3b63"
-  integrity sha512-aSSJ5beiKGdo7VSiyRiQ5xGEjMu40iWktRyMN5aAeEzaK1c1GsDsti9/w55r/7MNkuaY/yb2woYwdl9wFg6PTQ==
+vovas-utils@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.6.0.tgz#6617c016fd89b7a07f39f0fcac85fee1a772983a"
+  integrity sha512-qalyUNffCFzVcnON1L7GTy+bLro4kaTGhlAf7gDHKgLmJen3uLCNeiA23ksib701urpu8qJzPTOquV9p+9gNGg==
   dependencies:
     js-yaml "^4.1.0"
     lodash "^4.17.21"

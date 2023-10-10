@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Jsonable, JsonableObject, genericTypeguard, is, itselfIf } from "vovas-utils";
+import { Jsonable, JsonableObject, asTypeguard, is, itselfIf } from "vovas-utils";
 import { ChatType } from "./ChatType";
 import { Leftovers } from "./leftovers";
 
@@ -32,7 +32,7 @@ export function typeOf(value: any) {
 export type TypeName = ReturnType<typeof typeOf>;
 
 export function isSameTypeAs<S>(sample: S) {
-  return genericTypeguard<S>(arg => typeOf(arg) === typeOf(sample));
+  return asTypeguard<S>(arg => typeOf(arg) === typeOf(sample));
 };
 
 export type Defaults = Record<string, Jsonable | ((value: Jsonable) => any)>;
