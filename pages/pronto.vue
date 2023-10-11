@@ -4,20 +4,32 @@ import _ from 'lodash';
 import { computed, ref } from 'vue';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
+import Input from '~/components/shared/Input.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import { defaultProntoData, parseInputs } from '~/lib/pronto';
 import { switchRole, chatRoles, says } from '~/lib/vovas-openai';
 import { uniqueId } from '~/lib/utils';
+import { $throw } from 'vovas-utils';
 
 const tab = ref('compose');
 
 const { templates } = useLocalReactive('pronto-data', defaultProntoData);
+
 const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
 }));
 
 const selectedTemplate = computed(() => templates.find(t => t.id === selectedTemplateId.value));
+
+function changeId(newId: string) {
+  (
+    selectedTemplate.value
+      ?? $throw('selectedTemplate is undefined')
+  ).id = newId;
+  selectedTemplateId.value = newId;
+};
+
 const messages = computed(() => selectedTemplate.value?.messages ?? []);
 
 const output = ref('');
@@ -53,6 +65,11 @@ const run = async () => {
     </div>
 
     <div v-if="tab === 'compose'" class="compose-container">
+      <Input label="Template id" 
+        :modelValue="selectedTemplateId"
+        @update:modelValue="changeId"
+        :invalidIf="id => templates.some(t => t.id === id && t.id !== selectedTemplateId)"
+      />
       <div class="message-container" v-for="(message, index) in messages" :key="index">
         <Dropdown cycle-on-click :label="!index && 'Role'" class="role" :options="chatRoles" v-model="message.role" />
         <Textarea :label="!index && 'Message'" v-model="message.content" class="message-input" placeholder="Enter message" />
