@@ -2,6 +2,7 @@
 
 import _ from 'lodash';
 import { computed, ref } from 'vue';
+import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { defaultProntoData, parseInputs } from '~/lib/pronto';
@@ -39,15 +40,18 @@ const run = async () => {
         <Dropdown cycle-on-click label="Role" class="role" :options="['user', 'system', 'assistant']" v-model="message.role" />
         <Textarea label="Message" v-model="message.content" class="message-input" placeholder="Enter message" />
       </div>
-      <button class="add-message-button" @click="addMessage">Add Message</button>
+      <Button primary outline
+        caption="Add Message"
+        @click="addMessage"
+      />
     </div>
 
     <div v-else class="run-container">
-      <div class="input-container" v-for="(input, index) in inputs" :key="index">
-        <label v-text="_.startCase(input.name)"></label>
-        <input v-model="input.value" class="input-field">
-      </div>
-      <button class="run-button" @click="run">Run</button>
+      <Textarea v-for="(input, index) in inputs" :key="index" :label="_.startCase(input.name)" v-model="input.value" />
+      <Button primary
+        caption="Run"
+        @click="run"
+      />
       <div class="output-container">
         <label>Output:</label>
         <textarea readonly v-model="output" class="output-field"></textarea>
@@ -79,11 +83,11 @@ const run = async () => {
 }
 
 .compose-container, .run-container {
-  @apply mt-4;
+  @apply mt-4 space-y-2;
 }
 
 .message-container, .input-container {
-  @apply flex space-x-2 items-center mb-2;
+  @apply flex space-x-2 items-start mb-2;
 }
 
 
