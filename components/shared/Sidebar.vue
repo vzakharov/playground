@@ -1,3 +1,13 @@
+<script setup lang="ts" generic="Id extends string = string">
+
+import { SidebarProps } from './SidebarStuff';
+
+defineProps<SidebarProps<Id>>();
+
+const isVisible = ref(false);
+
+</script>
+
 <template>
   <button class="hamburger" @click="isVisible = !isVisible">
     <span class="hamburger-line"></span>
@@ -26,27 +36,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts" generic="Id extends string = string">
-
-defineProps<{
-  menu?: {
-    items: { 
-      id: Id,
-      emoji: string,
-      caption: string,
-      disabled?: boolean,
-      disabledTooltip?: string
-    }[],
-    selectedId: Id,
-    onSelect: (id: Id) => void
-  }
-}>();
-
-
-const isVisible = ref(false);
-
-</script>
 
 <style scoped lang="postcss">
 
