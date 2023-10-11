@@ -31,7 +31,9 @@ export const Textarea = defineComponent({
       type: Number,
       default: 200
     },
-    label: String,  
+    label: {
+      type: [ String, Boolean ] as PropType<string | false>
+    }
   },
 
   emits: {

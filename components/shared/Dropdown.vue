@@ -3,7 +3,7 @@
   import { useModelWrapper } from '~/composables/useModelWrapper';
 
   const props = defineProps<{ 
-    label: string, 
+    label?: string | false,
     options: readonly T[], 
     modelValue: T,
     cycleOnClick?: boolean,
@@ -27,7 +27,7 @@
 
 <template>
   <div class="container">
-    <label class="label">{{ label }}</label>
+    <label v-if="label" class="label" v-text="label" />
     <select v-if="!cycleOnClick" class="dropdown" v-model="input">
       <option v-for="option in options" :value="option" v-text="option" />
     </select>
