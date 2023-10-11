@@ -3,9 +3,16 @@
 import { SidebarMenu } from './SidebarStuff';
 import Sidebar from './Sidebar.vue'
 
-defineProps<{
-  sidebarMenu?: SidebarMenu<SidebarMenuItemId>
+const props = defineProps<{
+  sidebarMenu?: SidebarMenu<SidebarMenuItemId>,
+  sidebarMenuItemId?: SidebarMenuItemId,
 }>();
+
+const emit = defineEmits<{
+  'update:sidebarMenuItemId': [value: SidebarMenuItemId],
+}>();
+
+const sidebarMenuItemId = useModelWrapper(props, emit, 'sidebarMenuItemId');
 
 </script>
 
@@ -13,6 +20,7 @@ defineProps<{
   <div class="container">
     <Sidebar ref="sidebar"
       :menu="sidebarMenu"
+      v-model:menuItemId="sidebarMenuItemId"
     >
       <template #upper>
         <slot name="sidebar-upper"/>

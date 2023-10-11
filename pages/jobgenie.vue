@@ -22,7 +22,6 @@ import { ChatType, allTrue, defaultData, temperatureDescriptors } from '~/lib/jo
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
 useHashRoute(selectedSectionId, initSelectedSectionId);
-const refs = { selectedSectionId };
 
 function login(c: Credentials) {
   data.username = c.username;
@@ -43,8 +42,8 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
   <Sidebarred
     :sidebar-menu="{
       items: sections,
-      selectionRef: refs.selectedSectionId
     }"
+    v-model:sidebarMenuItemId="selectedSectionId"
   >
     <template #sidebar-lower>
       <template v-if="profileSlugs.length > 1">

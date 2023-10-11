@@ -16,7 +16,6 @@ const { templates } = useLocalReactive('pronto-data', defaultProntoData);
 const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
 }));
-const refs = { selectedTemplateId };
 
 const selectedTemplate = computed(() => templates.find(t => t.id === selectedTemplateId.value));
 const messages = computed(() => selectedTemplate.value?.messages ?? []);
@@ -39,8 +38,8 @@ const run = async () => {
   <Sidebarred
     :sidebar-menu="{
       items: templates,
-      selectionRef: refs.selectedTemplateId
     }"
+    v-model:sidebarMenuItemId="selectedTemplateId"
   >
     <template #sidebar-upper>
       <Button small outline

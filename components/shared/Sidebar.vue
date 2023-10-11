@@ -3,7 +3,12 @@
 import { SidebarMenu } from './SidebarStuff';
 
 defineProps<{
-  menu?: SidebarMenu<MenuItemId>
+  menu?: SidebarMenu<MenuItemId>,
+  menuItemId?: MenuItemId,
+}>();
+
+defineEmits<{
+  'update:menuItemId': [value: MenuItemId],
 }>();
 
 const isVisible = ref(false);
@@ -22,12 +27,12 @@ const isVisible = ref(false);
         <li v-for="item in menu.items" :key="item.id" 
           :class="{
             'menu-item': true,
-            selected: item.id === menu.selectionRef.value,
+            selected: item.id === menuItemId,
             disabled: item.disabled
           }"
           :title="item.disabled ? item.disabledTooltip : ''"
           @click="
-            !item.disabled && ( menu.selectionRef.value = item.id, isVisible = false )
+            !item.disabled && ( $emit('update:menuItemId', item.id), isVisible = false )
           "
         >
           <span v-if="item.emoji" v-text="item.emoji"/>
