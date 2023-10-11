@@ -5,6 +5,7 @@ import { ref, computed } from 'vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import _ from 'lodash';
+import { parseInputs } from '~/lib/pronto'
 
 const tab = ref('compose');
 
@@ -19,31 +20,7 @@ const addMessage = () => {
   messages.value.push({ content: '', role: 'user' });
 };
 
-const inputs = computed(() => {
-
-  const inputs = [] as {
-    name: string;
-    description?: string;
-    value: string;
-  }[];
-
-  for ( const message of messages.value ) {
-    // Take all {name} or {name|description} placeholders
-    const matches = message.content?.matchAll(/\{([^\|\}]+)(?:\|([^\}]+))?\}/g);
-    debugger
-    for ( const match of matches ?? [] ) {
-      const [placeholder, name, description] = match;
-      inputs.push({ 
-        name, 
-        description: description || undefined,
-        value: '' 
-      });
-    };
-  };
-
-  return inputs;
-
-});
+const inputs = computed(() => parseInputs(messages.value));
 
 const run = async () => {
   throw new Error('Not implemented');
