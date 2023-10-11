@@ -5,6 +5,15 @@ import { ReifyInterface, objectWithKeys } from "vovas-utils";
 
 export const chatRoles = ['user', 'assistant', 'system'] as const;
 
+export function switchRole(role?: ChatRole) {
+  return ({
+      user: 'assistant',
+      assistant: 'user',
+      system: 'user',
+      '': 'user'
+    } as const)[role ?? ''];
+};
+
 export type ChatRole = typeof chatRoles[number];
 
 export type WithRole<R extends ChatRole = any> = { role: R };

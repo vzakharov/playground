@@ -1,11 +1,11 @@
 <script setup lang="ts">
 
-import { AnyChatMessage } from 'lib/vovas-openai';
-import { ref, computed } from 'vue';
+import _ from 'lodash';
+import { computed, ref } from 'vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
-import _ from 'lodash';
-import { parseInputs, defaultProntoData } from '~/lib/pronto'
+import { defaultProntoData, parseInputs } from '~/lib/pronto';
+import { switchRole } from '~/lib/vovas-openai';
 
 const tab = ref('compose');
 
@@ -16,7 +16,7 @@ const { messages } = toRefs(data.templates[0]);
 const output = ref('');
 
 const addMessage = () => {
-  messages.value.push({ content: '', role: 'user' });
+  messages.value.push({ content: '', role: switchRole(_.last(messages.value)?.role) });
 };
 
 const inputs = computed(() => parseInputs(messages.value));
@@ -36,7 +36,7 @@ const run = async () => {
 
     <div v-if="tab === 'compose'" class="compose-container">
       <div class="message-container" v-for="(message, index) in messages" :key="index">
-        <Dropdown label="Role" class="role" :options="['user', 'system', 'assistant']" v-model="message.role" />
+        <Dropdown cycle-on-click label="Role" class="role" :options="['user', 'system', 'assistant']" v-model="message.role" />
         <Textarea label="Message" v-model="message.content" class="message-input" placeholder="Enter message" />
       </div>
       <button class="add-message-button" @click="addMessage">Add Message</button>
