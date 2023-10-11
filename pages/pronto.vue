@@ -5,14 +5,13 @@ import { ref, computed } from 'vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import _ from 'lodash';
-import { parseInputs } from '~/lib/pronto'
+import { parseInputs, defaultProntoData } from '~/lib/pronto'
 
 const tab = ref('compose');
 
-const messages = ref<AnyChatMessage<true>[]>([{ 
-  content: 'Tell me a joke about {topic}', 
-  role: 'user' 
-}]);
+const data = useLocalReactive('pronto-data', defaultProntoData);
+
+const { messages } = toRefs(data.templates[0]);
 
 const output = ref('');
 
