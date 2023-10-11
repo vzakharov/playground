@@ -49,7 +49,7 @@
 }
 
 .dropdown {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
+  @apply appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none;
 }
 
 </style>
