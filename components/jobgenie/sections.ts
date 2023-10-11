@@ -36,7 +36,7 @@ export const sectionConfigs = [
   },
   {
     id: 'social',
-    caption: 'Social presence',
+    caption: 'Social media',
     emoji: '📢'
   }
 ] as SectionConfig[];

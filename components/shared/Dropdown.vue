@@ -17,8 +17,8 @@
 </script>
 
 <template>
-  <div class="dropdown-container">
-    <label class="dropdown-label">{{ label }}</label>
+  <div class="container">
+    <label class="label">{{ label }}</label>
     <select class="dropdown" v-model="input">
       <option v-for="option in options" :value="option" v-text="option" />
     </select>
@@ -27,11 +27,11 @@
 
 <style scoped lang="postcss">
 
-.dropdown-container {
+.container {
   @apply flex flex-col;
 }
 
-.dropdown-label {
+.label {
   @apply text-gray-400 text-sm mb-2;
 }
 

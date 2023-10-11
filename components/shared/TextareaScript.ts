@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { targetedEventHandler } from './utils';
 import { useModelWrapper } from '~/composables/useModelWrapper';
 import { $throw } from 'vovas-utils';
+import { uniqueId } from '~/lib/utils';
 
 function addNewline(input: HTMLTextAreaElement) {
   const { selectionStart, selectionEnd, value } = input;
@@ -29,7 +30,8 @@ export const Textarea = defineComponent({
     maxHeight: {
       type: Number,
       default: 200
-    }
+    },
+    label: String,  
   },
 
   emits: {
@@ -40,6 +42,7 @@ export const Textarea = defineComponent({
   setup(props, { emit }) {
 
     const input = useModelWrapper(props, emit);
+    const id = uniqueId('textarea')
 
     const textarea = ref<HTMLTextAreaElement>();
     const height = ref(props.minHeight);
@@ -65,6 +68,7 @@ export const Textarea = defineComponent({
     return {
       textarea,
       handleKeydown,
+      id,
       input,
       mapValues,
       height
