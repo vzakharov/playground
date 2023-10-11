@@ -1,8 +1,10 @@
-<script setup lang="ts" generic="Id extends string = string">
+<script setup lang="ts" generic="MenuItemId extends string = string">
 
-import { SidebarProps } from './SidebarStuff';
+import { SidebarMenu } from './SidebarStuff';
 
-defineProps<SidebarProps<Id>>();
+defineProps<{
+  menu?: SidebarMenu<MenuItemId>
+}>();
 
 const isVisible = ref(false);
 
