@@ -39,8 +39,8 @@ const run = async () => {
       <div class="message-container" v-for="(message, index) in messages" :key="index">
         <Dropdown cycle-on-click label="Role" class="role" :options="chatRoles" v-model="message.role" />
         <Textarea label="Message" v-model="message.content" class="message-input" placeholder="Enter message" />
-        <Button primary outline
-          caption="Remove"
+        <Button small outline class="self-end"
+          caption="🗑️"
           @click="() => messages.splice(index, 1)"
         />
       </div>

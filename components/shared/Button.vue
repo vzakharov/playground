@@ -7,7 +7,8 @@
       'btn-disabled': disabled,
       'btn-rounded': rounded,
       'px-2 py-1': small,
-      'px-4 py-2': !small
+      'px-4 py-2': !small,
+      [props.class ?? '']: true,
     }"
     :type="type ?? 'button'"
     :title="tooltip"
