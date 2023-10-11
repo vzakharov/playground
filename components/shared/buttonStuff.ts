@@ -10,6 +10,7 @@ export const buttonProps = {
   rounded: Boolean,
   small: Boolean,
   outline: Boolean,
+  ghost: Boolean,
   checkmarkAfterCallback: Boolean,
   tooltip: String,
   class: String,

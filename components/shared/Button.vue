@@ -27,11 +27,15 @@
 
   const emit = defineEmits(['click'])
 
-  const variantClass = computed(() => _.compact([
+  const variantClass = computed(() => _([
     'btn',
-    props.outline && 'outline',
-    props.primary ? 'primary' : props.danger ? 'danger' : 'secondary',
-  ]).join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
+    props.ghost
+      ? 'ghost'
+    : [
+      props.outline && 'outline',
+      props.primary ? 'primary' : props.danger ? 'danger' : 'secondary',
+    ]
+  ]).flatten().compact().join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
 
   const onClick = () => {
     if ( !props.disabled ) {
@@ -56,6 +60,10 @@
 
 .btn-danger {
   @apply bg-red-500 hover:bg-red-700;
+}
+
+.btn-ghost {
+  @apply border-0 text-gray-300 hover:text-gray-700;
 }
 
 .btn-disabled {
