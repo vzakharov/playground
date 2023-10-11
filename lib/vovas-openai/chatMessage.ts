@@ -9,12 +9,19 @@ export type ChatRole = typeof chatRoles[number];
 
 export type WithRole<R extends ChatRole = any> = { role: R };
 
-export type ChatMessage<R extends ChatRole = ChatRole> = 
+export type ChatMessage<R extends ChatRole = ChatRole, RequireContent extends boolean = false> =
   WithRole<R>
   & {
-    content: R extends 'assistant' ? string | null : string;
+    content: 
+      RequireContent extends true 
+        ? string 
+      : R extends 'assistant' 
+        ? string | null 
+      : string;
   }
   & ReifyInterface<Omit<ChatCompletionMessageParam, 'role' | 'content'>>;
+
+export type AnyChatMessage<RequireContent extends boolean = false> = ChatMessage<ChatRole, RequireContent>;
 
 export function chatMessage<R extends ChatRole>(role: R, content: string): ChatMessage<R> {
   return {

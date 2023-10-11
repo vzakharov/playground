@@ -1,27 +1,52 @@
-<script setup>
+<script setup lang="ts">
 
+import { AnyChatMessage } from 'lib/vovas-openai';
 import { ref, computed } from 'vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
-// import { requestOpenAI } from './openai-api'; // abstracted OpenAI API request
+import _ from 'lodash';
 
 const tab = ref('compose');
-const messages = ref([{ text: '', role: 'user' }]);
+
+const messages = ref<AnyChatMessage<true>[]>([{ 
+  content: 'Tell me a joke about {topic}', 
+  role: 'user' 
+}]);
+
 const output = ref('');
 
 const addMessage = () => {
-  messages.value.push({ text: '', role: 'user' });
+  messages.value.push({ content: '', role: 'user' });
 };
 
 const inputs = computed(() => {
-  const placeholders = messages.value.flatMap(message => message.text.match(/{.*?}/g) || []);
-  return placeholders.map(placeholder => ({ placeholder, value: '' }));
+
+  const inputs = [] as {
+    name: string;
+    description?: string;
+    value: string;
+  }[];
+
+  for ( const message of messages.value ) {
+    // Take all {name} or {name|description} placeholders
+    const matches = message.content?.matchAll(/\{([^\|\}]+)(?:\|([^\}]+))?\}/g);
+    debugger
+    for ( const match of matches ?? [] ) {
+      const [placeholder, name, description] = match;
+      inputs.push({ 
+        name, 
+        description: description || undefined,
+        value: '' 
+      });
+    };
+  };
+
+  return inputs;
+
 });
 
 const run = async () => {
-  const text = messages.value.map(message => message.text).join('\n');
-  const filledText = inputs.value.reduce((text, input) => text.replace(input.placeholder, input.value), text);
-  output.value = await requestOpenAI(filledText);
+  throw new Error('Not implemented');
 };
 
 </script>
@@ -36,15 +61,14 @@ const run = async () => {
     <div v-if="tab === 'compose'" class="compose-container">
       <div class="message-container" v-for="(message, index) in messages" :key="index">
         <Dropdown label="Role" class="role" :options="['user', 'system', 'assistant']" v-model="message.role" />
-        <!-- <input v-model="message.text" class="message-input" placeholder="Enter message"> -->
-        <Textarea label="Message" v-model="message.text" class="message-input" placeholder="Enter message" />
+        <Textarea label="Message" v-model="message.content" class="message-input" placeholder="Enter message" />
       </div>
       <button class="add-message-button" @click="addMessage">Add Message</button>
     </div>
 
     <div v-else class="run-container">
       <div class="input-container" v-for="(input, index) in inputs" :key="index">
-        <label>{{ input.placeholder }}</label>
+        <label v-text="_.startCase(input.name)"></label>
         <input v-model="input.value" class="input-field">
       </div>
       <button class="run-button" @click="run">Run</button>
@@ -89,6 +113,10 @@ const run = async () => {
 
 .role {
   @apply w-40;
+}
+
+.input-field, .output-field {
+  @apply px-2 py-1 border rounded;
 }
 
 .add-message-button, .run-button {
