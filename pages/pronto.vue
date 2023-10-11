@@ -69,6 +69,9 @@ const run = async () => {
         )"
       />
     </template>
+    <template #sidebar-lower>
+      <GenieSettings appId="pronto" />
+    </template>
     <div class="tab-container">
       <button class="tab-button" :class="{ active: tab === 'compose' }" @click="tab = 'compose'">Compose</button>
       <button class="tab-button" :class="{ active: tab === 'run' }" @click="tab = 'run'">Run</button>

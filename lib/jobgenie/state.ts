@@ -2,10 +2,7 @@ import _ from "lodash";
 import { Jsonable, JsonableObject, asTypeguard, is, itselfIf } from "vovas-utils";
 import { ChatType } from "./ChatType";
 import { Leftovers } from "./leftovers";
-
-export const temperatureDescriptors = ['boring', 'normal', 'spicy', 'crazy'] as const;
-
-export type TemperatureDescriptor = typeof temperatureDescriptors[number];
+import { temperatureDescriptors, TemperatureDescriptor } from "~/lib/genie";
 
 export const defaultGlobalState = {
   openaiKey: '',

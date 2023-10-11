@@ -17,7 +17,8 @@ import TextModal from '~/components/shared/TextModal.vue';
 import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { ChatType, allTrue, defaultData, temperatureDescriptors } from '~/lib/jobgenie';
+import { ChatType, allTrue, defaultData } from '~/lib/jobgenie';
+import { temperatureDescriptors } from '~/lib/genie';
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
@@ -68,22 +69,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
           },
         ]"
       />
-      <Dropdown label="Temperature" 
-        :options="temperatureDescriptors"
-        v-model="temperatureDescriptor" 
-        cycle-on-click
-      />
-      <Toggle 
-        v-model="useGpt4" 
-        :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
-        title="This is around 10x more expensive if turned on." 
-      />
-      <div
-        title="Just an estimate — make sure to double-check your OpenAI billing page; double-click to reset."
-        @dblclick="win.confirm('Are you sure you want to reset your spending?') && (usdSpent = 0)"
-      >
-        Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
-      </div>
+      <GenieSettings appId="jobgenie" />
     </template>
     <Login v-if="!data.username || !openaiKey" @="{ login }" />
     <template v-else>
@@ -91,7 +77,6 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
         :key="`${selectedSectionId}-${dataLastLoaded}`"
         :type="getChatType(selectedSectionId)"
       />
-      <!-- Add more sections here -->
     </template>
     <TextModal monospace
       ref="importModal"
