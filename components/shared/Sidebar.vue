@@ -22,11 +22,13 @@ const isVisible = ref(false);
         <li v-for="item in menu.items" :key="item.id" 
           :class="{
             'menu-item': true,
-            selected: item.id === menu.selectedId,
+            selected: item.id === menu.selectionRef.value,
             disabled: item.disabled
           }"
           :title="item.disabled ? item.disabledTooltip : ''"
-          @click="!item.disabled && ( menu.onSelect(item.id), isVisible = false )"
+          @click="
+            !item.disabled && ( menu.selectionRef.value = item.id, isVisible = false )
+          "
         >
           <span v-if="item.emoji" v-text="item.emoji"/>
           <span v-text="item.caption ?? item.id"/>

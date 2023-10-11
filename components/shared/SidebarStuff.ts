@@ -6,6 +6,5 @@ export type SidebarMenu<MenuItemId extends string> = {
     disabled?: boolean;
     disabledTooltip?: string;
   }[];
-  selectedId: MenuItemId;
-  onSelect: (id: MenuItemId) => void;
+  selectionRef: { value: MenuItemId };
 };
