@@ -63,7 +63,10 @@ const run = async () => {
     <template #sidebar-upper>
       <Button small outline
         caption="New template"
-        @click="() => templates.push({ id: uniqueId('template'), messages: [says.user('')] })"
+        @click="() => (
+          templates.push({ id: uniqueId('template'), messages: [says.user('')] }),
+          selectedTemplateId = _.last(templates)!.id
+        )"
       />
     </template>
     <div class="tab-container">
