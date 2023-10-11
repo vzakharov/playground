@@ -38,7 +38,24 @@
   ]).flatten().compact().join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
 
   const onClick = () => {
-    if ( !props.disabled ) {
+    let { confirmPrompt } = props;
+    const { confirmInput , disabled} = props;
+    if ( !disabled ) {
+      if ( confirmPrompt || confirmInput ) {
+        confirmPrompt ||= (
+          `Are you sure you want to ${props.caption.toLowerCase()}?`
+          + ( confirmInput ? ` Type "${confirmInput}" to confirm.` : '' )
+        );
+        if ( confirmInput ) {
+          const input = prompt(confirmPrompt);
+          if ( input !== confirmInput ) {
+            if ( input ) alert('Incorrect input; action cancelled.');
+            return;
+          }
+        } else {
+          if ( !confirm(confirmPrompt) ) return;
+        };
+      };
       emit('click')
     }
   }

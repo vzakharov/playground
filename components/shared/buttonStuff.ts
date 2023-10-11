@@ -14,6 +14,8 @@ export const buttonProps = {
   checkmarkAfterCallback: Boolean,
   tooltip: String,
   class: String,
+  confirmPrompt: String,
+  confirmInput: String,
 } as const;
 
 export type MakeBooleanKeysOptional<T> = {

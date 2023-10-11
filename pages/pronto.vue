@@ -20,6 +20,13 @@ const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
 }));
 
+useHashRoute(selectedTemplateId, id => {
+  if (templates.some(t => t.id === id)) {
+    return id;
+  }
+  return templates[0].id;
+});
+
 const selectedTemplate = computed(() => templates.find(t => t.id === selectedTemplateId.value));
 
 function changeId(newId: string) {
@@ -65,11 +72,25 @@ const run = async () => {
     </div>
 
     <div v-if="tab === 'compose'" class="compose-container">
-      <Input label="Template id" 
-        :modelValue="selectedTemplateId"
-        @update:modelValue="changeId"
-        :invalidIf="id => templates.some(t => t.id === id && t.id !== selectedTemplateId)"
-      />
+      <h2 class="heading">Template id</h2>
+       <div class="flex">
+          <Input
+            :modelValue="selectedTemplateId"
+            @update:modelValue="changeId"
+            :invalidIf="id => templates.some(t => t.id === id && t.id !== selectedTemplateId)"
+          />
+          <Button small ghost
+            v-if="templates.length > 1"
+            caption="Delete"
+            :confirm-prompt="'Type DELETE to confirm (there is no undo!)'"
+            confirm-input="DELETE"
+            @click="() => (
+              templates.splice(templates.findIndex(t => t.id === selectedTemplateId), 1),
+              selectedTemplateId = templates[0].id
+            )"
+          />
+        </div>
+      <h2 class="heading">Messages</h2>
       <div class="message-container" v-for="(message, index) in messages" :key="index">
         <Dropdown cycle-on-click :label="!index && 'Role'" class="role" :options="chatRoles" v-model="message.role" />
         <Textarea :label="!index && 'Message'" v-model="message.content" class="message-input" placeholder="Enter message" />
@@ -100,6 +121,10 @@ const run = async () => {
 
 <style scoped lang="postcss">
 
+.heading {
+  @apply text-lg font-bold mt-8 mb-4;
+}
+
 .tab-container {
   @apply flex border-gray-200;
 }
@@ -117,7 +142,7 @@ const run = async () => {
 }
 
 .compose-container, .run-container {
-  @apply mt-4 space-y-2;
+  @apply mt-4;
 }
 
 .message-container, .input-container {
