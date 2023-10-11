@@ -28,7 +28,8 @@ const isVisible = ref(false);
           :title="item.disabled ? item.disabledTooltip : ''"
           @click="!item.disabled && ( menu.onSelect(item.id), isVisible = false )"
         >
-          <span v-text="`${item.emoji} ${item.caption}`" />
+          <span v-if="item.emoji" v-text="item.emoji"/>
+          <span v-text="item.caption ?? item.id"/>
         </li>
       </ul>
       <slot name="upper"/>
@@ -42,7 +43,7 @@ const isVisible = ref(false);
 <style scoped lang="postcss">
 
 .hamburger {
-  @apply lg:hidden fixed left-2 top-2 bg-white p-1 shadow rounded;
+  @apply lg:hidden fixed left-2 top-2 bg-white p-1;
 }
 
 .hamburger-line {
@@ -52,6 +53,10 @@ const isVisible = ref(false);
 .sidebar {
   @apply shadow rounded md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto bg-white lg:block p-2;
   width: 12rem;
+}
+
+.upper {
+  @apply flex flex-col gap-y-2.5;
 }
 
 .lower {

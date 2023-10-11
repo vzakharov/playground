@@ -47,7 +47,7 @@
 
 <style scoped lang="postcss">
 .btn {
-  @apply text-white font-bold rounded;
+  @apply text-white rounded;
 }
 
 .btn-primary {

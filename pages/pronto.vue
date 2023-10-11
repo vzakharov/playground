@@ -5,14 +5,20 @@ import { computed, ref } from 'vue';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
+import Sidebarred from '~/components/shared/Sidebarred.vue';
 import { defaultProntoData, parseInputs } from '~/lib/pronto';
-import { switchRole, chatRoles } from '~/lib/vovas-openai';
+import { switchRole, chatRoles, says } from '~/lib/vovas-openai';
+import { uniqueId } from '~/lib/utils';
 
 const tab = ref('compose');
 
-const data = useLocalReactive('pronto-data', defaultProntoData);
+const { templates } = useLocalReactive('pronto-data', defaultProntoData);
+const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
+  selectedTemplateId: templates[0].id,
+}));
 
-const { messages } = toRefs(data.templates[0]);
+const selectedTemplate = computed(() => templates.find(t => t.id === selectedTemplateId.value));
+const messages = computed(() => selectedTemplate.value?.messages ?? []);
 
 const output = ref('');
 
@@ -29,7 +35,19 @@ const run = async () => {
 </script>
 
 <template>
-  <div class="app-container">
+  <Sidebarred
+    :sidebar-menu="{
+      items: templates,
+      selectedId: selectedTemplateId,
+      onSelect: id => selectedTemplateId = id,
+    }"
+  >
+    <template #sidebar-upper>
+      <Button small outline
+        caption="New template"
+        @click="() => templates.push({ id: uniqueId('template'), messages: [says.user('')] })"
+      />
+    </template>
     <div class="tab-container">
       <button class="tab-button" :class="{ active: tab === 'compose' }" @click="tab = 'compose'">Compose</button>
       <button class="tab-button" :class="{ active: tab === 'run' }" @click="tab = 'run'">Run</button>
@@ -61,14 +79,10 @@ const run = async () => {
         <textarea readonly v-model="output" class="output-field"></textarea>
       </div>
     </div>
-  </div>
+  </Sidebarred>
 </template>
 
 <style scoped lang="postcss">
-
-.app-container {
-  @apply p-4;
-}
 
 .tab-container {
   @apply flex border-gray-200;
