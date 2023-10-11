@@ -6,7 +6,7 @@ import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { defaultProntoData, parseInputs } from '~/lib/pronto';
-import { switchRole } from '~/lib/vovas-openai';
+import { switchRole, chatRoles } from '~/lib/vovas-openai';
 
 const tab = ref('compose');
 
@@ -37,8 +37,12 @@ const run = async () => {
 
     <div v-if="tab === 'compose'" class="compose-container">
       <div class="message-container" v-for="(message, index) in messages" :key="index">
-        <Dropdown cycle-on-click label="Role" class="role" :options="['user', 'system', 'assistant']" v-model="message.role" />
+        <Dropdown cycle-on-click label="Role" class="role" :options="chatRoles" v-model="message.role" />
         <Textarea label="Message" v-model="message.content" class="message-input" placeholder="Enter message" />
+        <Button primary outline
+          caption="Remove"
+          @click="() => messages.splice(index, 1)"
+        />
       </div>
       <Button primary outline
         caption="Add Message"
