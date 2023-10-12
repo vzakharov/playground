@@ -1,19 +1,19 @@
 import _ from 'lodash';
 import { ToRefs } from 'vue';
-import { ChatType, JobGenieMessage, Resolvable, findBy, toReactive } from '~/lib/jobgenie';
+import { ChatType, JobGenieMessage, Resolvable, toReactive } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { findOrCreateChat } from "../findOrCreateChat";
 // import { dataLastLoaded, generating, userMessage } from '../refs';
 import Textarea from '~/components/shared/TextareaScript';
-import { says } from '~/lib/genie';
+import { GenieMessage, findBy, says } from '~/lib/genie';
 import { editMessage } from './editMessage';
 import { cycleLeftovers, deleteLeftover } from './leftovers';
 import { countIrrelevantMessages, isRelevant } from './relevantMessages';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 
-export type ChatControllerState<T extends ChatType> = {
-  generating: Resolvable<JobGenieMessage<T, 'assistant'>> | undefined;
+export type ChatControllerState<AK extends string> = {
+  generating: Resolvable<GenieMessage<AK, 'assistant'>> | undefined;
   userMessage: string;
   userMessageComponent: InstanceType<typeof Textarea> | undefined;
   msExpected: number | undefined;

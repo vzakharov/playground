@@ -1,14 +1,9 @@
 import _ from "lodash";
-import { AppChat, ChatType, findBy } from "~/lib/jobgenie";
+import { JobGenieChat, ChatType } from "~/lib/jobgenie";
 import { data } from "./data";
+import { findBy, findOrCreateChat as baseFindOrCreateChat } from "~/lib/genie";
 
 
-export function findOrCreateChat<T extends ChatType>(type: T) {
-  const { chats } = data;
-  const chat = findBy({ type }, chats);
-  if (!chat) {
-    chats.push({ type, messages: [] });
-    return _.last(chats) as AppChat<T>;
-  }
-  return chat as AppChat<T>;
-}
+export function findOrCreateChat<T extends ChatType>(type: T, id: string) {
+  return baseFindOrCreateChat(data, type, id) as JobGenieChat<T>;
+};

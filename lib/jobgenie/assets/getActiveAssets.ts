@@ -1,12 +1,13 @@
+import { findBy } from "~/lib/genie";
 import _ from "lodash";
 import { objectWithKeys } from "vovas-utils";
-import { AppChat, AppData, AssetsForChatType, ChatType, chatTypes, findBy } from "~/lib/jobgenie";
+import { JobGenieChat, AppData, AssetsForChatType, ChatType, chatTypes } from "~/lib/jobgenie";
 
 export function getActiveAssets(data: AppData) {
 
   const result = objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
 
-    const chat = findBy({ type }, data.chats) as AppChat<T> | undefined;
+    const chat = findBy({ type }, data.chats) as JobGenieChat<T> | undefined;
 
     if (!chat) return undefined;
 

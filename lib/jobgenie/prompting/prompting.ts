@@ -5,12 +5,13 @@ import { ChatType } from "../ChatType";
 import { JobGenieMessage } from "../JobGenieMessage";
 import { resuméPromptBuilder } from "./builders/resumé";
 import { AssetsForChatType, AssetsMap } from "../assets/assets";
-import { StringKey, challengePromptBuilder, findBy } from "..";
+import { StringKey, challengePromptBuilder } from "..";
 import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
 import { jobPromptBuilder } from "./builders/job";
 import { pitchPromptBuilder } from "./builders/pitch";
 import { socialPromptBuilder } from "./builders/social";
+import { findBy } from "~/lib/genie";
 
 export type FnPropsFor<T extends ChatType> =
   StringKey<AssetsForChatType<T>> | 'content';

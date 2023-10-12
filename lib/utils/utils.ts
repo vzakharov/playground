@@ -30,10 +30,6 @@ export type Unfilter<Filter extends Record<string, any>> = {
   [K in keyof Filter]: any
 };
 
-export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[] | readonly T[]) {
-  return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
-}
-
 export function isAmong<T>(arr: readonly T[]) {
   return (item: any): item is T => arr.includes(item);
 };

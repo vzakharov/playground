@@ -1,10 +1,10 @@
 import { forEach } from "vovas-utils";
 import { ChatType } from "./ChatType";
-import { AppChat } from "./types";
+import { JobGenieChat } from "./JobGenieChat";
 import { RefLike } from "../utils/utils";
 
 export const defaultData = {
-  chats: [] as AppChat<ChatType>[],
+  chats: [] as JobGenieChat<ChatType>[],
   username: '',
   profileSlug: 'default',
 };
