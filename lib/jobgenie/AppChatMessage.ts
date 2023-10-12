@@ -4,7 +4,7 @@ import { objectWithKeys } from "vovas-utils";
 import { ChatType } from "./ChatType";
 
 
-export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
+export type JobGenieMessage<T extends ChatType, R extends ChatRole = ChatRole> =
   RawChatMessage<R> &
   WithId & {
     content: string;
@@ -12,11 +12,11 @@ export type AppChatMessage<T extends ChatType, R extends ChatRole = ChatRole> =
     assetsPickedAt?: number;
   };
 
-export const says = objectWithKeys(chatRoles, role => <T extends ChatType>(content: string, params?: Omit<AppChatMessage<T>, 'id' | 'role' | 'content'>) => ({
+export const says = objectWithKeys(chatRoles, role => <T extends ChatType>(content: string, params?: Omit<JobGenieMessage<T>, 'id' | 'role' | 'content'>) => ({
   ...rawSays[role](content),
   ...params,
   ...withUniqueId()
 })
 ) as {
-    [K in ChatRole]: <T extends ChatType>(content: string, assets?: AssetsForChatType<T>) => AppChatMessage<T, K>;
+    [K in ChatRole]: <T extends ChatType>(content: string, assets?: AssetsForChatType<T>) => JobGenieMessage<T, K>;
   };

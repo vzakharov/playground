@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
 import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { AppChatMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./AppChatMessage";
 import { getPromptBuilder } from './prompting';
 import { GlobalState, temperatureForDescriptor } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
@@ -11,8 +11,8 @@ import { withUniqueId } from '../utils/utils';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,
-  messages: AppChatMessage<T>[],
-  previousGeneration?: AppChatMessage<T, 'assistant'>,
+  messages: JobGenieMessage<T>[],
+  previousGeneration?: JobGenieMessage<T, 'assistant'>,
   state: {
     msExpected: number | undefined
   },
@@ -22,7 +22,7 @@ export type GenerateResponseParams<T extends ChatType> = {
 
 export async function generateResponse<T extends ChatType>(
   { type, messages, data, state, globalState, previousGeneration }: GenerateResponseParams<T>
-): Promise<AppChatMessage<T, 'assistant'>> {
+): Promise<JobGenieMessage<T, 'assistant'>> {
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
   const { promptMessages, fn } = getPromptBuilder(type).build({ messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
@@ -64,7 +64,7 @@ export async function generateResponse<T extends ChatType>(
       : (
         ({ content, ...assets }) => ({ content, assets })
       )(raw)
-  }) as AppChatMessage<T, 'assistant'>;
+  }) as JobGenieMessage<T, 'assistant'>;
 
   const responseMessage = fromRawMessage(result);
   const existingLeftovers = getLeftovers(globalState, type);

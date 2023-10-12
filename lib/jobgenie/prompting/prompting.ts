@@ -2,7 +2,7 @@ import { ChatFunction, ChatFunctionReturns, ChatMessage } from "~/lib/vovas-open
 import { interviewPromptBuilder } from "./builders/dna";
 import { AppData } from "../AppData";
 import { ChatType } from "../ChatType";
-import { AppChatMessage } from "../AppChatMessage";
+import { JobGenieMessage } from "../AppChatMessage";
 import { resuméPromptBuilder } from "./builders/resumé";
 import { AssetsForChatType, AssetsMap } from "../assets/assets";
 import { StringKey, challengePromptBuilder, findBy } from "..";

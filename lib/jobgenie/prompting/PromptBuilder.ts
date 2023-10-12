@@ -4,7 +4,7 @@ import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
 import {
-  AppChatMessage, AppData, AssetsMap, Falsible, FnPropsFor, PickAssets,
+  JobGenieMessage, AppData, AssetsMap, Falsible, FnPropsFor, PickAssets,
   assetsDefinedForChatTypes,
   getActiveAssets, toRawMessage, yamlifyAssets
 } from "..";
@@ -28,7 +28,7 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
 };
 
 export type PromptBuilderInput<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
-  messages: AppChatMessage<T>[];
+  messages: JobGenieMessage<T>[];
   data: AppData;
 };
 

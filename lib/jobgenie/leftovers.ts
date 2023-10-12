@@ -1,17 +1,17 @@
-import { AppChatMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./AppChatMessage";
 import { ChatType } from "./ChatType";
 import { GlobalState } from "./state";
 
 
 export type Leftovers<T extends ChatType> = {
-  results: AppChatMessage<T>[];
+  results: JobGenieMessage<T>[];
   baseId: string | null;
   selectedIndex: number;
 };
 
 export function areLeftoversForMessage<T extends ChatType>(
   leftovers: Leftovers<any>,
-  { id }: AppChatMessage<T, "assistant">
+  { id }: JobGenieMessage<T, "assistant">
 ): leftovers is Leftovers<T> {
   return !!id && (leftovers.baseId === id);
 };

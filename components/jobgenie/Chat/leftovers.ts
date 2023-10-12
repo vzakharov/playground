@@ -1,12 +1,12 @@
 import { $throw } from "vovas-utils";
-import { AppChatMessage, ChatType, areLeftoversForMessage, getLeftovers } from "~/lib/jobgenie";
+import { JobGenieMessage, ChatType, areLeftoversForMessage, getLeftovers } from "~/lib/jobgenie";
 import { globalState } from "../state";
 import { ChatController } from "./controller";
 
 
 export function deleteLeftover<T extends ChatType>(
   this: ChatController<T>, 
-  message: AppChatMessage<T, 'assistant'>
+  message: JobGenieMessage<T, 'assistant'>
 ) {
 
   const leftovers = getLeftovers(globalState, this.type);
@@ -29,7 +29,7 @@ export function deleteLeftover<T extends ChatType>(
 
 export function cycleLeftovers<T extends ChatType>(
   this: ChatController<T>, 
-  message: AppChatMessage<T, 'assistant'>
+  message: JobGenieMessage<T, 'assistant'>
 ) {
 
   const { 

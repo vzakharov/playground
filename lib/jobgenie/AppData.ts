@@ -3,11 +3,6 @@ import { ChatType } from "./ChatType";
 import { AppChat } from "./types";
 import { RefLike } from "../utils/utils";
 
-// export type AppData = {
-//   username: string | null;
-//   chats: AppChat<ChatType>[];
-// };
-
 export const defaultData = {
   chats: [] as AppChat<ChatType>[],
   username: '',

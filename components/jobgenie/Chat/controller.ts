@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { ToRefs } from 'vue';
-import { AppChatMessage, ChatType, Resolvable, findBy, says, toReactive } from '~/lib/jobgenie';
+import { JobGenieMessage, ChatType, Resolvable, findBy, says, toReactive } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { findOrCreateChat } from "../findOrCreateChat";
 // import { dataLastLoaded, generating, userMessage } from '../refs';
@@ -12,7 +12,7 @@ import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 
 export type ChatControllerState<T extends ChatType> = {
-  generating: Resolvable<AppChatMessage<T, 'assistant'>> | undefined;
+  generating: Resolvable<JobGenieMessage<T, 'assistant'>> | undefined;
   userMessage: string;
   userMessageComponent: InstanceType<typeof Textarea> | undefined;
   msExpected: number | undefined;
@@ -25,20 +25,20 @@ export function createChatController<T extends ChatType>(type: T, refs: ToRefs<C
     type,
     state: toReactive(refs) as ChatControllerState<T>,
     messages: findOrCreateChat(type).messages,
-    previousGeneration: undefined as AppChatMessage<T, 'assistant'> | undefined,
+    previousGeneration: undefined as JobGenieMessage<T, 'assistant'> | undefined,
 
     get lastMessageIsFromUser() {
       const lastMessage = _.last(c.messages);
       return lastMessage && isBy.user(lastMessage);
     },
 
-    removeMessagesFrom(message: AppChatMessage<T>) {
+    removeMessagesFrom(message: JobGenieMessage<T>) {
       c.messages.splice(c.messages.indexOf(message), c.messages.length - c.messages.indexOf(message));
     },
 
     editMessage,
 
-    regenerate(message: AppChatMessage<T, 'assistant'>) {
+    regenerate(message: JobGenieMessage<T, 'assistant'>) {
       c.previousGeneration = message;
       c.removeMessagesFrom(message);
     },

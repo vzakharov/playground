@@ -46,6 +46,8 @@ export type AssetsWithKeys<K extends string> = {
 
 export type AssetKeyForChatType<T extends ChatType> = StringKey<AssetsMap[T]>;
 
+type TestAssetKey = AssetKeyForChatType<'resumé'>;
+
 export type AssetsForChatType<T extends ChatType> = AssetsWithKeys<AssetKeyForChatType<T>>;
 
 type TestAssets = AssetsForChatType<'resumé'>;

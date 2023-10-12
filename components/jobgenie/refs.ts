@@ -1,4 +1,4 @@
-import { AppChatMessage, ChatType, getActiveAssets } from "~/lib/jobgenie";
+import { JobGenieMessage, ChatType, getActiveAssets } from "~/lib/jobgenie";
 import { ChatController } from "./Chat/controller";
 import { data } from "./data";
 
@@ -8,6 +8,6 @@ export const activeAssets = computed(() =>
   getActiveAssets(data)
 );
 
-export function isActiveAssetFor<T extends ChatType>(chat: ChatController<T>, message: AppChatMessage<T, any>) {
+export function isActiveAssetFor<T extends ChatType>(chat: ChatController<T>, message: JobGenieMessage<T, any>) {
   return message.assets && message.assets === activeAssets.value[chat.type]
 };

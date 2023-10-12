@@ -1,4 +1,4 @@
-import { AppChatMessage, ChatType, getPromptBuilder } from "~/lib/jobgenie";
+import { JobGenieMessage, ChatType, getPromptBuilder } from "~/lib/jobgenie";
 import { ChatController } from "./controller";
 import { data } from "../data";
 import { reduceChatMessages } from "~/lib/vovas-openai";
@@ -11,7 +11,7 @@ export function countIrrelevantMessages<T extends ChatType>(this: ChatController
 
   const { type } = this;
   const originalMessages = [...this.messages];
-  const relevantMessages = [] as AppChatMessage<T>[];
+  const relevantMessages = [] as JobGenieMessage<T>[];
   const builder = getPromptBuilder(type);
   let previousJsonChars = 0;
 
@@ -32,6 +32,6 @@ export function countIrrelevantMessages<T extends ChatType>(this: ChatController
 
 };
 
-export function isRelevant<T extends ChatType>(this: ChatController<T>, message: AppChatMessage<T>) {
+export function isRelevant<T extends ChatType>(this: ChatController<T>, message: JobGenieMessage<T>) {
   return this.messages.indexOf(message) >= this.countIrrelevantMessages();
 };

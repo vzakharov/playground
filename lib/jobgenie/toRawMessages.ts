@@ -1,5 +1,5 @@
 import { ChatType } from "./ChatType";
-import { AppChatMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./AppChatMessage";
 import { ChatFunctionFor } from './prompting';
 import { ChatMessage } from 'lib/vovas-openai';
 import { $throw } from 'vovas-utils';
@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 export function toRawMessage<T extends ChatType>(fn?: ChatFunctionFor<T>) {
 
-  return (appChatMessage: AppChatMessage<T> ) => {
+  return (appChatMessage: JobGenieMessage<T> ) => {
 
     const { content, assets, role } = appChatMessage;
 
