@@ -1,3 +1,4 @@
+import { StringKey } from "vovas-utils";
 import { ChatType } from "../ChatType";
 
 export const assetCaptions = {
@@ -35,12 +36,22 @@ export type PickAssets<ChatTypes extends ChatType[] | undefined> =
     ? Pick<AssetsMap, ChatTypes[number]> 
     : {};
 
-export type Assets<T extends ChatType> = {
-  [K in keyof AssetsMap[T]]: string;
+// export type Assets<T extends ChatType> = {
+//   [K in keyof AssetsMap[T]]: string;
+// };
+
+export type AssetsWithKeys<K extends string> = {
+  [P in K]: string;
 };
 
+export type AssetKeyForChatType<T extends ChatType> = StringKey<AssetsMap[T]>;
+
+export type AssetsForChatType<T extends ChatType> = AssetsWithKeys<AssetKeyForChatType<T>>;
+
+type TestAssets = AssetsForChatType<'resumé'>;
+
 export function getAssetCaptions<T extends ChatType>(type: T) {
-  return assetCaptions[type] as Assets<T>;
+  return assetCaptions[type] as AssetsForChatType<T>;
 };
 
 export function assetsDefinedForChatTypes<

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { objectWithKeys } from "vovas-utils";
-import { AppChat, AppData, Assets, ChatType, chatTypes, findBy } from "~/lib/jobgenie";
+import { AppChat, AppData, AssetsForChatType, ChatType, chatTypes, findBy } from "~/lib/jobgenie";
 
 export function getActiveAssets(data: AppData) {
 
@@ -16,7 +16,7 @@ export function getActiveAssets(data: AppData) {
       .last()?.assets;
 
   }) as {
-      [T in ChatType]?: Assets<T>;
+      [T in ChatType]?: AssetsForChatType<T>;
     };
   
   return result;

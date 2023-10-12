@@ -4,7 +4,7 @@ import { AppData } from "../AppData";
 import { ChatType } from "../ChatType";
 import { AppChatMessage } from "../AppChatMessage";
 import { resuméPromptBuilder } from "./builders/resumé";
-import { Assets, AssetsMap } from "../assets/assets";
+import { AssetsForChatType, AssetsMap } from "../assets/assets";
 import { StringKey, challengePromptBuilder, findBy } from "..";
 import _ from "lodash";
 import { PromptBuilder } from "./PromptBuilder";
@@ -13,9 +13,9 @@ import { pitchPromptBuilder } from "./builders/pitch";
 import { socialPromptBuilder } from "./builders/social";
 
 export type FnPropsFor<T extends ChatType> =
-  StringKey<Assets<T>> | 'content';
+  StringKey<AssetsForChatType<T>> | 'content';
 
-export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, StringKey<Assets<T>> | 'content', never>;
+export type ChatFunctionFor<T extends ChatType> = ChatFunction<any, StringKey<AssetsForChatType<T>> | 'content', never>;
 
 export const promptBuilders = [
   interviewPromptBuilder,
