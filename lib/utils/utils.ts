@@ -45,15 +45,6 @@ export function debugAnd<Args, Result>(fn: (...args: Args[]) => Result) {
   }
 };
 
-export type WithId = { id: string };
-
-export function withUniqueId() {
-  return {
-    id: _.uniqueId(`${new Date().toISOString()}_`)
-  } as WithId;
-};
-
-
 export function create<C extends new (...args: any[]) => any>(Class: C) {
   
   return {

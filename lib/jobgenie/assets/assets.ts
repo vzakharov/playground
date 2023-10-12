@@ -1,5 +1,6 @@
 import { StringKey } from "vovas-utils";
 import { ChatType } from "../ChatType";
+import { WithKeys } from "~/lib/genie";
 
 export const assetCaptions = {
   dna: {
@@ -40,15 +41,11 @@ export type PickAssets<ChatTypes extends ChatType[] | undefined> =
 //   [K in keyof AssetsMap[T]]: string;
 // };
 
-export type AssetsWithKeys<K extends string> = {
-  [P in K]: string;
-};
-
 export type AssetKeyForChatType<T extends ChatType> = StringKey<AssetsMap[T]>;
 
 type TestAssetKey = AssetKeyForChatType<'resumé'>;
 
-export type AssetsForChatType<T extends ChatType> = AssetsWithKeys<AssetKeyForChatType<T>>;
+export type AssetsForChatType<T extends ChatType> = WithKeys<AssetKeyForChatType<T>>;
 
 type TestAssets = AssetsForChatType<'resumé'>;
 
