@@ -1,4 +1,4 @@
-import { JobGenieMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./JobGenieMessage";
 import { ChatType } from "./ChatType";
 import { GlobalState } from "./state";
 

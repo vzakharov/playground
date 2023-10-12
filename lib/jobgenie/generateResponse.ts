@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
 import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { JobGenieMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./JobGenieMessage";
 import { getPromptBuilder } from './prompting';
 import { GlobalState, temperatureForDescriptor } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";

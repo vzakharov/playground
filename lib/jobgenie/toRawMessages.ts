@@ -1,5 +1,5 @@
 import { ChatType } from "./ChatType";
-import { JobGenieMessage } from "./AppChatMessage";
+import { JobGenieMessage } from "./JobGenieMessage";
 import { ChatFunctionFor } from './prompting';
 import { ChatMessage } from 'lib/vovas-openai';
 import { $throw } from 'vovas-utils';

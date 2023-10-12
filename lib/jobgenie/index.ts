@@ -1,4 +1,4 @@
-export * from './AppChatMessage';
+export * from './JobGenieMessage';
 export * from './AppData';
 export * from './ChatType';
 export * from './assets';
