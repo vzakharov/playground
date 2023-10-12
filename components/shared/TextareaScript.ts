@@ -49,7 +49,8 @@ export const Textarea = defineComponent({
     const textarea = ref<HTMLTextAreaElement>();
     const height = ref(props.minHeight);
 
-    watch(input, () => {
+    watchEffect(() => {
+      input.value // this is just to trigger the watcher when the model value changes
       const inputElement = textarea.value;
       if (inputElement) {
         height.value = props.minHeight; // reset the height, otherwise it won’t shrink
