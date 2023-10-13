@@ -1,4 +1,4 @@
-import { Defaults, defaultable } from "~/lib/jobgenie";
+import { Defaults, defaultable } from "~/lib/utils";
 import _ from "lodash";
 import { $if, $try, JsonableObject, give, give$, is } from "vovas-utils"
 

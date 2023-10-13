@@ -1,9 +1,9 @@
-import { GenieChat } from "./GenieChat";
+import { AssetName, GenieChat, GenieChatType } from ".";
 
-export function defaultGenieData<T extends string>() {
+export function defaultGenieData<T extends GenieChatType>() {
   return ({
-    chats: [] as GenieChat<T, string>[],
+    chats: [] as GenieChat<T, AssetName>[],
   });
 }
 
-export type GenieData<T extends string> = ReturnType<typeof defaultGenieData<T>>;
+export type GenieData<T extends GenieChatType> = ReturnType<typeof defaultGenieData<T>>;

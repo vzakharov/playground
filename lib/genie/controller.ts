@@ -2,10 +2,10 @@ import _ from 'lodash';
 import { ToRefs } from 'vue';
 import { toReactive } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { GenieData, GenieMessage, Resolvable, findBy, findOrCreateChat, says } from '.';
+import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, cycleLeftovers, replaceWithLeftover, editMessage, findBy, findOrCreateChat, getLeftovers, handleResponseGeneration, says, watchForResponseGeneration } from '.';
 
-export type ChatControllerState<AK extends string> = {
-  generating: Resolvable<GenieMessage<AK, 'assistant'>> | undefined;
+export type ChatControllerState<A extends AssetName> = {
+  generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;
   userMessage: string;
   userMessageComponent: {
     textarea?: HTMLTextAreaElement;
@@ -13,31 +13,41 @@ export type ChatControllerState<AK extends string> = {
   msExpected: number | undefined;
 };
 
-export function createChatController<Ts extends string, T extends Ts, AK extends string>(
-  data: GenieData<Ts>,
-  type: T,
-  id: string,
-  refs: ToRefs<ChatControllerState<AK>>
-) {
+export type ChatControllerConfig<T extends GenieChatType, A extends AssetName> = {
+  data: GenieData<GenieChatType>;
+  globalState: GenieState;
+  type: T;
+  chatId: ChatId;
+  refs: ToRefs<ChatControllerState<A>>;
+};
+
+export function createChatController<T extends GenieChatType, A extends AssetName>({
+  data, globalState, type, chatId, refs,
+}: ChatControllerConfig<T, A>) {
+
+  const chat = findOrCreateChat(data, type, chatId ) as GenieChat<T, A>;
+  const { messages } = chat;
 
   const c = {
     type,
-    state: toReactive(refs) as ChatControllerState<AK>,
-    messages: findOrCreateChat(data, type, id ).messages,
-    previousGeneration: undefined as GenieMessage<AK, 'assistant'> | undefined,
+    chat,
+    globalState,
+    state: toReactive(refs) as ChatControllerState<A>,
+    messages,
+    previousGeneration: undefined as GenieMessage<A, 'assistant'> | undefined,
 
     get lastMessageIsFromUser() {
       const lastMessage = _.last(c.messages);
       return lastMessage && isBy.user(lastMessage);
     },
 
-    removeMessagesFrom(message: GenieMessage<AK>) {
+    removeMessagesFrom(message: GenieMessage<A>) {
       c.messages.splice(c.messages.indexOf(message), c.messages.length - c.messages.indexOf(message));
     },
 
     editMessage,
 
-    regenerate(message: GenieMessage<AK, 'assistant'>) {
+    regenerate(message: GenieMessage<A, 'assistant'>) {
       c.previousGeneration = message;
       c.removeMessagesFrom(message);
     },
@@ -54,8 +64,9 @@ export function createChatController<Ts extends string, T extends Ts, AK extends
     watchForResponseGeneration,
     handleResponseGeneration,
 
+    getLeftovers,
     cycleLeftovers,
-    deleteLeftover,
+    replaceWithLeftover,
 
     countIrrelevantMessages,
     isRelevant,
@@ -67,16 +78,14 @@ export function createChatController<Ts extends string, T extends Ts, AK extends
 
 };
 
-// export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
+export type ChatController<T extends GenieChatType, A extends AssetName> = ReturnType<typeof createChatController<T, A>>;
 
-export type ChatController<Ts extends string, T extends Ts, AK extends string> = ReturnType<typeof createChatController<Ts, T, AK>>;
-
-export type AnyChatController = ChatController<string, string, string>;
+export type AnyChatController = ChatController<GenieChatType, AssetName>;
 
 export const activeChatControllers = reactive<AnyChatController[]>([]);
 
-export function renewChatController<Ts extends string, T extends Ts, AK extends string>(
-  ...args: Parameters<typeof createChatController<Ts, T, AK>>
+export function renewChatController<T extends GenieChatType, A extends AssetName>(
+  ...args: Parameters<typeof createChatController<T, A>>
 ) {
   const [, type, id] = args;
   const oldController = findBy({ type, id }, activeChatControllers);

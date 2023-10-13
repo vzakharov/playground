@@ -12,20 +12,20 @@ import { countIrrelevantMessages, isRelevant } from './relevantMessages';
 import { handleResponseGeneration } from './responder/handleResponseGeneration';
 import { watchForResponseGeneration } from './responder/watchForResponseGeneration';
 
-export type ChatControllerState<AK extends string> = {
-  generating: Resolvable<GenieMessage<AK, 'assistant'>> | undefined;
+export type ChatControllerState<A extends string> = {
+  generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;
   userMessage: string;
   userMessageComponent: InstanceType<typeof Textarea> | undefined;
   msExpected: number | undefined;
 };
 
-export function createChatController<T extends ChatType>(type: T, refs: ToRefs<ChatControllerState<T>>) {
+export function createChatController<T extends ChatType>(type: T, id: string, refs: ToRefs<ChatControllerState<T>>) {
 
   const c = {
 
     type,
     state: toReactive(refs) as ChatControllerState<T>,
-    messages: findOrCreateChat(type).messages,
+    messages: findOrCreateChat(type, id).messages,
     previousGeneration: undefined as JobGenieMessage<T, 'assistant'> | undefined,
 
     get lastMessageIsFromUser() {
