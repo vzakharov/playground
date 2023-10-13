@@ -1,9 +1,13 @@
-import { AssetName, BaseChatController, GenieChatType, Resolvable } from "..";
+import _ from "lodash";
+import { 
+  AssetName, BaseChatController, GenieChatType, LeftoversMixin, Resolvable, generateResponse 
+} from "..";
+import { isBy } from "~/lib/vovas-openai";
 
 export class GenerationCanceledException extends Error {}
 
 export async function handleResponseGeneration<T extends GenieChatType, A extends AssetName>(
-  this: BaseChatController<T, A>
+  this: BaseChatController<T, A> & LeftoversMixin<A>
 ) {
 
   const { type, messages, state, previousGeneration, data, globalState } = this;
@@ -22,7 +26,7 @@ export async function handleResponseGeneration<T extends GenieChatType, A extend
     const responseMessage = await (
       state.generating =
       new Resolvable(
-        generateResponse({ type, messages, state, data, globalState, previousGeneration })
+        generateResponse.call(this)
       )
     ).promise;
 

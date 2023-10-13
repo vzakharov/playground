@@ -1,7 +1,9 @@
 import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AssetName, BaseChatController, GenieChatType, handleResponseGeneration } from '..';
+import { 
+  AssetName, BaseChatController, GenieChatType, LeftoversMixin, generateResponse, handleResponseGeneration 
+} from '..';
 
 export type ResponderMixinConfig = {
   watch: <T>(
@@ -14,7 +16,7 @@ export type ResponderMixinConfig = {
 export function responderMixin({ watch }: ResponderMixinConfig) {
 
   return function <T extends GenieChatType, A extends AssetName>(
-    base: BaseChatController<T, A>
+    base: BaseChatController<T, A> & LeftoversMixin<A>
   ) {
 
     const { messages, data, autoMessage } = base;
@@ -35,7 +37,10 @@ export function responderMixin({ watch }: ResponderMixinConfig) {
           }
         }, { immediate: true });
 
-      }
+      },
+
+      generateResponse,
+      handleResponseGeneration
 
     };
 

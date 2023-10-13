@@ -18,12 +18,4 @@ export const defaultGlobalState = {
   temperatureDescriptor: itselfIf(is.among(temperatureDescriptors)).else('normal'),
 } satisfies Defaults;
 
-
-export const temperatureForDescriptor: Record<TemperatureDescriptor, number> = {
-  boring: 0,
-  normal: 0.3,
-  spicy: 0.7,
-  crazy: 1,
-};
-
 export type GlobalState = InferDefaultTypes<typeof defaultGlobalState>;

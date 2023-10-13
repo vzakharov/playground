@@ -3,11 +3,11 @@ import { is, mutate } from 'vovas-utils';
 import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
 import { JobGenieMessage } from "./JobGenieMessage";
 import { getPromptBuilder } from './prompting';
-import { GlobalState, temperatureForDescriptor } from './state';
+import { GlobalState } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
 import { AppData } from "./AppData";
 import { ChatType } from "./ChatType";
-import { withUniqueId } from '~/lib/genie';
+import { temperatureForDescriptor, withUniqueId } from '~/lib/genie';
 
 export type GenerateResponseParams<T extends ChatType> = {
   type: T,

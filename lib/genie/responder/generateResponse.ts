@@ -1,30 +1,14 @@
 import _ from 'lodash';
 import { is, mutate } from 'vovas-utils';
 import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { JobGenieMessage } from "./JobGenieMessage";
-import { getPromptBuilder } from './prompting';
-import { GlobalState, temperatureForDescriptor } from './state';
-import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
-import { AppData } from "./AppData";
-import { ChatType } from "./ChatType";
-import { withUniqueId } from '~/lib/genie';
+import { AssetName, BaseChatController, ChatController, GenieChatType, GenieData, GenieMessage, GenieState, LeftoversMixin, leftoversMixin, temperatureForDescriptor, withUniqueId } from '..';
 
-export type GenerateResponseParams<T extends ChatType> = {
-  type: T,
-  messages: JobGenieMessage<T>[],
-  previousGeneration?: JobGenieMessage<T, 'assistant'>,
-  state: {
-    msExpected: number | undefined
-  },
-  globalState: GlobalState,
-  data: AppData
-};
-
-export async function generateResponse<T extends ChatType>(
-  { type, messages, data, state, globalState, previousGeneration }: GenerateResponseParams<T>
-): Promise<JobGenieMessage<T, 'assistant'>> {
+export async function generateResponse<Ts extends GenieChatType, A extends AssetName>(
+  this: BaseChatController<Ts, A> & LeftoversMixin<A>,
+): Promise<GenieMessage<A, 'assistant'>> {
+  const { promptBuilder, messages, data, state, globalState, previousGeneration } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
-  const { promptMessages, fn } = getPromptBuilder(type).build({ messages, data });
+  const { promptMessages, fn } = promptBuilder.build({ messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });
@@ -64,23 +48,23 @@ export async function generateResponse<T extends ChatType>(
       : (
         ({ content, ...assets }) => ({ content, assets })
       )(raw)
-  }) as JobGenieMessage<T, 'assistant'>;
+  }) as GenieMessage<A, 'assistant'>;
 
   const responseMessage = fromRawMessage(result);
-  const existingLeftovers = getLeftovers(globalState, type);
+  const existingLeftovers = this.leftovers;
 
-  setLeftovers(globalState, type, {
+  this.leftovers = {
     results: _.compact([
       ...leftovers.map(fromRawMessage),
       // If the the existing leftovers are for the previousGeneration, then we want to keep them (as well as the previous generation itself)
-      ...previousGeneration && areLeftoversForMessage(existingLeftovers, previousGeneration) ? [
+      ...previousGeneration && this.areForMessage(previousGeneration) ? [
         ...existingLeftovers.results,
         previousGeneration
       ] : []
     ]),
     baseId: responseMessage.id,
-    selectedIndex: 1
-  });
+    activeMessageOriginalIndex: 1
+  };
 
   return responseMessage
 

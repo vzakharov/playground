@@ -17,13 +17,6 @@ export type LeftoversStore = {
   [id in ChatId]?: Leftovers<AssetName>
 };
 
-export function areLeftoversForMessage<A extends AssetName>(
-  leftovers: Leftovers<AssetName>,
-  { id }: GenieMessage<A, "assistant">
-): leftovers is Leftovers<A> {
-  return !!id && (leftovers.baseId === id);
-};
-
 export function leftoversMixin<A extends AssetName>(
 
   { globalState: { leftoversStore }, chat, messages }: BaseChatController<GenieChatType, A>
@@ -32,24 +25,34 @@ export function leftoversMixin<A extends AssetName>(
 
   return {
 
-    getLeftovers() {
+    get leftovers() {
       return leftoversStore[chat.id] ??= defaultLeftovers;
     },
 
 
-    setLeftovers(
+    set leftovers(
       value: Leftovers<A>
     ) {
       leftoversStore[chat.id] = value;
+    },
+
+    areForMessage(
+      message: GenieMessage<A, 'assistant'>
+    ) {
+
+      const { leftovers } = this;
+
+      return !!message.id && (leftovers.baseId === message.id);
+
     },
 
     replaceWithLeftover(
       message: GenieMessage<A, 'assistant'>
     ) {
 
-      const leftovers = this.getLeftovers();
+      const { leftovers } = this;
 
-      if (!areLeftoversForMessage(leftovers, message))
+      if (!this.areForMessage(message))
         throw new Error('Leftovers are not for this message');
 
       const { results } = leftovers;
@@ -85,4 +88,4 @@ export function leftoversMixin<A extends AssetName>(
 
 };
 
-export type LeftoverHandler<A extends AssetName> = ReturnType<typeof leftoversMixin<A>>;
+export type LeftoversMixin<A extends AssetName> = ReturnType<typeof leftoversMixin<A>>;

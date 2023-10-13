@@ -1,3 +1,4 @@
+export * from './BaseChatController';
 export * from './GenieChat';
 export * from './GenieData';
 export * from './GenieMessage';
