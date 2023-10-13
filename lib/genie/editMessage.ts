@@ -1,7 +1,7 @@
-import { AssetName, ChatController, GenieChatType, GenieMessage } from ".";
+import { AssetName, BaseChatController, ChatController, GenieChatType, GenieMessage } from ".";
 
 export function editMessage<A extends AssetName>(
-  this: ChatController<GenieChatType, A>,
+  this: BaseChatController<GenieChatType, A>,
   message: GenieMessage<A, 'user'>) {
 
   const { state, state: { generating, userMessageComponent } } = this;

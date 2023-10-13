@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { ToRefs } from 'vue';
-import { toReactive } from '~/lib/utils';
+import { mixin, toReactive } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, cycleLeftovers, replaceWithLeftover, editMessage, findBy, findOrCreateChat, getLeftovers, handleResponseGeneration, says, watchForResponseGeneration } from '.';
+import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, leftoversMixin, editMessage, findBy, findOrCreateChat, says } from '.';
+import { merge } from 'vovas-utils';
 
 export type ChatControllerState<A extends AssetName> = {
   generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;
@@ -21,7 +22,7 @@ export type ChatControllerConfig<T extends GenieChatType, A extends AssetName> =
   refs: ToRefs<ChatControllerState<A>>;
 };
 
-export function createChatController<T extends GenieChatType, A extends AssetName>({
+export function createBaseChatController<T extends GenieChatType, A extends AssetName>({
   data, globalState, type, chatId, refs,
 }: ChatControllerConfig<T, A>) {
 
@@ -61,21 +62,28 @@ export function createChatController<T extends GenieChatType, A extends AssetNam
       }
     },
 
-    watchForResponseGeneration,
-    handleResponseGeneration,
+    // watchForResponseGeneration,
+    // handleResponseGeneration,
 
-    getLeftovers,
-    cycleLeftovers,
-    replaceWithLeftover,
-
-    countIrrelevantMessages,
-    isRelevant,
+    // countIrrelevantMessages,
+    // isRelevant,
   };
 
-  c.watchForResponseGeneration();
+  // c.watchForResponseGeneration();
 
   return c;
 
+};
+
+export type BaseChatController<T extends GenieChatType, A extends AssetName> = ReturnType<typeof createBaseChatController<T, A>>;
+
+export function createChatController<T extends GenieChatType, A extends AssetName>(
+  config: ChatControllerConfig<T, A>
+) {
+  return mixin(
+    createBaseChatController(config),
+    leftoversMixin
+  );
 };
 
 export type ChatController<T extends GenieChatType, A extends AssetName> = ReturnType<typeof createChatController<T, A>>;
@@ -85,15 +93,15 @@ export type AnyChatController = ChatController<GenieChatType, AssetName>;
 export const activeChatControllers = reactive<AnyChatController[]>([]);
 
 export function renewChatController<T extends GenieChatType, A extends AssetName>(
-  ...args: Parameters<typeof createChatController<T, A>>
-) {
-  const [, type, id] = args;
-  const oldController = findBy({ type, id }, activeChatControllers);
+  config: ChatControllerConfig<T, A>
+): ChatController<T, A> {
+  const { type, chatId } = config;
+  const oldController = findBy({ type, chatId }, activeChatControllers);
   if (oldController) {
     console.log("Deleting old chat controller:", oldController);
     _.pull(activeChatControllers, oldController);
   };
-  const newController = createChatController(...args);
+  const newController = createChatController(config);
   console.log("Creating new chat controller:", newController);
   activeChatControllers.push(newController);
   return newController;

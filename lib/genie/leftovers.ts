@@ -1,5 +1,5 @@
 import { $throw } from "vovas-utils";
-import { AssetName, ChatController, ChatId, GenieChatType, GenieMessage, MessageId } from ".";
+import { AssetName, BaseChatController, ChatId, GenieChatType, GenieMessage, MessageId } from ".";
 
 export type Leftovers<A extends AssetName> = {
   results: GenieMessage<A, 'assistant'>[];
@@ -14,7 +14,7 @@ export const defaultLeftovers: Leftovers<AssetName> = {
 };
 
 export type LeftoversStore = {
-  [id in ChatId]? : Leftovers<AssetName>
+  [id in ChatId]?: Leftovers<AssetName>
 };
 
 export function areLeftoversForMessage<A extends AssetName>(
@@ -24,58 +24,65 @@ export function areLeftoversForMessage<A extends AssetName>(
   return !!id && (leftovers.baseId === id);
 };
 
-export function getLeftovers<A extends AssetName>(
-  this: ChatController<GenieChatType, A>
+export function leftoversMixin<A extends AssetName>(
+  c: BaseChatController<GenieChatType, A>
 ) {
-  const { globalState: { leftoversStore }, chat } = this;
-  return leftoversStore[chat.id] ??= defaultLeftovers;
+
+  const { globalState: { leftoversStore }, chat, messages } = c;
+
+  return {
+
+    getLeftovers() {
+      return leftoversStore[chat.id] ??= defaultLeftovers;
+    },
+
+
+    setLeftovers(
+      value: Leftovers<A>
+    ) {
+      leftoversStore[chat.id] = value;
+    },
+
+    replaceWithLeftover(
+      message: GenieMessage<A, 'assistant'>
+    ) {
+
+      const leftovers = this.getLeftovers();
+
+      if (!areLeftoversForMessage(leftovers, message))
+        throw new Error('Leftovers are not for this message');
+
+      const { results } = leftovers;
+
+      const leftover = results.shift()
+        ?? $throw('No leftovers left');
+
+      leftovers.baseId = leftover.id;
+
+      messages.splice(messages.indexOf(message), 1, leftover);
+
+      return { deletedMessage: message, leftovers };
+
+    },
+
+    cycleLeftovers(
+      message: GenieMessage<A, 'assistant'>
+    ) {
+
+      const {
+        deletedMessage,
+        leftovers,
+        leftovers: { activeMessageOriginalIndex, results }
+      } = this.replaceWithLeftover(message);
+
+      results.push(deletedMessage);
+
+      leftovers.activeMessageOriginalIndex = (activeMessageOriginalIndex % (results.length + 1)) + 1;
+
+    }
+
+  }
+
 };
 
-
-export function setLeftovers<A extends AssetName>(
-  this: ChatController<GenieChatType, A>,
-  value: Leftovers<AssetName>
-) {
-  const { globalState: { leftoversStore }, chat } = this;
-  leftoversStore[chat.id] = value;
-};
-
-export function replaceWithLeftover<A extends AssetName>(
-  this: ChatController<GenieChatType, A>, 
-  message: GenieMessage<A, 'assistant'>
-) {
-
-  const leftovers = this.getLeftovers();
-
-  if (!areLeftoversForMessage(leftovers, message))
-    throw new Error('Leftovers are not for this message');
-
-  const { results } = leftovers;
-
-  const leftover = results.shift()
-    ?? $throw('No leftovers left');
-
-  leftovers.baseId = leftover.id;
-
-  this.messages.splice(this.messages.indexOf(message), 1, leftover);
-
-  return { deletedMessage: message, leftovers };
-
-}
-
-export function cycleLeftovers<A extends AssetName>(
-  this: ChatController<GenieChatType, A>,
-  message: GenieMessage<A, 'assistant'>
-) {
-
-  const { 
-    deletedMessage, 
-    leftovers, 
-    leftovers: { activeMessageOriginalIndex, results } 
-  } = this.replaceWithLeftover(message);
-
-  results.push(deletedMessage);
-  
-  leftovers.activeMessageOriginalIndex = (activeMessageOriginalIndex % ( results.length + 1 )) + 1;
-
-};
+export type LeftoverHandler<A extends AssetName> = ReturnType<typeof leftoversMixin<A>>;
