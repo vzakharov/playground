@@ -9,10 +9,10 @@ export type WithId<Brand extends symbol = typeof idBrand> = {
   id: Id<Brand>;
 };
 
-export function withUniqueId() {
+export function withUniqueId<Brand extends symbol = typeof idBrand>() {
   return {
     id: _.uniqueId(`${new Date().toISOString()}_`)
-  } as WithId;
+  } as WithId<Brand>;
 };
 
 export type WithKeys<K extends string> = {

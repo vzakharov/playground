@@ -1,4 +1,4 @@
-import { AssetName, BaseChatController, ChatController, GenieChatType, Resolvable } from "..";
+import { AssetName, BaseChatController, GenieChatType, Resolvable } from "..";
 
 export class GenerationCanceledException extends Error {}
 
@@ -6,7 +6,7 @@ export async function handleResponseGeneration<T extends GenieChatType, A extend
   this: BaseChatController<T, A>
 ) {
 
-  const { type, messages, state, previousGeneration } = this;
+  const { type, messages, state, previousGeneration, data, globalState } = this;
 
   if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
