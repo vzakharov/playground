@@ -10,7 +10,7 @@ export async function handleResponseGeneration<T extends GenieChatType, A extend
   this: BaseChatController<T, A> & LeftoversMixin<A>
 ) {
 
-  const { type, messages, state, previousGeneration, data, globalState } = this;
+  const { messages, state } = this;
 
   if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
