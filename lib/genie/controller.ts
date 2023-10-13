@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { ToRefs } from 'vue';
 import { mixin, toReactive } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, leftoversMixin, editMessage, findBy, findOrCreateChat, says } from '.';
+import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, leftoversMixin, editMessage, findBy, findOrCreateChat, says, responderMixin, ResponderMixinConfig } from '.';
 import { merge } from 'vovas-utils';
 
 export type ChatControllerState<A extends AssetName> = {
@@ -14,17 +14,20 @@ export type ChatControllerState<A extends AssetName> = {
   msExpected: number | undefined;
 };
 
-export type ChatControllerConfig<T extends GenieChatType, A extends AssetName> = {
+export type BaseChatControllerConfig<T extends GenieChatType, A extends AssetName> = {
   data: GenieData<GenieChatType>;
   globalState: GenieState;
   type: T;
   chatId: ChatId;
   refs: ToRefs<ChatControllerState<A>>;
+  autoMessage?: ( data: GenieData<GenieChatType> ) => GenieMessage<A, 'assistant'>;
 };
 
-export function createBaseChatController<T extends GenieChatType, A extends AssetName>({
-  data, globalState, type, chatId, refs,
-}: ChatControllerConfig<T, A>) {
+export function createBaseChatController<T extends GenieChatType, A extends AssetName>(
+  {
+    data, globalState, type, chatId, refs, autoMessage
+  }: BaseChatControllerConfig<T, A>
+) {
 
   const chat = findOrCreateChat(data, type, chatId ) as GenieChat<T, A>;
   const { messages } = chat;
@@ -32,7 +35,9 @@ export function createBaseChatController<T extends GenieChatType, A extends Asse
   const c = {
     type,
     chat,
+    data,
     globalState,
+    autoMessage,
     state: toReactive(refs) as ChatControllerState<A>,
     messages,
     previousGeneration: undefined as GenieMessage<A, 'assistant'> | undefined,
@@ -62,11 +67,9 @@ export function createBaseChatController<T extends GenieChatType, A extends Asse
       }
     },
 
-    // watchForResponseGeneration,
-    // handleResponseGeneration,
-
     // countIrrelevantMessages,
     // isRelevant,
+    
   };
 
   // c.watchForResponseGeneration();
@@ -77,16 +80,25 @@ export function createBaseChatController<T extends GenieChatType, A extends Asse
 
 export type BaseChatController<T extends GenieChatType, A extends AssetName> = ReturnType<typeof createBaseChatController<T, A>>;
 
+export type ChatControllerConfig<T extends GenieChatType, A extends AssetName> = 
+  BaseChatControllerConfig<T, A> 
+  & ResponderMixinConfig;
+
 export function createChatController<T extends GenieChatType, A extends AssetName>(
   config: ChatControllerConfig<T, A>
 ) {
-  return mixin(
+  const controller = mixin(
     createBaseChatController(config),
-    leftoversMixin
+    leftoversMixin,
+    responderMixin(config)
   );
+  controller.watchForResponseGeneration();
+  return controller;
 };
 
 export type ChatController<T extends GenieChatType, A extends AssetName> = ReturnType<typeof createChatController<T, A>>;
+
+type Test = ChatController<GenieChatType, AssetName>['watchForResponseGeneration'];
 
 export type AnyChatController = ChatController<GenieChatType, AssetName>;
 

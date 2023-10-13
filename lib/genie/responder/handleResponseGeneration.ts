@@ -1,8 +1,10 @@
-import { GenieController, Resolvable } from "..";
+import { AssetName, BaseChatController, ChatController, GenieChatType, Resolvable } from "..";
 
 export class GenerationCanceledException extends Error {}
 
-export async function handleResponseGeneration<T extends string, A extends string>(this: GenieController<T, A>) {
+export async function handleResponseGeneration<T extends GenieChatType, A extends AssetName>(
+  this: BaseChatController<T, A>
+) {
 
   const { type, messages, state, previousGeneration } = this;
 

@@ -1,5 +1,5 @@
 import { $throw } from "vovas-utils";
-import { AssetName, BaseChatController, ChatId, GenieChatType, GenieMessage, MessageId } from ".";
+import { AssetName, BaseChatController, ChatId, GenieChat, GenieChatType, GenieMessage, MessageId } from ".";
 
 export type Leftovers<A extends AssetName> = {
   results: GenieMessage<A, 'assistant'>[];
@@ -25,10 +25,10 @@ export function areLeftoversForMessage<A extends AssetName>(
 };
 
 export function leftoversMixin<A extends AssetName>(
-  c: BaseChatController<GenieChatType, A>
-) {
 
-  const { globalState: { leftoversStore }, chat, messages } = c;
+  { globalState: { leftoversStore }, chat, messages }: BaseChatController<GenieChatType, A>
+
+) {
 
   return {
 
