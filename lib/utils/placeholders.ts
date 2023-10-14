@@ -55,6 +55,10 @@ type TestReplacedLiteralString = ReplacePlaceholders<TestString, TestLiteralPlac
 type TestReplacedNonLiteralString = ReplacePlaceholders<TestString, TestNonLiteralPlaceholderValues>;
 // `I have a luxury car, a luxury yacht, and a ${string} house, {or so I tell my friends}.` | `I have a luxury car, a cheap yacht, and a ${string} house, {or so I tell my friends}.` | `I have a cheap car, a luxury yacht, and a ${string} house, {or so I tell my friends}.` | `I have a cheap car, a cheap yacht, and a ${string} house, {or so I tell my friends}.`
 
+// Note that here the inference is incorrect because it takes all possible combinations of `luxury` and `cheap` for the two `color` placeholders, even though we know that the two `color` placeholders must be the same. 
+// This cannot be fixed by pure TypeScript, but the inferred type is a supertype of the actual type, so it's still safe to use the inferred type (i.e., it's still better and more descriptive than just `string`)
+// A way around would be to only replace the first placeholder (and then exclude the key from PlaceholderValues when infering the next placeholder), but this would prevent some real use cases, so let's live with a slightly broader inferred type for now
+
 export function replacePlaceholders<
   T extends string, 
   V extends PlaceholderValues<T>
