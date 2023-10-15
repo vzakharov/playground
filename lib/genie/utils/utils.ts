@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { Branded } from "./Branded";
 
 const idBrand = Symbol('id');
 
@@ -22,5 +23,3 @@ export type WithKeys<K extends string> = {
 export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[] | readonly T[]) {
   return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
 };
-
-export type Branded<T, B extends symbol> = T & { [brand in B]: never };

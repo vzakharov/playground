@@ -28,6 +28,11 @@ export type SimplifiedChatFunctionFor<F extends AnyChatFunction> =
     ? SimplifiedChatFunction<Name, Props, Optional> 
     : never;
 
+export type UnsimplifiedChatFunctionFor<F extends SimplifiedChatFunction<any, any, any>> =
+  F extends SimplifiedChatFunction<infer Name, infer Props, infer Optional> 
+    ? ChatFunction<Name, Props, Optional> 
+    : never;
+
 export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
   ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional>
 ) {
@@ -75,6 +80,7 @@ const exampleChatFunction = chatFunction(
 type ExampleChatFunction = typeof exampleChatFunction;
 
 type SimpleExampleChatFunction = SimplifiedChatFunctionFor<ExampleChatFunction>;
+type UnsimplifiedExampleChatFunction = UnsimplifiedChatFunctionFor<SimpleExampleChatFunction>;
 
 type ExampleChatFunctionReturns = ChatFunctionReturns<ExampleChatFunction>;
 
