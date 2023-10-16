@@ -4,13 +4,15 @@ import _ from 'lodash';
 import { computed, ref } from 'vue';
 import Button from '~/components/shared/Button.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
-import Input from '~/components/shared/Input.vue';
+import TextInput from '~/components/shared/Input.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
-import { defaultProntoData, parseInputs } from '~/lib/pronto';
-import { switchRole, chatRoles, says } from '~/lib/vovas-openai';
+import { defaultProntoData, parseInputs, Input } from '~/lib/pronto';
+import { switchRole, chatRoles, says, chatCompletion } from '~/lib/vovas-openai';
 import { uniqueId } from '~/lib/utils';
 import { $throw } from 'vovas-utils';
+import { GenieState, defaultGenieState } from '~/lib/genie';
+import { defaultable, temperatureForDescriptor } from '~/lib/jobgenie';
 
 const tab = ref('compose');
 
@@ -19,6 +21,8 @@ const { templates } = useLocalReactive('pronto-data', defaultProntoData);
 const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
 }));
+
+const genie = ref<GenieState>();
 
 useHashRoute(selectedTemplateId, id => {
   if (templates.some(t => t.id === id)) {
@@ -47,9 +51,32 @@ const addMessage = () => {
 
 const inputs = computed(() => parseInputs(messages.value));
 
-const run = async () => {
-  throw new Error('Not implemented');
+async function run() {
+  const promptMessages = messages.value.map(m => {
+  const content = insertInputs(m.content, inputs.value);
+  return says[m.role](content);
+  });
+  const {
+    apiKey,
+    temperatureDescriptor,
+    useGpt4
+  } = defaultable(genie.value, defaultGenieState);
+  ([output.value] = await chatCompletion(promptMessages, {
+    apiKey,
+    temperature: temperatureForDescriptor[temperatureDescriptor],
+    model: useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo',
+  }));
 };
+
+function insertInputs(content: string, inputs: Input[]) {
+  return content.replace(/\{(.+?)\}/g, (_, name) => {
+    const input = inputs.find(i => i.name === name);
+    if (!input) {
+      return $throw(`Input ${name} not found`);
+    }
+    return input.value;
+  });
+}
 
 </script>
 
@@ -70,7 +97,7 @@ const run = async () => {
       />
     </template>
     <template #sidebar-lower>
-      <GenieSettings appId="pronto" />
+      <GenieSettings appId="pronto" @update="genie = $event" />
     </template>
     <div class="tab-container">
       <button class="tab-button" :class="{ active: tab === 'compose' }" @click="tab = 'compose'">Compose</button>
@@ -80,7 +107,7 @@ const run = async () => {
     <div v-if="tab === 'compose'" class="compose-container">
       <h2 class="heading">Template id</h2>
        <div class="flex">
-          <Input
+          <TextInput
             :modelValue="selectedTemplateId"
             @update:modelValue="changeId"
             :invalidIf="id => templates.some(t => t.id === id && t.id !== selectedTemplateId)"
@@ -172,6 +199,6 @@ const run = async () => {
 }
 
 .output-container {
-  @apply mt-4;
+  @apply flex flex-col mt-4;
 }
 </style>
