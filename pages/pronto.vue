@@ -9,10 +9,9 @@ import Textarea from '~/components/shared/Textarea.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import { defaultProntoData, parseInputs, Input } from '~/lib/pronto';
 import { switchRole, chatRoles, says, chatCompletion } from '~/lib/vovas-openai';
-import { uniqueId } from '~/lib/utils';
+import { defaultable, uniqueId } from '~/lib/utils';
 import { $throw } from 'vovas-utils';
-import { GenieState, defaultGenieState } from '~/lib/genie';
-import { defaultable, temperatureForDescriptor } from '~/lib/jobgenie';
+import { GenieState, defaultGenieState, temperatureForDescriptor } from '~/lib/genie';
 
 const tab = ref('compose');
 
@@ -57,12 +56,12 @@ async function run() {
   return says[m.role](content);
   });
   const {
-    apiKey,
+    openaiKey,
     temperatureDescriptor,
     useGpt4
   } = defaultable(genie.value, defaultGenieState);
   ([output.value] = await chatCompletion(promptMessages, {
-    apiKey,
+    apiKey: openaiKey,
     temperature: temperatureForDescriptor[temperatureDescriptor],
     model: useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo',
   }));
