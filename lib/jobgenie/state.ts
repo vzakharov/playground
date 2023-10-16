@@ -44,13 +44,14 @@ export function defaultable<D extends Defaults>(
 ) {
   return _.mapValues(defaults, ( defaultValueOrInitializer, key ) => {
     const value = object?.[key];
-    return typeof defaultValueOrInitializer === 'function'
+    const defaultValue = typeof defaultValueOrInitializer === 'function'
       ? defaultValueOrInitializer(value)
-      : is.undefined(value)
-        ? defaultValueOrInitializer
-        : isSameTypeAs(defaultValueOrInitializer)(value)
-          ? value
-          : defaultValueOrInitializer;
+      : defaultValueOrInitializer;
+    return is.undefined(value)
+      ? defaultValue
+      : isSameTypeAs(defaultValue)(value)
+        ? value
+        : defaultValue;
   }) as InferDefaultTypes<D>;
 };
 

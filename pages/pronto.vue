@@ -59,10 +59,12 @@ async function run() {
   const {
     apiKey,
     temperatureDescriptor,
+    useGpt4
   } = defaultable(genie.value, defaultGenieState);
   ([output.value] = await chatCompletion(promptMessages, {
     apiKey,
     temperature: temperatureForDescriptor[temperatureDescriptor],
+    model: useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo',
   }));
 };
 
@@ -197,6 +199,6 @@ function insertInputs(content: string, inputs: Input[]) {
 }
 
 .output-container {
-  @apply mt-4;
+  @apply flex flex-col mt-4;
 }
 </style>
