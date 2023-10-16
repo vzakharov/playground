@@ -39,11 +39,11 @@ export type InferDefaultTypes<D extends Defaults> = {
 };
 
 export function defaultable<D extends Defaults>(
-  object: JsonableObject, 
+  object: JsonableObject | undefined, 
   defaults: D
 ) {
   return _.mapValues(defaults, ( defaultValueOrInitializer, key ) => {
-    const value = object[key];
+    const value = object?.[key];
     return typeof defaultValueOrInitializer === 'function'
       ? defaultValueOrInitializer(value)
       : is.undefined(value)

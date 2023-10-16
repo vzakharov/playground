@@ -1,12 +1,14 @@
 import { AnyChatMessage } from "~/lib/vovas-openai";
 
+export type Input = {
+  name: string;
+  description?: string;
+  value: string;
+};
+
 export function parseInputs(messages: AnyChatMessage[]) {
 
-  const inputs = [] as {
-    name: string;
-    description?: string;
-    value: string;
-  }[];
+  const inputs = [] as Input[];
 
   for ( const message of messages ) {
     // Take all {name} or {name|description} placeholders
