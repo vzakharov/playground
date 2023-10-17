@@ -3,7 +3,9 @@ import { AssetName, ChatController, ChatControllerConfig, ChatId, GenieChatType,
 
 export class Genie<Ts extends GenieChatType> {
 
-  chatControllers: ChatController<Ts, Ts, AssetName>[] = [];
+  chatControllers: {
+    [T in Ts]?: ChatController<Ts, T, AssetName>[];
+  } = {};
 
   constructor(
     public data: GenieData<Ts>,
@@ -20,15 +22,14 @@ export class Genie<Ts extends GenieChatType> {
         config: Omit<ChatControllerConfig<Ts, T, AssetName>, 'data' | 'globalState'>,
       ) {
         const { type, chatId } = config;
-        const oldController = findBy({ config: { type, chatId } }, chatControllers);
-        if (oldController) {
-          console.log("Deleting old chat controller:", oldController);
-          _.pull(chatControllers, oldController);
-        };
+        const controllers = chatControllers[type] ??= [];
+        const oldController = findBy({ config: { chatId } }, controllers);
+        if (oldController)
+          _.pull(controllers, oldController);
 
         super({ ...config, data, globalState });
 
-        chatControllers.push(this as ChatController<Ts, Ts, AssetName>);
+        controllers.push(this);
 
       };
 
