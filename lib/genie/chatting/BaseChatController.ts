@@ -10,10 +10,10 @@ export type BaseChatControllerConfig<
   A extends AssetName
 > = {
   data: GenieData<Ts>;
+  state: ChatControllerState<A>;
   globalState: GenieState;
   type: T;
   chatId: ChatId;
-  state: ChatControllerState<A>;
   promptBuilder: PromptBuilder<T, any, any>;
   autoMessage?: (data: GenieData<Ts>) => GenieMessage<A, 'assistant'>;
 };
