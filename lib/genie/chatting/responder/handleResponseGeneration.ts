@@ -3,7 +3,7 @@ import { Resolvable, ResolvablePromiseCanceled } from "~/lib/utils";
 import { GenerateException, isBy } from "~/lib/vovas-openai";
 import {
   AssetName, GenieChatType, Responder
-} from "..";
+} from "../..";
 
 export class GenerationCanceledException extends Error {}
 

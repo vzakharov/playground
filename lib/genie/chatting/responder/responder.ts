@@ -3,7 +3,7 @@ import { also } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
 import {
   AssetName, BaseChatControllerConfig, GenieChatType, LeftoversController, generateResponse, handleResponseGeneration
-} from '..';
+} from '../..';
 
 export type ResponderMixinConfig = {
   watch: <T>(

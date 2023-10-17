@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { ToRefs } from 'vue';
 import { Resolvable, toReactive } from '~/lib/utils';
 import {
-  AssetName, GenieChatType, GenieMessage, Responder, findBy} from '.';
+  AssetName, GenieChatType, GenieMessage, Responder, findBy} from '..';
 
 export type ChatControllerState<A extends AssetName> = {
   generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;

@@ -5,7 +5,7 @@ import {
 } from '~/lib/vovas-openai';
 import { 
   AssetName, GenieChatType, GenieMessage, Responder, temperatureForDescriptor, withUniqueId 
-} from '..';
+} from '../..';
 
 export async function generateResponse<Ts extends GenieChatType, T extends Ts, A extends AssetName>(
   this: Responder<Ts, T, A>

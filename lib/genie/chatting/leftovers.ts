@@ -1,5 +1,5 @@
 import { $throw } from "vovas-utils";
-import { AssetName, BaseChatController, ChatId, GenieChat, GenieChatType, GenieMessage, MessageId } from ".";
+import { AssetName, BaseChatController, ChatId, GenieChat, GenieChatType, GenieMessage, MessageId } from "..";
 
 export type Leftovers<A extends AssetName> = {
   results: GenieMessage<A, 'assistant'>[];
