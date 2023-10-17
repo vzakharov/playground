@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
 import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, PromptBuilder, editMessage, findOrCreateChat, says } from '.';
-import { ChatControllerState } from './controller';
+import { ChatControllerState } from './ChatController';
 
 
 export type BaseChatControllerConfig<

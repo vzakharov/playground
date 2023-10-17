@@ -3,7 +3,7 @@ export * from './GenieData';
 export * from './GenieMessage';
 export * from './GenieState';
 export * from './assets';
-export * from './controller';
+export * from './ChatController';
 export * from './editMessage';
 export * from './findOrCreateChat';
 export * from './leftovers';
