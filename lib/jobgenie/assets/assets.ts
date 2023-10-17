@@ -1,6 +1,7 @@
 import { StringKey } from "vovas-utils";
-import { ChatType } from "../ChatType";
 import { WithKeys } from "~/lib/genie";
+import { PickByArray } from "~/lib/utils";
+import { ChatType } from "..";
 
 export const assetCaptions = {
   dna: {
@@ -32,14 +33,8 @@ export const assetCaptions = {
 
 export type AssetsMap = typeof assetCaptions;
 
-export type PickAssets<ChatTypes extends ChatType[] | undefined> = 
-  ChatTypes extends ChatType[] 
-    ? Pick<AssetsMap, ChatTypes[number]> 
-    : {};
-
-// export type Assets<T extends ChatType> = {
-//   [K in keyof AssetsMap[T]]: string;
-// };
+export type PickAssets<ChatTypes extends ChatType[] | undefined> =
+  PickByArray<AssetsMap, ChatTypes>;
 
 export type AssetKeyForChatType<T extends ChatType> = StringKey<AssetsMap[T]>;
 

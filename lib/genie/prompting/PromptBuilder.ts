@@ -1,6 +1,6 @@
 import dedent from "dedent-js";
 import _ from "lodash";
-import { ArrayItem, Falsible } from "~/lib/utils";
+import { ArrayItem, Falsible, PickByArray } from "~/lib/utils";
 import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
@@ -32,7 +32,7 @@ export type PromptBuilderConfig<
     username: Falsible<string>;
   }) => Record<'pre' | 'post', StackUpable>;
   fnArgs: SimplifiedChatFunction<string, BuilderFunctionParameters<Schema, T>, never>;
-  prerequisiteChatTypes?: PreTsArr;
+  prerequisites?: PreTsArr;
 };
 
 export type PromptBuilderInput<PreTsArr extends GenieChatType[] | undefined, A extends AssetName> = {
@@ -42,23 +42,23 @@ export type PromptBuilderInput<PreTsArr extends GenieChatType[] | undefined, A e
 
 export class PromptBuilder<
   T extends GenieChatType,
-  Map extends AssetMap<T>,
+  Schema extends AssetMap<T | ArrayItem<PreTsArr>>,
   PreTsArr extends Exclude<GenieChatType, T>[] | undefined,
 > {
 
   constructor(
     public type: T,
-    public config: PromptBuilderConfig<T, Map, PreTsArr>
+    public config: PromptBuilderConfig<T, Schema, PreTsArr>
   ) { }
 
-  build(input: PromptBuilderInput<PreTsArr, AssetNameForChatType<Map, T>>) {
+  build(input: PromptBuilderInput<PreTsArr, AssetNameForChatType<Schema, T>>) {
 
     type PreTs = ArrayItem<PreTsArr>;
 
     const { messages, data } = input;
     const { 
       mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, fnArgs, prerequisiteChatTypes
+      buildSystemMessages, fnArgs, prerequisites
     } = this.config;
 
     const fn = chatFunction(...fnArgs);
@@ -70,10 +70,10 @@ export class PromptBuilder<
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetMap = getActiveAssets(data) as Map;
+    const assetMap = getActiveAssets(data) as Schema;
 
     if ( !this.isBuildableWithAssets(assetMap) )
-      throw new Error(`The following assets are missing: ${this.getMissingAssets(assetMap)}`);
+      throw new Error(`The following assets are missing: ${this.getMissingPrerequisites(assetMap)}`);
 
     const { username } = data;
 
@@ -81,7 +81,7 @@ export class PromptBuilder<
       pre: preMessage, 
       post: postMessage 
     } = buildSystemMessages({ 
-      functionCalled, numResponses, requestFunctionCall, assetMap: assetMap, 
+      functionCalled, numResponses, requestFunctionCall, assetMap, 
       username,
       ...input
     });
@@ -92,11 +92,11 @@ export class PromptBuilder<
           stackUp([
             mainSystemMessage,
             preMessage, 
-            prerequisiteChatTypes && numResponses >= addAssetsAfter && dedent`
+            prerequisites && numResponses >= addAssetsAfter && dedent`
               User data reference:
 
               ===
-              ${yamlifyAssets(_.pick(assetMap, ...prerequisiteChatTypes))}
+              ${yamlifyAssets(_.pick(assetMap, ...prerequisites))}
               ===
             `
           ])
@@ -108,13 +108,14 @@ export class PromptBuilder<
     };
   }
 
-  isBuildableWithAssets<A extends Partial<AssetsMap>>(assets: A): assets is A & PickAssets<RequiredAssets> {
-    return !this.getMissingAssets(assets);
+  getMissingPrerequisites(assets: Partial<Schema>) {
+    const missingPrerequisites = this.config.prerequisites?.filter(type => !(type in assets));
+    return missingPrerequisites?.length ? missingPrerequisites : undefined;
   };
 
-  getMissingAssets(assets: Partial<AssetsMap>) {
-    const missingAssets = this.config.requiredAssets?.filter(type => !assets[type]);
-    return missingAssets?.length ? missingAssets : undefined;
+  isBuildableWithAssets<A extends Partial<Schema>>(assets: A): assets is A & PickByArray<Schema, PreTsArr> {
+    return !this.getMissingPrerequisites(assets);
   };
+
 
 };

@@ -1,4 +1,5 @@
 export * from './ArrayItem';
+export * from './PickByArray';
 export * from './concat';
 export * from './defaultable';
 export * from './mixin';
