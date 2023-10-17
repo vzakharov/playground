@@ -1,15 +1,14 @@
-import { ChatFunction, ChatMessage, ChatRole } from '~/lib/vovas-openai';
 import { $throw } from 'vovas-utils';
-import _ from 'lodash';
-import { AssetMap, AssetName, BuilderFunctionParameters, GenieChatType, GenieMessage } from '..';
+import { ChatFunction, ChatMessage, ChatRole } from '~/lib/vovas-openai';
+import { BuilderFunctionParameters, GenieMessage, Schema, Tool } from '..';
 
 
 export function toRawMessage<
-  T extends GenieChatType,
-  Map extends AssetMap<T>,
->(fn?: ChatFunction<string, BuilderFunctionParameters<Map, T>, never>) {
+  S extends Schema,
+  T extends Tool<S>
+>(fn?: ChatFunction<string, BuilderFunctionParameters<S, T>, never>) {
 
-  return <R extends ChatRole>(appChatMessage: GenieMessage<AssetName, R> ) => {
+  return <R extends ChatRole>(appChatMessage: GenieMessage<S, T, R> ) => {
 
     const { content, assets, role } = appChatMessage;
 

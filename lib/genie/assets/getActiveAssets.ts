@@ -1,24 +1,28 @@
 import _ from "lodash";
-import { objectWithKeys } from "~/lib/utils";
-import { AssetMap, AssetsForChatType, GenieChatType, GenieData, findBy, getChatTypes } from "..";
+import { GenieData, PartialAssetValues, Schema, Tool, assetsComplyWithSchema } from "..";
 
 export function getActiveAssets<
-  Ts extends GenieChatType
->(data: GenieData<Ts>) {
+  S extends Schema
+>(data: GenieData<S>, schema: S): PartialAssetValues<S, Tool<S>> {
 
-  const chatTypes = getChatTypes(data.chats);
+  const result = _.mapValues(schema, (toolSchema, toolName) => {
 
-  const result = objectWithKeys(chatTypes, type => {
-
-    const chat = findBy({ type }, data.chats);
+    const chat = data.chats.find(chat => chat.tool === toolName);
     // TODO: Search by id in addition to type
 
     if (!chat) return undefined;
 
-    return _(chat.messages)
+    const { tool, messages } = chat; 
+
+    const { assets } = _(messages)
       .filter(m => !!m.assets)
       .sortBy(m => m.assetsPickedAt ?? 0)
-      .last()?.assets;
+      .last() ?? {};
+    
+    if ( !assets || !assetsComplyWithSchema(assets, schema, tool) ) 
+      return undefined;
+
+    return assets;
 
   });
   

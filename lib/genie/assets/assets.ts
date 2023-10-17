@@ -1,43 +1,43 @@
+import _ from "lodash";
 import { StringKey } from "vovas-utils";
-import { $GenieChatType, Branded, GenieChatType, Unbrand } from "..";
+import { Branded, Schema, Tool } from "..";
 
-const $assetName = Symbol('$AssetName');
-export type $AssetName = typeof $assetName;
+export type AssetCaption = string;
 
-export type AssetName<S extends string = string> = Branded<S, $AssetName>;
+export function getAssetCaptions<S extends Schema, T extends Tool<S>>(schema: S, tool: T) {
+  return schema[tool];
+};
 
-export type AssetMap<Ts extends GenieChatType> = Record<
-  Unbrand<Ts, $GenieChatType>,
-  Record<
-    Unbrand<AssetName, $AssetName>, 
-    string
-  >
->;
+export type Asset<S extends Schema, T extends Tool<S>> = StringKey<S[T]>;
 
-export type AssetNameForChatType<
-  Map extends AssetMap<T>,
-  T extends GenieChatType
-> = Branded<StringKey<Map[Unbrand<T, $GenieChatType>]>, $AssetName>;
+export type AssetValues<S extends Schema, Ts extends Tool<S> = Tool<S>> = {
+  [T in Ts]: ToolAssetValues<S, T>;
+};
 
-export type AssetsForChatType<
-  Map extends AssetMap<T>,
-  T extends GenieChatType
-> = Map[Unbrand<T, $GenieChatType>];
+export type PartialAssetValues<S extends Schema, Ts extends Tool<S>> =
+  Partial<AssetValues<S, Ts>>;
 
-const testAssetMap = {
-  type1: {
-    asset1: 'value1',
-    asset2: 'value2'
-  },
-  type2: {
-    asset3: 'value3'
-  }
-} as const;
+export function hasAssetsForTools<
+  S extends Schema,
+  Ts extends Tool<S>
+>(assetValues: PartialAssetValues<S, Ts>, tools: Ts[]): assetValues is AssetValues<S, Ts> {
+  return !getMissingTools(assetValues, tools).length;
+};
 
-type TestAssetMap = typeof testAssetMap;
+export function getMissingTools<
+  S extends Schema,
+  Ts extends Tool<S>
+>(assetValues: PartialAssetValues<S, Ts>, tools: Ts[]) {
+  return tools.filter(tool => !(tool in assetValues));
+};
 
-type TestAssetNameForChatType = AssetNameForChatType<TestAssetMap, GenieChatType<'type1'>>;
-// =>
-// type TestAssetNameForChatType = ("asset1" | "asset2") & {
-//   [$assetName]: void;
-// }
+export type ToolAssetValues<S extends Schema, T extends Tool<S>> = {
+  [A in Asset<S, T>]: string;
+};
+
+export function assetsComplyWithSchema<
+  S extends Schema,
+  T extends Tool<S>
+>(assetValues: ToolAssetValues<S, T>, schema: S, tool: T): assetValues is ToolAssetValues<S, T> {
+  return _.isEqual(Object.keys(assetValues), Object.keys(schema[tool].assets));
+};

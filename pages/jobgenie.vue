@@ -7,18 +7,19 @@ import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { getChatType, sections } from '~/components/jobgenie/sections';
+import { sections } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
-import Button from '~/components/shared/Button.vue';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import TextModal from '~/components/shared/TextModal.vue';
-import Toggle from '~/components/shared/Toggle.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { ChatType, allTrue, defaultData } from '~/lib/jobgenie';
-import { temperatureDescriptors } from '~/lib/genie';
+import { Genie } from '~/lib/genie';
+import { defaultData, schema } from '~/lib/jobgenie';
+import { allTrue } from '~/lib/utils';
+
+const genie = new Genie(schema, data, globalState);
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
@@ -75,7 +76,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <template v-else>
       <Chat
         :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :type="getChatType(selectedSectionId)"
+        :="{genie}"
       />
     </template>
     <TextModal monospace

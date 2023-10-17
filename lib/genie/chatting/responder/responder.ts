@@ -1,9 +1,7 @@
 import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
-import {
-  AssetName, BaseChatControllerConfig, GenieChatType, LeftoversController, generateResponse, handleResponseGeneration
-} from '../..';
+import { BaseChatControllerConfig, LeftoversController, Schema, Tool, generateResponse, handleResponseGeneration } from '../..';
 
 export type ResponderMixinConfig = {
   watch: <T>(
@@ -15,13 +13,12 @@ export type ResponderMixinConfig = {
 };
 
 export class Responder<
-  Ts extends GenieChatType, 
-  T extends Ts, 
-  A extends AssetName
-> extends LeftoversController<Ts, T, A> {
+  S extends Schema,
+  T extends Tool<S>,
+> extends LeftoversController<S, T> {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Ts, T, A> & ResponderMixinConfig
+    public readonly config: BaseChatControllerConfig<S, T> & ResponderMixinConfig
   ) {
     super(config);
     this.watchForResponseGeneration();

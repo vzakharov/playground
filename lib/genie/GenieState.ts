@@ -1,6 +1,6 @@
-import { give$, is, itselfIf } from "vovas-utils";
+import { is, itselfIf } from "vovas-utils";
 import { Defaults, InferDefaultTypes } from "~/lib/utils";
-import { temperatureDescriptors, GenieChat, Leftovers, LeftoversStore, AssetName, GenieChatType, ChatId } from ".";
+import { temperatureDescriptors } from ".";
 
 export const defaultGenieState = {
   openaiKey: '',
@@ -10,7 +10,6 @@ export const defaultGenieState = {
     'gpt-3.5-turbo': 5,
     'gpt-4': 15,
   },
-  leftoversStore: {} as LeftoversStore,
   temperatureDescriptor: itselfIf(is.among(temperatureDescriptors)).else('normal'),
 } satisfies Defaults;
 

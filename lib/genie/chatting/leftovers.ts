@@ -1,43 +1,43 @@
 import { $throw } from "vovas-utils";
-import { AssetName, BaseChatController, ChatId, GenieChat, GenieChatType, GenieMessage, MessageId } from "..";
+import { Asset, BaseChatController, ChatId, GenieMessage, MessageId, Schema, Tool } from "..";
 
-export type Leftovers<A extends AssetName> = {
-  results: GenieMessage<A, 'assistant'>[];
-  baseId: MessageId | null;
-  activeMessageOriginalIndex: number;
+export function getDefaultLeftovers<S extends Schema, T extends Tool<S>>(controller: LeftoversController<S, T>) {
+  return {
+    results: [] as GenieMessage<S, T, 'assistant'>[],
+    baseId: null as MessageId | null,
+    activeMessageOriginalIndex: 1,
+  }
 };
 
-export const defaultLeftovers: Leftovers<AssetName> = {
-  results: [],
-  baseId: null,
-  activeMessageOriginalIndex: 1,
-};
+export type Leftovers<S extends Schema, T extends Tool<S>> = ReturnType<typeof getDefaultLeftovers<S, T>>;
 
-export type LeftoversStore = {
-  [id in ChatId]?: Leftovers<AssetName>
+export type LeftoversStore<S extends Schema> = {
+  [T in Tool<S>]?: {
+    [id in ChatId]?: Leftovers<S, T>
+  };
 };
 
 export class LeftoversController<
-  Ts extends GenieChatType, 
-  T extends Ts, 
-  A extends AssetName
-> extends BaseChatController<Ts, T, A> {
+  S extends Schema,
+  T extends Tool<S>
+> extends BaseChatController<S, T> {
 
   private store = this.config.globalState.leftoversStore;
 
+  get defaultLeftovers() { return getDefaultLeftovers(this); };
+
   get leftovers() {
-    const { store, chat } = this;
+    const { store, chat, defaultLeftovers } = this;
     return store[chat.id] ??= defaultLeftovers;
   };
 
-
-  set leftovers( value: Leftovers<A> ) {
+  set leftovers( value: Leftovers<S, T> ) {
     const { store, chat } = this;
     store[chat.id] = value;
   };
 
   areForMessage(
-    message: GenieMessage<A, 'assistant'>
+    message: GenieMessage<S, T, 'assistant'>
   ) {
 
     const { leftovers } = this;
@@ -47,7 +47,7 @@ export class LeftoversController<
   };
 
   replaceWithLeftover(
-    message: GenieMessage<A, 'assistant'>
+    message: GenieMessage<S, T, 'assistant'>
   ) {
 
     const { leftovers, messages } = this;
@@ -69,7 +69,7 @@ export class LeftoversController<
   };
 
   cycleLeftovers(
-    message: GenieMessage<A, 'assistant'>
+    message: GenieMessage<S, T, 'assistant'>
   ) {
 
     const {

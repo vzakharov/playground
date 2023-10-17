@@ -7,7 +7,7 @@ export function getActiveAssets(data: AppData) {
 
   const result = objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
 
-    const chat = findBy({ type }, data.chats) as JobGenieChat<T> | undefined;
+    const chat = findBy({ tool: type }, data.chats) as JobGenieChat<T> | undefined;
 
     if (!chat) return undefined;
 

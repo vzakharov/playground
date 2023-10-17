@@ -1,22 +1,23 @@
 import { ChatRole, chatRoles, says as rawSays } from "~/lib/vovas-openai";
 import { objectWithKeys } from "vovas-utils";
-import { GenieMessage, withUniqueId } from ".";
+import { GenieMessage, Schema, Tool, withUniqueId } from ".";
 
 export const says = objectWithKeys(
   chatRoles, 
-  role => 
-    <AssetKey extends string>(
-      content: string, 
-      params?: Omit<GenieMessage<AssetKey>, 'id' | 'role' | 'content'>
+  function (role) {
+    return <S extends Schema, T extends Tool<S>>(
+      content: string,
+      params?: Omit<GenieMessage<S, T>, 'id' | 'role' | 'content'>
     ) => ({
       ...rawSays[role](content),
       ...params,
       ...withUniqueId()
-    })
+    });
+  }
 ) as {
-    [K in ChatRole]: 
-      <AssetKey extends string>(
+    [R in ChatRole]: 
+      <S extends Schema, T extends Tool<S>>(
         content: string, 
-        params?: Omit<GenieMessage<AssetKey>, 'id' | 'role' | 'content'>
-      ) => GenieMessage<AssetKey, K>;
+        params?: Omit<GenieMessage<S, T>, 'id' | 'role' | 'content'>
+      ) => GenieMessage<S, T, R>;
   };

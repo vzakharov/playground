@@ -1,64 +1,59 @@
 import dedent from "dedent-js";
 import _ from "lodash";
-import { ArrayItem, Falsible, PickByArray } from "~/lib/utils";
+import { ArrayItem, Falsible } from "~/lib/utils";
 import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import {
-  $AssetName, AssetMap, AssetName, AssetNameForChatType, GenieChatType, GenieData, GenieMessage, 
-  Unbrand, getActiveAssets, toRawMessage, yamlifyAssets
-} from "..";
+import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, Schema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets } from "..";
 
 
 export type BuilderFunctionParameters<
-  Map extends AssetMap<T>, 
-  T extends GenieChatType
-> = 'content' | Unbrand<AssetNameForChatType<Map, T>, $AssetName>;
+  S extends Schema,
+  T extends Tool<S>
+> = 'content' | Asset<S, T>;
 
 export type PromptBuilderConfig<
-  T extends GenieChatType,
-  Schema extends AssetMap<T | ArrayItem<PreTsArr>>,
-  PreTsArr extends Exclude<GenieChatType, T>[] | undefined,
+  S extends Schema,
+  T extends Tool<S>,
+  Pres extends OtherTools<S, T>
 > = {
+  schema: S;
+  tool: T;
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
   addAssetsAfter?: number;
-  assetSchema: Schema;
-  buildSystemMessages: (params: PromptBuilderInput<PreTsArr, AssetNameForChatType<Schema, T>> & {
+  buildSystemMessages: (params: PromptBuilderInput<S, T> & {
     numResponses: number;
     requestFunctionCall: boolean;
     functionCalled: boolean;
-    assetMap: AssetMap<ArrayItem<PreTsArr>>;
+    assetValues: AssetValues<S, ArrayItem<Pres>>;
     username: Falsible<string>;
   }) => Record<'pre' | 'post', StackUpable>;
-  fnArgs: SimplifiedChatFunction<string, BuilderFunctionParameters<Schema, T>, never>;
-  prerequisites?: PreTsArr;
+  fnArgs: SimplifiedChatFunction<string, BuilderFunctionParameters<S, T>, never>;
+  prerequisites?: Pres;
 };
 
-export type PromptBuilderInput<PreTsArr extends GenieChatType[] | undefined, A extends AssetName> = {
-  messages: GenieMessage<A>[];
-  data: GenieData<ArrayItem<PreTsArr>>;
+export type PromptBuilderInput<S extends Schema, T extends Tool<S>> = {
+  messages: GenieMessage<S, T>[];
+  data: GenieData<S>;
 };
 
 export class PromptBuilder<
-  T extends GenieChatType,
-  Schema extends AssetMap<T | ArrayItem<PreTsArr>>,
-  PreTsArr extends Exclude<GenieChatType, T>[] | undefined,
+  S extends Schema,
+  T extends Tool<S>,
+  Pres extends OtherTools<S, T>
 > {
 
   constructor(
-    public type: T,
-    public config: PromptBuilderConfig<T, Schema, PreTsArr>
+    public config: PromptBuilderConfig<S, T, Pres>
   ) { }
 
-  build(input: PromptBuilderInput<PreTsArr, AssetNameForChatType<Schema, T>>) {
-
-    type PreTs = ArrayItem<PreTsArr>;
+  build(input: PromptBuilderInput<S, T>) {
 
     const { messages, data } = input;
     const { 
       mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, fnArgs, prerequisites
+      buildSystemMessages, fnArgs, prerequisites = [], schema
     } = this.config;
 
     const fn = chatFunction(...fnArgs);
@@ -70,10 +65,10 @@ export class PromptBuilder<
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetMap = getActiveAssets(data) as Schema;
+    const assetValues = getActiveAssets(data, schema);
 
-    if ( !this.isBuildableWithAssets(assetMap) )
-      throw new Error(`The following assets are missing: ${this.getMissingPrerequisites(assetMap)}`);
+    if ( !hasAssetsForTools(assetValues, prerequisites) )
+      throw new Error(`The following assets are missing: ${getMissingTools(assetValues, prerequisites).join(', ')}`);
 
     const { username } = data;
 
@@ -81,7 +76,7 @@ export class PromptBuilder<
       pre: preMessage, 
       post: postMessage 
     } = buildSystemMessages({ 
-      functionCalled, numResponses, requestFunctionCall, assetMap, 
+      functionCalled, numResponses, requestFunctionCall, assetValues, 
       username,
       ...input
     });
@@ -93,10 +88,10 @@ export class PromptBuilder<
             mainSystemMessage,
             preMessage, 
             prerequisites && numResponses >= addAssetsAfter && dedent`
-              User data reference:
+              For reference:
 
               ===
-              ${yamlifyAssets(_.pick(assetMap, ...prerequisites))}
+              ${reciteAssets(assetValues, schema, prerequisites)}
               ===
             `
           ])
@@ -106,16 +101,6 @@ export class PromptBuilder<
       ],
       fn: requestFunctionCall ? fn : undefined
     };
-  }
-
-  getMissingPrerequisites(assets: Partial<Schema>) {
-    const missingPrerequisites = this.config.prerequisites?.filter(type => !(type in assets));
-    return missingPrerequisites?.length ? missingPrerequisites : undefined;
   };
-
-  isBuildableWithAssets<A extends Partial<Schema>>(assets: A): assets is A & PickByArray<Schema, PreTsArr> {
-    return !this.getMissingPrerequisites(assets);
-  };
-
 
 };

@@ -1,14 +1,14 @@
 import { ChatMessage, ChatRole } from "~/lib/vovas-openai";
-import { AssetName, Branded, WithId, WithKeys } from ".";
+import { Asset, Branded, Schema, Tool, WithId, WithKeys } from ".";
 
 const $messageId = Symbol('messageId');
 export type $MessageId = typeof $messageId;
 export type MessageId = Branded<string, $MessageId>;
 
-export type GenieMessage<A extends AssetName, R extends ChatRole = ChatRole> =
+export type GenieMessage<S extends Schema, T extends Tool<S>, R extends ChatRole = ChatRole> =
   ChatMessage<R> & {
     id: MessageId;
     content: string;
-    assets?: WithKeys<A>;
+    assets?: WithKeys<Asset<S, T>>;
     assetsPickedAt?: number;
   };

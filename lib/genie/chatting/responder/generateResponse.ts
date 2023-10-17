@@ -1,15 +1,18 @@
 import _ from 'lodash';
 import { is } from 'vovas-utils';
-import { 
-  UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst 
+import {
+  UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst
 } from '~/lib/vovas-openai';
-import { 
-  AssetName, GenieChatType, GenieMessage, Responder, temperatureForDescriptor, withUniqueId 
+import {
+  GenieMessage, Responder, Schema, Tool, temperatureForDescriptor, withUniqueId
 } from '../..';
 
-export async function generateResponse<Ts extends GenieChatType, T extends Ts, A extends AssetName>(
-  this: Responder<Ts, T, A>
-): Promise<GenieMessage<A, 'assistant'>> {
+export async function generateResponse<
+  S extends Schema,
+  T extends Tool<S>
+>(
+  this: Responder<S, T>
+): Promise<GenieMessage<S, T, 'assistant'>> {
   const { config: { promptBuilder, data, globalState, state }, messages, previousGeneration } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
   const { promptMessages, fn } = promptBuilder.build({ messages, data });
@@ -52,7 +55,7 @@ export async function generateResponse<Ts extends GenieChatType, T extends Ts, A
       : (
         ({ content, ...assets }) => ({ content, assets })
       )(raw)
-  }) as GenieMessage<A, 'assistant'>;
+  }) as GenieMessage<S, T, 'assistant'>;
 
   const responseMessage = fromRawMessage(result);
   const existingLeftovers = this.leftovers;

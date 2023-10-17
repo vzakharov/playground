@@ -2,17 +2,16 @@ import _ from "lodash";
 import { Resolvable, ResolvablePromiseCanceled } from "~/lib/utils";
 import { GenerateException, isBy } from "~/lib/vovas-openai";
 import {
-  AssetName, GenieChatType, Responder
+  Responder, Schema, Tool
 } from "../..";
 
 export class GenerationCanceledException extends Error {}
 
 export async function handleResponseGeneration<
-  Ts extends GenieChatType, 
-  T extends Ts, 
-  A extends AssetName
+S extends Schema,
+T extends Tool<S>
 >(
-  this: Responder<Ts, T, A>
+  this: Responder<S, T>
 ) {
 
   const { config: { alert, state }, messages } = this;

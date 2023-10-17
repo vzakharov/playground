@@ -1,35 +1,45 @@
-<script setup lang="ts" generic="T extends ChatType">
+<script setup lang="ts" generic="S extends Schema, T extends Tool<S>">
 
 import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { AppChatMessage, ChatType, Resolvable } from '~/lib/jobgenie';
 import { data } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
 import { renewChatController } from './controller';
+import { Genie, GenieMessage, Schema, Tool } from '~/lib/genie';
+import { Resolvable } from '~/lib/utils';
 
-  const { type } = defineProps<{
-    type: T;
+  const { genie } = defineProps<{
+    genie: Genie<S, T>;
   }>();
 
-  const generating = ref<Resolvable<AppChatMessage<T, 'assistant'>>>();
+  const generating = ref<Resolvable<GenieMessage<S, T, 'assistant'>>>();
   const dataLastLoaded = ref(Date.now());
   const msExpected = ref<number>();
 
   const { userMessage } = toRefs(globalState);
   const userMessageComponent = refForInstance(Textarea);
 
-  const c = renewChatController(type, {
-    generating,
-    userMessage,
-    userMessageComponent,
-    msExpected
+
+  // const c = renewChatController(type, {
+  //   generating,
+  //   userMessage,
+  //   userMessageComponent,
+  //   msExpected
+  // });
+  const c = new genie.ChatController({
+    state: {
+      generating,
+      userMessage,
+      userMessageComponent,
+      msExpected
+    }
   });
 
-  addProperties(window, { _, c, data, userMessageComponent, globalState });
+  addProperties(window, { _, genie, c, data, userMessageComponent, globalState });
 
   watch(userMessageComponent, component => {
     if ( !component ) return;
