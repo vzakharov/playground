@@ -1,12 +1,16 @@
 import _ from 'lodash';
-import { is, mutate } from 'vovas-utils';
-import { UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { AssetName, BaseChatController, ChatController, GenieChatType, GenieData, GenieMessage, GenieState, LeftoversMixin, leftoversMixin, temperatureForDescriptor, withUniqueId } from '..';
+import { is } from 'vovas-utils';
+import { 
+  UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst 
+} from '~/lib/vovas-openai';
+import { 
+  AssetName, GenieChatType, GenieMessage, Responder, temperatureForDescriptor, withUniqueId 
+} from '..';
 
-export async function generateResponse<Ts extends GenieChatType, A extends AssetName>(
-  this: BaseChatController<Ts, A> & LeftoversMixin<A>,
+export async function generateResponse<Ts extends GenieChatType, T extends Ts, A extends AssetName>(
+  this: Responder<Ts, T, A>
 ): Promise<GenieMessage<A, 'assistant'>> {
-  const { promptBuilder, messages, data, state, globalState, previousGeneration } = this;
+  const { config: { promptBuilder, data, globalState, state }, messages, previousGeneration } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
   const { promptMessages, fn } = promptBuilder.build({ messages, data });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';

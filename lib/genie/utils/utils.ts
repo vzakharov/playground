@@ -20,6 +20,10 @@ export type WithKeys<K extends string> = {
   [P in K]: string;
 };
 
-export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[] | readonly T[]) {
+export function findBy<T extends object, Filter extends DeepPartial<T>>(filter: Filter, arr: T[] | readonly T[]) {
   return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
+};
+
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };

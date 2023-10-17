@@ -2,17 +2,20 @@ import _ from "lodash";
 import { Resolvable, ResolvablePromiseCanceled } from "~/lib/utils";
 import { GenerateException, isBy } from "~/lib/vovas-openai";
 import {
-  AssetName, BaseChatController, GenieChatType, LeftoversMixin, ResponderMixinConfig, generateResponse
+  AssetName, GenieChatType, Responder
 } from "..";
 
 export class GenerationCanceledException extends Error {}
 
-export async function handleResponseGeneration<T extends GenieChatType, A extends AssetName>(
-  this: BaseChatController<T, A> & LeftoversMixin<A>,
-  config: ResponderMixinConfig
+export async function handleResponseGeneration<
+  Ts extends GenieChatType, 
+  T extends Ts, 
+  A extends AssetName
+>(
+  this: Responder<Ts, T, A>
 ) {
 
-  const { messages, state } = this;
+  const { config: { alert, state }, messages } = this;
 
   if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
@@ -28,7 +31,7 @@ export async function handleResponseGeneration<T extends GenieChatType, A extend
     const responseMessage = await (
       state.generating =
       new Resolvable(
-        generateResponse.call(this)
+        this.generateResponse()
       )
     ).promise;
 

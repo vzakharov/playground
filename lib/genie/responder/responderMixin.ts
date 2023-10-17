@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { addProperties, also, assign } from 'vovas-utils';
+import { also } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
-import { 
-  AssetName, BaseChatController, GenieChatType, LeftoversMixin, generateResponse, handleResponseGeneration 
+import {
+  AssetName, BaseChatControllerConfig, GenieChatType, LeftoversController, generateResponse, handleResponseGeneration
 } from '..';
 
 export type ResponderMixinConfig = {
@@ -14,39 +14,38 @@ export type ResponderMixinConfig = {
   alert: (message: string) => void;
 };
 
-export function responderMixin(config: ResponderMixinConfig) {
+export class Responder<
+  Ts extends GenieChatType, 
+  T extends Ts, 
+  A extends AssetName
+> extends LeftoversController<Ts, T, A> {
 
-  const { watch, alert } = config;
-
-  return function <T extends GenieChatType, A extends AssetName>(
-    base: BaseChatController<T, A> & LeftoversMixin<A>
+  constructor(
+    public readonly config: BaseChatControllerConfig<Ts, T, A> & ResponderMixinConfig
   ) {
+    super(config);
+    this.watchForResponseGeneration();
+  };
 
-    const { messages, data, autoMessage } = base;
+  watchForResponseGeneration() {
 
-    return {
+    const { config: { watch, autoMessage, data }, messages } = this;
 
-      watchForResponseGeneration() {
+    watch(messages, messages => {
 
-        watch(messages, messages => {
-
-          const lastMessage = _.last(messages)
-            ?? also(
-              autoMessage?.(data),
-              m => m && messages.push(m)
-            );
-          if (!lastMessage || isBy.user(lastMessage)) {
-            handleResponseGeneration.call(base, config);
-          }
-        }, { immediate: true });
-
-      },
-
-      generateResponse,
-      handleResponseGeneration
-
-    };
+      const lastMessage = _.last(messages)
+        ?? also(
+          autoMessage?.(data),
+          m => m && messages.push(m)
+        );
+      if (!lastMessage || isBy.user(lastMessage)) {
+        this.handleResponseGeneration();
+      }
+    }, { immediate: true });
 
   };
+
+  generateResponse = generateResponse;
+  handleResponseGeneration = handleResponseGeneration;
 
 };

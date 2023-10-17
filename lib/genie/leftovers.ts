@@ -17,75 +17,71 @@ export type LeftoversStore = {
   [id in ChatId]?: Leftovers<AssetName>
 };
 
-export function leftoversMixin<A extends AssetName>(
+export class LeftoversController<
+  Ts extends GenieChatType, 
+  T extends Ts, 
+  A extends AssetName
+> extends BaseChatController<Ts, T, A> {
 
-  { globalState: { leftoversStore }, chat, messages }: BaseChatController<GenieChatType, A>
+  private store = this.config.globalState.leftoversStore;
 
-) {
-
-  return {
-
-    get leftovers() {
-      return leftoversStore[chat.id] ??= defaultLeftovers;
-    },
+  get leftovers() {
+    const { store, chat } = this;
+    return store[chat.id] ??= defaultLeftovers;
+  };
 
 
-    set leftovers(
-      value: Leftovers<A>
-    ) {
-      leftoversStore[chat.id] = value;
-    },
+  set leftovers( value: Leftovers<A> ) {
+    const { store, chat } = this;
+    store[chat.id] = value;
+  };
 
-    areForMessage(
-      message: GenieMessage<A, 'assistant'>
-    ) {
+  areForMessage(
+    message: GenieMessage<A, 'assistant'>
+  ) {
 
-      const { leftovers } = this;
+    const { leftovers } = this;
 
-      return !!message.id && (leftovers.baseId === message.id);
+    return !!message.id && (leftovers.baseId === message.id);
 
-    },
+  };
 
-    replaceWithLeftover(
-      message: GenieMessage<A, 'assistant'>
-    ) {
+  replaceWithLeftover(
+    message: GenieMessage<A, 'assistant'>
+  ) {
 
-      const { leftovers } = this;
+    const { leftovers, messages } = this;
 
-      if (!this.areForMessage(message))
-        throw new Error('Leftovers are not for this message');
+    if (!this.areForMessage(message))
+      throw new Error('Leftovers are not for this message');
 
-      const { results } = leftovers;
+    const { results } = leftovers;
 
-      const leftover = results.shift()
-        ?? $throw('No leftovers left');
+    const leftover = results.shift()
+      ?? $throw('No leftovers left');
 
-      leftovers.baseId = leftover.id;
+    leftovers.baseId = leftover.id;
 
-      messages.splice(messages.indexOf(message), 1, leftover);
+    messages.splice(messages.indexOf(message), 1, leftover);
 
-      return { deletedMessage: message, leftovers };
+    return { deletedMessage: message, leftovers };
 
-    },
+  };
 
-    cycleLeftovers(
-      message: GenieMessage<A, 'assistant'>
-    ) {
+  cycleLeftovers(
+    message: GenieMessage<A, 'assistant'>
+  ) {
 
-      const {
-        deletedMessage,
-        leftovers,
-        leftovers: { activeMessageOriginalIndex, results }
-      } = this.replaceWithLeftover(message);
+    const {
+      deletedMessage,
+      leftovers,
+      leftovers: { activeMessageOriginalIndex, results }
+    } = this.replaceWithLeftover(message);
 
-      results.push(deletedMessage);
+    results.push(deletedMessage);
 
-      leftovers.activeMessageOriginalIndex = (activeMessageOriginalIndex % (results.length + 1)) + 1;
-
-    }
+    leftovers.activeMessageOriginalIndex = (activeMessageOriginalIndex % (results.length + 1)) + 1;
 
   }
 
 };
-
-export type LeftoversMixin<A extends AssetName> = ReturnType<typeof leftoversMixin<A>>;
