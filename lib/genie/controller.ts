@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { ToRefs } from 'vue';
 import { Resolvable, mixin, toReactive } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, ResponderMixinConfig, editMessage, findBy, findOrCreateChat, leftoversMixin, responderMixin, says } from '.';
+import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, PromptBuilder, ResponderMixinConfig, editMessage, findBy, findOrCreateChat, leftoversMixin, responderMixin, says } from '.';
 
 export type ChatControllerState<A extends AssetName> = {
   generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;
@@ -19,6 +19,7 @@ export type BaseChatControllerConfig<T extends GenieChatType, A extends AssetNam
   type: T;
   chatId: ChatId;
   refs: ToRefs<ChatControllerState<A>>;
+  promptBuilder: PromptBuilder<T, any, any>;
   autoMessage?: ( data: GenieData<GenieChatType> ) => GenieMessage<A, 'assistant'>;
 };
 
