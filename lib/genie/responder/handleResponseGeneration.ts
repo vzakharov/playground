@@ -1,13 +1,15 @@
 import _ from "lodash";
-import { 
-  AssetName, BaseChatController, GenieChatType, LeftoversMixin, Resolvable, generateResponse 
+import { Resolvable, ResolvablePromiseCanceled } from "~/lib/utils";
+import { GenerateException, isBy } from "~/lib/vovas-openai";
+import {
+  AssetName, BaseChatController, GenieChatType, LeftoversMixin, ResponderMixinConfig, generateResponse
 } from "..";
-import { isBy } from "~/lib/vovas-openai";
 
 export class GenerationCanceledException extends Error {}
 
 export async function handleResponseGeneration<T extends GenieChatType, A extends AssetName>(
-  this: BaseChatController<T, A> & LeftoversMixin<A>
+  this: BaseChatController<T, A> & LeftoversMixin<A>,
+  config: ResponderMixinConfig
 ) {
 
   const { messages, state } = this;

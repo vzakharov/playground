@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import { ToRefs } from 'vue';
-import { mixin, toReactive } from '~/lib/utils';
+import { Resolvable, mixin, toReactive } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, Resolvable, leftoversMixin, editMessage, findBy, findOrCreateChat, says, responderMixin, ResponderMixinConfig } from '.';
-import { merge } from 'vovas-utils';
+import { AssetName, ChatId, GenieChat, GenieChatType, GenieData, GenieMessage, GenieState, ResponderMixinConfig, editMessage, findBy, findOrCreateChat, leftoversMixin, responderMixin, says } from '.';
 
 export type ChatControllerState<A extends AssetName> = {
   generating: Resolvable<GenieMessage<A, 'assistant'>> | undefined;
@@ -88,8 +87,10 @@ export function createChatController<T extends GenieChatType, A extends AssetNam
   config: ChatControllerConfig<T, A>
 ) {
   const controller = mixin(
-    createBaseChatController(config),
-    leftoversMixin,
+    mixin(
+      createBaseChatController(config),
+      leftoversMixin,
+    ),
     responderMixin(config)
   );
   controller.watchForResponseGeneration();

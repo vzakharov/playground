@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { also } from 'vovas-utils';
+import { addProperties, also, assign } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
 import { 
   AssetName, BaseChatController, GenieChatType, LeftoversMixin, generateResponse, handleResponseGeneration 
@@ -11,9 +11,12 @@ export type ResponderMixinConfig = {
     callback: (value: T) => void,
     options?: { immediate: boolean }
   ) => void;
+  alert: (message: string) => void;
 };
 
-export function responderMixin({ watch }: ResponderMixinConfig) {
+export function responderMixin(config: ResponderMixinConfig) {
+
+  const { watch, alert } = config;
 
   return function <T extends GenieChatType, A extends AssetName>(
     base: BaseChatController<T, A> & LeftoversMixin<A>
@@ -33,7 +36,7 @@ export function responderMixin({ watch }: ResponderMixinConfig) {
               m => m && messages.push(m)
             );
           if (!lastMessage || isBy.user(lastMessage)) {
-            handleResponseGeneration.call(base);
+            handleResponseGeneration.call(base, config);
           }
         }, { immediate: true });
 

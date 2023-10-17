@@ -5,5 +5,6 @@ export * from './defaultable';
 export * from './mixin';
 export * from './objectWithKeys';
 export * from './placeholders';
+export * from './resolvable';
 export * from './uniqueId';
 export * from './utils';

@@ -9,7 +9,13 @@ export const stringKeyed = <T extends object>(obj: T) => obj as { [K in StringKe
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
-export type UnionToIntersection<U> = 
+/**
+ * Returns the intersection of all types in the union `U`.
+ * 
+ * @template U The union of types to intersect.
+ * @returns The intersection of all types in the union `U`.
+ */
+export type AllOf<U> = 
   ( 
     U extends any 
       ? (k: U) => void 
@@ -20,7 +26,7 @@ export type UnionToIntersection<U> =
     ? I 
     : never;
 
-export type IntersectMapValues<Map, Key extends keyof Map> = UnionToIntersection<Map[Key]>;
+export type IntersectMapValues<Map, Key extends keyof Map> = AllOf<Map[Key]>;
 
 export type MapToGeneric<Map, Key extends keyof Map> = {
   [K in keyof IntersectMapValues<Map, keyof Map>]: K extends keyof Map[Key] ? IntersectMapValues<Map, keyof Map>[K] : never;
