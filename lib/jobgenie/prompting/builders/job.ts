@@ -1,5 +1,5 @@
 import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "..";
+import { mainSystemMessage, schema } from "../..";
 
 export const job = new PromptBuilder('job', { 
 

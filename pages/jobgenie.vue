@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { JobGenie, defaultData } from '~/lib/jobgenie';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
@@ -16,7 +17,6 @@ import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { Genie } from '~/lib/genie';
-import { JobGenie, Schema, defaultData, promptBuilders, schema } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
 
 const genie = new JobGenie({

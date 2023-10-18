@@ -6,7 +6,7 @@ export * from './GenieSchema';
 export * from './GenieState';
 export * from './assets';
 export * from './chatting';
-export * from './derivedGenie';
+export * from './customGenie';
 export * from './prompting';
 export * from './says';
 export * from './temperatureDescriptors';

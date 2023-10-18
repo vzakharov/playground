@@ -1,6 +1,6 @@
 import dedent from "dedent-js";
 import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "..";
+import { mainSystemMessage, schema } from "../..";
 
 export const pitch = new PromptBuilder('pitch', {
 
