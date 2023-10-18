@@ -1,5 +1,5 @@
 import { forEach } from "vovas-utils";
-import { ChatType } from "./ChatType";
+import { Tool } from "./ChatType";
 import { JobGenieChat } from "./JobGenieChat";
 import { RefLike } from "../utils/utils";
 import { schema } from "./schema";

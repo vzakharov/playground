@@ -1,14 +1,15 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "../PromptBuilder"
-import { mainSystemMessage } from "../mainSystemMessage";
+import { PromptBuilder } from "~/lib/genie";
+import { mainSystemMessage, schema } from "../..";
 
-export const socialPromptBuilder = new PromptBuilder('social', {
+export const socialBuilder = new PromptBuilder('social', {
 
+  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 2,
   addAssetsAfter: 1,
-  requiredAssets: ['dna'],
-  buildSystemMessages({ numResponses, requestFunctionCall, functionCalled, username }) { return {
+  prerequisites: ['dna'],
+  buildSystemMessages({ numResponses, functionCalled, username }) { return {
     pre: `In this specific flow, you help ${username || 'the user'} come up with social posts on topics related to their professional profile, reflecting their personality, stance and tone.`,
 
     post:

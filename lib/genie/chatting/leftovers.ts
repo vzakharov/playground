@@ -36,7 +36,7 @@ export class LeftoversController<
     store[chat.id] = value;
   };
 
-  areForMessage(
+  areLeftoversForMessage(
     message: GenieMessage<S, T, 'assistant'>
   ) {
 
@@ -46,13 +46,13 @@ export class LeftoversController<
 
   };
 
-  replaceWithLeftover(
+  replaceActiveMessageWithLeftover(
     message: GenieMessage<S, T, 'assistant'>
   ) {
 
     const { leftovers, messages } = this;
 
-    if (!this.areForMessage(message))
+    if (!this.areLeftoversForMessage(message))
       throw new Error('Leftovers are not for this message');
 
     const { results } = leftovers;
@@ -76,12 +76,12 @@ export class LeftoversController<
       deletedMessage,
       leftovers,
       leftovers: { activeMessageOriginalIndex, results }
-    } = this.replaceWithLeftover(message);
+    } = this.replaceActiveMessageWithLeftover(message);
 
     results.push(deletedMessage);
 
     leftovers.activeMessageOriginalIndex = (activeMessageOriginalIndex % (results.length + 1)) + 1;
 
-  }
+  };
 
 };

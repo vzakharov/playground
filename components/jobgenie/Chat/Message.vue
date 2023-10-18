@@ -1,40 +1,41 @@
-<script setup lang="ts" generic="T extends ChatType">
+<script setup lang="ts" generic="S extends Schema, T extends Tool<S>">
 
 import { Marked } from '@ts-stack/markdown';
-import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Button from '~/components/shared/Button.vue';
+import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Card from '~/components/shared/Card.vue';
-import { AppChatMessage, ChatType, allTrue, getAssetCaptions, areLeftoversForMessage, getLeftovers } from '~/lib/jobgenie';
+// import { AppChatMessage, ChatType, allTrue, getAssetCaptions, areLeftoversForMessage, getLeftovers } from '~/lib/jobgenie';
+import _ from 'lodash';
+import TextModal from '~/components/shared/TextModal.vue';
+import { refForInstance } from '~/components/shared/utils';
+import { ChatController, GenieMessage, Schema, Tool } from '~/lib/genie';
 import { isBy } from '~/lib/vovas-openai';
 import { isActiveAssetFor } from '../refs';
 import { globalState as state } from '../state';
-import { ChatController } from './controller';
-import TextModal from '~/components/shared/TextModal.vue';
-import { refForInstance } from '~/components/shared/utils';
-import _ from 'lodash';
 
 const props = defineProps<{
-  message: AppChatMessage<T>,
-  c: ChatController<T>
+  message: GenieMessage<S, T>,
+  c: ChatController<S, T>
 }>();
+
+const { message, c } = props;
 
 const buttons = computed(() => {
   
-  const leftovers = getLeftovers(state, props.c.type)
-  const { message, c } = props;
+  const { leftovers } = c;
 
   return [
     ...isBy.assistant(message) ? [
-      ...leftovers.results.length && areLeftoversForMessage(leftovers, message) ? [
+      ...leftovers.results.length && c.areLeftoversForMessage(message) ? [
         {
-          caption: `${leftovers.selectedIndex}/${leftovers.results.length + 1}`,
+          caption: `${leftovers.activeMessageOriginalIndex}/${leftovers.results.length + 1}`,
           tooltip: 'Loop through alternatives',
           onClick: () => c.cycleLeftovers(message)
         },
         {
           caption: '🗑',
           tooltip: 'Delete this alternative',
-          onClick: () => c.deleteLeftover(message)
+          onClick: () => c.replaceActiveMessageWithLeftover(message)
         }
 
       ] : [],

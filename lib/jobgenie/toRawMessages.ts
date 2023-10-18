@@ -1,4 +1,4 @@
-import { ChatType } from "./ChatType";
+import { Tool } from "./ChatType";
 import { JobGenieMessage } from "./JobGenieMessage";
 import { ChatFunctionFor } from './prompting';
 import { ChatMessage } from 'lib/vovas-openai';
@@ -6,7 +6,7 @@ import { $throw } from 'vovas-utils';
 import _ from 'lodash';
 
 
-export function toRawMessage<T extends ChatType>(fn?: ChatFunctionFor<T>) {
+export function toRawMessage<T extends Tool>(fn?: ChatFunctionFor<T>) {
 
   return (appChatMessage: JobGenieMessage<T> ) => {
 

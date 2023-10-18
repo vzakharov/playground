@@ -9,61 +9,52 @@ import { data } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
 import { renewChatController } from './controller';
-import { Genie, GenieMessage, Schema, Tool } from '~/lib/genie';
-import { Resolvable } from '~/lib/utils';
+import { ChatControllerState, Genie, GenieMessage, GenieState, Schema, Tool, branded, $GenieChatId } from '~/lib/genie';
+import { Resolvable, refsToReactive } from '~/lib/utils';
+import { promptBuilders } from '~/lib/jobgenie';
 
-  const { genie } = defineProps<{
-    genie: Genie<S, T>;
-  }>();
+const { genie, tool } = defineProps<{
+  genie: Genie<S, T>;
+  tool: T;
+}>();
 
-  const generating = ref<Resolvable<GenieMessage<S, T, 'assistant'>>>();
-  const dataLastLoaded = ref(Date.now());
-  const msExpected = ref<number>();
+const generating = ref<Resolvable<GenieMessage<S, T, 'assistant'>>>();
+const msExpected = ref<number>();
+const userMessage = toRefs(globalState).userMessage;
+const userMessageComponent = refForInstance(Textarea);
 
-  const { userMessage } = toRefs(globalState);
-  const userMessageComponent = refForInstance(Textarea);
+const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
+const c = new genie.ChatController({
+  tool, state, 
+  chatId: branded<$GenieChatId>(tool), // TODO: Implement multiple chat ids per tool
+});
 
-  // const c = renewChatController(type, {
-  //   generating,
-  //   userMessage,
-  //   userMessageComponent,
-  //   msExpected
-  // });
-  const c = new genie.ChatController({
-    state: {
-      generating,
-      userMessage,
-      userMessageComponent,
-      msExpected
-    }
+addProperties(window, { _, genie, c, data, state, globalState });
+
+watch(userMessageComponent, component => {
+  if ( !component ) return;
+  const { textarea } = component;
+  nextTick(() => {
+    if ( !textarea ) return;
+    textarea.scrollIntoView();
+    textarea.focus();
   });
+});
 
-  addProperties(window, { _, genie, c, data, userMessageComponent, globalState });
+const countIrrelevantMessages = computed(() => {
+  return c.countIrrelevantMessages();
+});
 
-  watch(userMessageComponent, component => {
-    if ( !component ) return;
-    const { textarea } = component;
-    nextTick(() => {
-      if ( !textarea ) return;
-      textarea.scrollIntoView();
-      textarea.focus();
-    });
+const showIrrelevantMessages = ref(false);
+const irrelevanceNote = ref<[HTMLDivElement]>();
+// (Tuple because we technically create multiple notes due to v-for)
+function toggleIrrelevantMessages() {
+  showIrrelevantMessages.value = !showIrrelevantMessages.value;
+  nextTick(() => {
+    irrelevanceNote.value?.[0].scrollIntoView();
   });
-
-  const countIrrelevantMessages = computed(() => {
-    return c.countIrrelevantMessages();
-  });
-
-  const showIrrelevantMessages = ref(false);
-  const irrelevanceNote = ref<[HTMLDivElement]>();
-  // (Tuple because we technically create multiple notes due to v-for)
-  function toggleIrrelevantMessages() {
-    showIrrelevantMessages.value = !showIrrelevantMessages.value;
-    nextTick(() => {
-      irrelevanceNote.value?.[0].scrollIntoView();
-    });
-  }
+}
 
 </script>
 

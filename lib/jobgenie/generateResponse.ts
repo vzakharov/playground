@@ -6,10 +6,10 @@ import { getPromptBuilder } from './prompting';
 import { GlobalState } from './state';
 import { areLeftoversForMessage, getLeftovers, setLeftovers } from "./leftovers";
 import { AppData } from "./AppData";
-import { ChatType } from "./ChatType";
+import { Tool } from "./ChatType";
 import { temperatureForDescriptor, withUniqueId } from '~/lib/genie';
 
-export type GenerateResponseParams<T extends ChatType> = {
+export type GenerateResponseParams<T extends Tool> = {
   type: T,
   messages: JobGenieMessage<T>[],
   previousGeneration?: JobGenieMessage<T, 'assistant'>,
@@ -20,7 +20,7 @@ export type GenerateResponseParams<T extends ChatType> = {
   data: AppData
 };
 
-export async function generateResponse<T extends ChatType>(
+export async function generateResponse<T extends Tool>(
   { type, messages, data, state, globalState, previousGeneration }: GenerateResponseParams<T>
 ): Promise<JobGenieMessage<T, 'assistant'>> {
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;

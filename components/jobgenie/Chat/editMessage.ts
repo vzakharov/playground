@@ -1,7 +1,7 @@
-import { ChatType, JobGenieMessage } from "lib/jobgenie";
+import { Tool, JobGenieMessage } from "lib/jobgenie";
 import { ChatController } from "./controller";
 
-export function editMessage<T extends ChatType>(this: ChatController<T>, message: JobGenieMessage<T, 'user'>) {
+export function editMessage<T extends Tool>(this: ChatController<T>, message: JobGenieMessage<T, 'user'>) {
 
   const { state, state: { generating, userMessageComponent } } = this;
   state.userMessage = message.content;

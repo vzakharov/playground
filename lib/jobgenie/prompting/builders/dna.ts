@@ -1,10 +1,10 @@
 import dedent from "dedent-js";
-import { chatFunction, stackUp } from "~/lib/vovas-openai";
-import { mainSystemMessage } from "../mainSystemMessage";
-import { PromptBuilder } from "../PromptBuilder";
+import { PromptBuilder } from "~/lib/genie";
+import { mainSystemMessage, schema } from "../..";
 
-export const interviewPromptBuilder = new PromptBuilder('dna', { 
+export const dnaBuilder = new PromptBuilder('dna', { 
 
+  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 3,
 

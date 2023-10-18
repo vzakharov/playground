@@ -76,14 +76,14 @@ export function setValue<T>(ref: RefLike<T>, value: T) {
   return ref.value = value;
 };
 
-export function toReactive<T extends Record<string, Ref<any>>>(refObject: T) {
+export function refsToReactive<T extends Record<string, Ref<any>>>(refsObject: T) {
   const reactiveObject = {};
 
-  for (const key in refObject) {
-    if (refObject.hasOwnProperty(key)) {
+  for (const key in refsObject) {
+    if (refsObject.hasOwnProperty(key)) {
       Object.defineProperty(reactiveObject, key, {
-        get: () => refObject[key].value,
-        set: (newValue) => { refObject[key].value = newValue; },
+        get: () => refsObject[key].value,
+        set: (newValue) => { refsObject[key].value = newValue; },
       });
     }
   }

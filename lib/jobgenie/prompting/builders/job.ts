@@ -1,13 +1,12 @@
-import dedent from "dedent-js";
-import { chatFunction, stackUp } from "~/lib/vovas-openai";
-import { mainSystemMessage } from "../mainSystemMessage";
-import { PromptBuilder } from "../PromptBuilder";
+import { PromptBuilder } from "~/lib/genie";
+import { mainSystemMessage, schema } from "../..";
 
-export const jobPromptBuilder = new PromptBuilder('job', { 
+export const jobBuilder = new PromptBuilder('job', { 
 
+  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 1,
-  requiredAssets: ['dna'],
+  prerequisites: ['dna'],
 
   buildSystemMessages({ requestFunctionCall }) { return {
 

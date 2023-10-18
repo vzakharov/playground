@@ -8,10 +8,10 @@ export type BaseChatControllerConfig<
   S extends Schema,
   T extends Tool<S>,
 > = {
+  tool: T;
   data: GenieData<S>;
   state: ChatControllerState<S, T>;
   globalState: GenieState;
-  type: T;
   chatId: ChatId;
   promptBuilder: PromptBuilder<S, T, any>;
   autoMessage?: (data: GenieData<S>) => GenieMessage<S, T, 'assistant'>;
@@ -25,7 +25,8 @@ export class BaseChatController<
   constructor(
     public readonly config: BaseChatControllerConfig<S, T>,
   ) {
-    this.chat = findOrCreateChat(config.data, config.type, config.chatId);
+    const { config: { data, tool, chatId } } = this;
+    this.chat = findOrCreateChat(data, tool, chatId);
     this.messages = this.chat.messages;
   };
 

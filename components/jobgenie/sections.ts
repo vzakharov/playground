@@ -1,7 +1,7 @@
-import { ChatType, create, getPromptBuilder } from '~/lib/jobgenie';
-import { activeAssets } from './refs';
 import _ from 'lodash';
-import { $throw, map } from 'vovas-utils';
+import { $throw } from 'vovas-utils';
+import { Tool, getPromptBuilder } from '~/lib/jobgenie';
+import { activeAssets } from './refs';
 
 export const sectionIds = [ 'dna', 'resume', 'job', 'pitch', 'social' ] as const;
 
@@ -15,7 +15,7 @@ export const sectionConfigs = [
   },
   {
     id: 'resume',
-    chatType: 'resumé',
+    tool: 'resumé',
     caption: 'Resumé',
     emoji: '👔',
   },
@@ -48,11 +48,11 @@ export type SectionConfig<IdIsChatType extends boolean = boolean> = {
 } & (
   IdIsChatType extends true
     ? { 
-      id: ChatType,
-      chatType?: never,
+      id: Tool,
+      tool?: never,
     }
     : {
-      chatType: ChatType
+      tool: Tool
     }
 );
 
@@ -60,20 +60,20 @@ export function getSection(id: SectionId) {
   return _.find(sectionConfigs, { id })!;
 }
 
-export function getChatType(id: SectionId): ChatType {  
+export function getToolName(id: SectionId) {  
   const section = getSection(id);
-  return section.chatType ?? section.id;
+  return section.tool ?? section.id;
 };
 
-export function getSectionConfigForChatType(chatType: ChatType) {
+export function getSectionConfigForChatType(chatType: Tool) {
   return _.find(sectionConfigs, 
-    section => section.chatType === chatType || section.id === chatType
+    section => section.tool === chatType || section.id === chatType
   ) ?? $throw(`No section config for chat type ${chatType}`);
 };
 
 export const sections = computed( () => _.map(sectionConfigs, config => {
   
-  const builder = getPromptBuilder(config.chatType ?? config.id);
+  const builder = getPromptBuilder(config.tool ?? config.id);
   const missingAssets = builder.getMissingAssets(activeAssets.value);
 
   return {

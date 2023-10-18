@@ -1,3 +1,5 @@
+import { literalKeys } from "lib/utils";
+import _ from "lodash";
 
 export const schema = {
   dna: {
@@ -28,3 +30,5 @@ export const schema = {
 } as const;
 
 export type Schema = typeof schema;
+
+// export const tools = literalKeys(schema);

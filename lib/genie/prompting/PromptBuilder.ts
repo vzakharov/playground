@@ -18,7 +18,6 @@ export type PromptBuilderConfig<
   Pres extends OtherTools<S, T>
 > = {
   schema: S;
-  tool: T;
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
   addAssetsAfter?: number;
@@ -45,6 +44,7 @@ export class PromptBuilder<
 > {
 
   constructor(
+    public tool: T,
     public config: PromptBuilderConfig<S, T, Pres>
   ) { }
 

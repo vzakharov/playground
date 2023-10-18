@@ -1,11 +1,11 @@
 import { findBy } from "~/lib/genie";
 import _ from "lodash";
 import { objectWithKeys } from "vovas-utils";
-import { JobGenieChat, AppData, AssetsForChatType, ChatType, chatTypes } from "~/lib/jobgenie";
+import { JobGenieChat, AppData, AssetsForChatType, Tool, tools } from "~/lib/jobgenie";
 
 export function getActiveAssets(data: AppData) {
 
-  const result = objectWithKeys(chatTypes, <T extends ChatType>(type: T) => {
+  const result = objectWithKeys(tools, <T extends Tool>(type: T) => {
 
     const chat = findBy({ tool: type }, data.chats) as JobGenieChat<T> | undefined;
 
@@ -17,7 +17,7 @@ export function getActiveAssets(data: AppData) {
       .last()?.assets;
 
   }) as {
-      [T in ChatType]?: AssetsForChatType<T>;
+      [T in Tool]?: AssetsForChatType<T>;
     };
   
   return result;

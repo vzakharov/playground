@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { ToRefs } from 'vue';
-import { ChatType, JobGenieMessage, Resolvable, toReactive } from '~/lib/jobgenie';
+import { Tool, JobGenieMessage, Resolvable, toReactive } from '~/lib/jobgenie';
 import { isBy } from '~/lib/vovas-openai';
 import { findOrCreateChat } from "../findOrCreateChat";
 // import { dataLastLoaded, generating, userMessage } from '../refs';
@@ -19,7 +19,7 @@ export type ChatControllerState<A extends string> = {
   msExpected: number | undefined;
 };
 
-export function createChatController<T extends ChatType>(type: T, id: string, refs: ToRefs<ChatControllerState<T>>) {
+export function createChatController<T extends Tool>(type: T, id: string, refs: ToRefs<ChatControllerState<T>>) {
 
   const c = {
 
@@ -70,14 +70,14 @@ export function createChatController<T extends ChatType>(type: T, id: string, re
 
 };
 
-export type ChatController<T extends ChatType> = ReturnType<typeof createChatController<T>>;
+export type ChatController<T extends Tool> = ReturnType<typeof createChatController<T>>;
 
 // export class ChatController<T extends ChatType> extends LeftoverHandler<T> { }
 
 export const activeChatControllers: ChatController<any>[] = reactive([]);
 
 // export function renewChatController<T extends ChatType>(...args: ConstructorParameters<typeof BaseChatController<T>>) {
-export function renewChatController<T extends ChatType>(...args: Parameters<typeof createChatController<T>>) {
+export function renewChatController<T extends Tool>(...args: Parameters<typeof createChatController<T>>) {
   const [type] = args;
   const oldController = findBy({ type }, activeChatControllers);
   if (oldController) {

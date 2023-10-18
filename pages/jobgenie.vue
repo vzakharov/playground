@@ -7,7 +7,7 @@ import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { sections } from '~/components/jobgenie/sections';
+import { sections, getToolName } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
@@ -19,7 +19,13 @@ import { Genie } from '~/lib/genie';
 import { defaultData, schema } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
 
-const genie = new Genie(schema, data, globalState);
+const genie = new Genie({
+  schema,
+  data,
+  globalState,
+  watch,
+  alert
+});
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 
@@ -76,7 +82,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <template v-else>
       <Chat
         :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :="{genie}"
+        :="{ genie, tool: getToolName(selectedSectionId) }"
       />
     </template>
     <TextModal monospace

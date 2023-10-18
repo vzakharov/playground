@@ -1,10 +1,10 @@
-import { JobGenieMessage, ChatType, getPromptBuilder } from "~/lib/jobgenie";
+import { JobGenieMessage, Tool, getPromptBuilder } from "~/lib/jobgenie";
 import { ChatController } from "./controller";
 import { data } from "../data";
 import { reduceChatMessages } from "~/lib/vovas-openai";
 import { $throw } from "vovas-utils";
 
-export function countIrrelevantMessages<T extends ChatType>(this: ChatController<T>) {
+export function countIrrelevantMessages<T extends Tool>(this: ChatController<T>) {
 
   // This function checks how many messages will be used to generate the response (due to the constraint of max. `charLimit` JSON characters in the prompt).
   // This is done by adding messages one by one (from the end), until `reduceChatMessages` no longer removes any messages from the prompt.
@@ -32,6 +32,6 @@ export function countIrrelevantMessages<T extends ChatType>(this: ChatController
 
 };
 
-export function isRelevant<T extends ChatType>(this: ChatController<T>, message: JobGenieMessage<T>) {
+export function isRelevant<T extends Tool>(this: ChatController<T>, message: JobGenieMessage<T>) {
   return this.messages.indexOf(message) >= this.countIrrelevantMessages();
 };

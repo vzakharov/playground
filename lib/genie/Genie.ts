@@ -1,5 +1,15 @@
 import _ from "lodash";
-import { Asset, ChatController, ChatControllerConfig, GenieData, GenieState, Schema, Tool, findBy } from ".";
+import { Asset, ChatController, ChatControllerConfig, GenieData, GenieState, PromptBuilder, ResponderMixinConfig, Schema, Tool, findBy } from ".";
+import { $throw } from "vovas-utils";
+
+export type GenieConfig<S extends Schema> = {
+  schema: S;
+  data: GenieData<S>;
+  globalState: GenieState;
+  promptBuilders: {
+    [T in Tool<S>]: PromptBuilder<S, T, any>;
+  };
+} & ResponderMixinConfig;
 
 export class Genie<
   S extends Schema,
@@ -11,27 +21,29 @@ export class Genie<
   } = {};
 
   constructor(
-    public schema: S,
-    public data: GenieData<S>,
-    public state: GenieState,
+    public readonly config: GenieConfig<S>,
   ) { };
 
   get ChatController() {
 
-    const { data, state: globalState, chatControllers } = this;
+    const genie = this;
+    const { chatControllers } = this;
+    
 
     return class BoundChatController<T extends Ts> extends ChatController<S, T> {
 
       constructor(
-        config: Omit<ChatControllerConfig<S, T>, 'data' | 'globalState'>,
+        config: Omit<ChatControllerConfig<S, T>, keyof GenieConfig<S> | 'promptBuilder'>
       ) {
-        const { type, chatId } = config;
-        const controllers = chatControllers[type] ??= [];
+        const { tool, chatId } = config;
+        const controllers = chatControllers[tool] ??= [];
         const oldController = findBy({ config: { chatId } }, controllers);
         if (oldController)
           _.pull(controllers, oldController);
 
-        super({ ...config, data, globalState });
+        const promptBuilder = genie.getPromptBuilder(tool);
+
+        super({ ...genie.config, ...config, promptBuilder });
 
         controllers.push(this);
 
@@ -39,6 +51,10 @@ export class Genie<
 
     };
 
+  };
+
+  getPromptBuilder<T extends Tool<S>>(tool: T) {
+    return this.config.promptBuilders[tool];
   };
 
 

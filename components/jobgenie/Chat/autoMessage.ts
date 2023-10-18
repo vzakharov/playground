@@ -1,9 +1,9 @@
 import { says } from "~/lib/genie";
 import { data } from "../data";
-import { JobGenieMessage, ChatType } from "~/lib/jobgenie";
+import { JobGenieMessage, Tool } from "~/lib/jobgenie";
 
 export type AutoMessageMap = {
-  [T in ChatType]?: () => JobGenieMessage<T>;
+  [T in Tool]?: () => JobGenieMessage<T>;
 };
 
 export const autoMessage: AutoMessageMap = {

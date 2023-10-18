@@ -64,7 +64,7 @@ export async function generateResponse<
     results: _.compact([
       ...leftovers.map(fromRawMessage),
       // If the the existing leftovers are for the previousGeneration, then we want to keep them (as well as the previous generation itself)
-      ...previousGeneration && this.areForMessage(previousGeneration) ? [
+      ...previousGeneration && this.areLeftoversForMessage(previousGeneration) ? [
         ...existingLeftovers.results,
         previousGeneration
       ] : []

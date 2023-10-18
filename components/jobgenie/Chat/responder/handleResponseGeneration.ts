@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { globalState } from '~/components/jobgenie/state';
-import { ChatType, generateResponse } from '~/lib/jobgenie';
+import { Tool, generateResponse } from '~/lib/jobgenie';
 import { Resolvable, ResolvablePromiseCanceled } from '~/lib/utils';
 import { GenerateException, isBy } from '~/lib/vovas-openai';
 import { data } from '../../data';
@@ -8,7 +8,7 @@ import { ChatController } from '../controller';
 
 export class GenerationCanceledException extends Error {}
 
-export async function handleResponseGeneration<T extends ChatType>(this: ChatController<T>) {
+export async function handleResponseGeneration<T extends Tool>(this: ChatController<T>) {
 
   const { type, messages, state, previousGeneration } = this;
 

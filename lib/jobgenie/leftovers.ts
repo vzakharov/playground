@@ -1,22 +1,22 @@
 import { JobGenieMessage } from "./JobGenieMessage";
-import { ChatType } from "./ChatType";
+import { Tool } from "./ChatType";
 import { GlobalState } from "./state";
 
 
-export type Leftovers<T extends ChatType> = {
+export type Leftovers<T extends Tool> = {
   results: JobGenieMessage<T>[];
   baseId: string | null;
   selectedIndex: number;
 };
 
-export function areLeftoversForMessage<T extends ChatType>(
+export function areLeftoversForMessage<T extends Tool>(
   leftovers: Leftovers<any>,
   { id }: JobGenieMessage<T, "assistant">
 ): leftovers is Leftovers<T> {
   return !!id && (leftovers.baseId === id);
 };
 
-export function getLeftovers<T extends ChatType>(
+export function getLeftovers<T extends Tool>(
   globalState: GlobalState,
   type: T
 ): Leftovers<T> {
@@ -29,7 +29,7 @@ export function getLeftovers<T extends ChatType>(
   );
 };
 
-export function setLeftovers<T extends ChatType>(
+export function setLeftovers<T extends Tool>(
   globalState: GlobalState,
   type: T,
   leftovers: Leftovers<T>

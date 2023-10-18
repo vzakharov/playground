@@ -1,5 +1,4 @@
 export * from './AppData';
-export * from './ChatType';
 export * from './JobGenie';
 export * from './JobGenieChat';
 export * from './JobGenieMessage';

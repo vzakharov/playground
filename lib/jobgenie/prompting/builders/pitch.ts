@@ -1,12 +1,13 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "../PromptBuilder";
-import { mainSystemMessage } from "../mainSystemMessage";
+import { PromptBuilder } from "~/lib/genie";
+import { mainSystemMessage, schema } from "../..";
 
-export const pitchPromptBuilder = new PromptBuilder('pitch', {
+export const pitchBuilder = new PromptBuilder('pitch', {
 
+  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 0,
-  requiredAssets: ['dna'],
+  prerequisites: ['dna'],
 
   buildSystemMessages({ numResponses, functionCalled }) { return {
 

@@ -1,15 +1,16 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "../PromptBuilder"
-import { mainSystemMessage } from "../mainSystemMessage";
+import { PromptBuilder } from "~/lib/genie";
+import { mainSystemMessage, schema } from "../..";
 
-export const challengePromptBuilder = new PromptBuilder('challenge', {
+export const challengeBuilder = new PromptBuilder('challenge', {
 
+  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 1,
   addAssetsAfter: 1,
-  requiredAssets: ['dna', 'resumé', 'job'],
+  prerequisites: ['dna', 'resumé', 'job'],
 
-  buildSystemMessages({ numResponses, requestFunctionCall, functionCalled, username }) { return {
+  buildSystemMessages({ numResponses, functionCalled, username }) { return {
 
     pre: `In this specific flow, you help ${username || 'the user'} come up with ideas for how potential employers could challenge them during the interview process.`,
 

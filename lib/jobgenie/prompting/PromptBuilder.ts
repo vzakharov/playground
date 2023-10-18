@@ -8,11 +8,11 @@ import {
   assetsDefinedForChatTypes,
   getActiveAssets, toRawMessage, yamlifyAssets
 } from "..";
-import { ChatType } from "../ChatType";
+import { Tool } from "../ChatType";
 import dedent from "dedent-js";
 
 
-export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
+export type PromptBuilderConfig<T extends Tool, RequiredAssets extends Tool[] | undefined> = {
   mainSystemMessage: string;
   requestFunctionCallAfter: number;
   addAssetsAfter?: number;
@@ -27,12 +27,12 @@ export type PromptBuilderConfig<T extends ChatType, RequiredAssets extends ChatT
   requiredAssets?: RequiredAssets;
 };
 
-export type PromptBuilderInput<T extends ChatType, RequiredAssets extends ChatType[] | undefined> = {
+export type PromptBuilderInput<T extends Tool, RequiredAssets extends Tool[] | undefined> = {
   messages: JobGenieMessage<T>[];
   data: AppData;
 };
 
-export class PromptBuilder<T extends ChatType, RequiredAssets extends ChatType[] | undefined> {
+export class PromptBuilder<T extends Tool, RequiredAssets extends Tool[] | undefined> {
 
   constructor(
     public type: T,
