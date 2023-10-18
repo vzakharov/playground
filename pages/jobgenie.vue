@@ -18,13 +18,7 @@ import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { Genie } from '~/lib/genie';
 import { allTrue } from '~/lib/utils';
-
-const genie = new JobGenie({
-  data,
-  globalState,
-  watch,
-  alert
-});
+import { genie } from '~/components/jobgenie/refs';
 
 const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
 

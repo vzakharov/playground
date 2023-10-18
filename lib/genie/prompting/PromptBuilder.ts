@@ -4,7 +4,8 @@ import { ArrayItem, Falsible } from "~/lib/utils";
 import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, GenieSchema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets } from "..";
+import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, GenieSchema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets, PartialAssetValues } from "..";
+import { $throw } from "vovas-utils";
 
 
 export type BuilderFunctionParameters<
@@ -68,7 +69,7 @@ export class PromptBuilder<
     const assetValues = getActiveAssets(data, schema);
 
     if ( !hasAssetsForTools(assetValues, prerequisites) )
-      throw new Error(`The following assets are missing: ${getMissingTools(assetValues, prerequisites).join(', ')}`);
+      throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);
 
     const { username } = data;
 
@@ -101,6 +102,12 @@ export class PromptBuilder<
       ],
       fn: requestFunctionCall ? fn : undefined
     };
+  };
+
+  getMissingTools(assetValues: PartialAssetValues<S, ArrayItem<OtherTools<S, T>>>) {
+    const { prerequisites } = this.config;
+    if ( !prerequisites ) return [];
+    return getMissingTools(assetValues, prerequisites);
   };
 
 };

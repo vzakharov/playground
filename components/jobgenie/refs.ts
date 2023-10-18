@@ -1,6 +1,14 @@
-import { JobGenieMessage, Tool, getActiveAssets } from "~/lib/jobgenie";
+import { JobGenie, Tool } from "~/lib/jobgenie";
 import { ChatController } from "./Chat/controller";
 import { data } from "./data";
+import { globalState } from "./state";
+
+export const genie = new JobGenie({
+  data,
+  globalState,
+  watch,
+  alert
+});
 
 export const dataLastLoaded = ref(Date.now());
 
