@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="S extends Schema, T extends Tool<S>">
+<script setup lang="ts" generic="S extends GenieSchema, T extends Tool<S>">
 
 import { Marked } from '@ts-stack/markdown';
 import Button from '~/components/shared/Button.vue';
@@ -8,10 +8,10 @@ import Card from '~/components/shared/Card.vue';
 import _ from 'lodash';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { ChatController, GenieMessage, Schema, Tool } from '~/lib/genie';
+import { ChatController, GenieMessage, GenieSchema, Tool } from '~/lib/genie';
 import { isBy } from '~/lib/vovas-openai';
-import { isActiveAssetFor } from '../refs';
 import { globalState as state } from '../state';
+import { genie } from '../refs';
 
 const props = defineProps<{
   message: GenieMessage<S, T>,
@@ -44,7 +44,7 @@ const buttons = computed(() => {
         tooltip: 'More alternatives',
         onClick: () => c.regenerate(message)
       },
-      message.assets && !isActiveAssetFor(c, message) && {
+      message === genie.messageWithActiveAssets(c) && {
         caption: 'Use this',
         tooltip: 'Set this asset globally for any relevant generations',
         onClick: () => message.assetsPickedAt = Date.now()

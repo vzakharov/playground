@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Asset, ChatController, ChatControllerConfig, GenieData, GenieState, PromptBuilder, ResponderMixinConfig, GenieSchema, Tool, defaultGenieState, findBy } from ".";
+import { Asset, ChatController, ChatControllerConfig, GenieData, GenieState, PromptBuilder, ResponderMixinConfig, GenieSchema, Tool, defaultGenieState, findBy, getActiveAssets } from ".";
 import { $throw } from "vovas-utils";
 
 export type PromptBuilders<S extends GenieSchema> = {
@@ -61,7 +61,19 @@ export class Genie<
 
   get defaultState() {
     return defaultGenieState(this.config.schema);
-  }
+  };
+
+  get activeAssets() {
+    return getActiveAssets(this.config.data, this.config.schema);
+  };
+
+  messageWithActiveAssets<T extends Tool<S>>(
+    controller: ChatController<S, T>
+  ) {
+    const { messages, config: { tool }} = controller;
+    return messages.find(({ assets }) => assets && assets === this.activeAssets[tool])
+      ?? $throw(`No message with active assets for ${tool}`);
+  };
 
 
 };

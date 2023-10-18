@@ -1,7 +1,7 @@
-import { JobGenie, Tool } from "~/lib/jobgenie";
-import { ChatController } from "./Chat/controller";
+import { JobGenie, schema } from "~/lib/jobgenie";
 import { data } from "./data";
 import { globalState } from "./state";
+import { ChatController, Tool, getActiveAssets } from "~/lib/genie";
 
 export const genie = new JobGenie({
   data,
@@ -11,11 +11,3 @@ export const genie = new JobGenie({
 });
 
 export const dataLastLoaded = ref(Date.now());
-
-export const activeAssets = computed(() =>
-  getActiveAssets(data)
-);
-
-export function isActiveAssetFor<T extends Tool>(chat: ChatController<T>, message: JobGenieMessage<T, any>) {
-  return message.assets && message.assets === activeAssets.value[chat.type]
-};

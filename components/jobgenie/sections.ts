@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { $throw } from 'vovas-utils';
 import { Tool } from '~/lib/jobgenie';
-import { activeAssets, genie } from './refs';
+import { genie } from './refs';
 
 export const sectionIds = [ 'dna', 'resume', 'job', 'pitch', 'social' ] as const;
 
@@ -74,7 +74,7 @@ export function getSectionConfigForChatType(chatType: Tool) {
 export const sections = computed( () => _.map(sectionConfigs, config => {
   
   const builder = genie.getPromptBuilder(config.tool ?? config.id);
-  const missingTools = builder.getMissingTools(activeAssets.value);
+  const missingTools = builder.getMissingTools(genie.activeAssets);
 
   return {
     ...config,
