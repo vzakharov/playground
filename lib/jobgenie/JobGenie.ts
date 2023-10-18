@@ -1,16 +1,4 @@
-import { Genie, GenieConfig } from "~/lib/genie";
-import { Schema, promptBuilders, schema } from ".";
+import { derivedGenie } from "~/lib/genie";
+import { promptBuilders, schema } from ".";
 
-export class JobGenie extends Genie<Schema> {
-
-  constructor(
-    config: Omit<GenieConfig<Schema>, 'schema' | 'promptBuilders'>
-  ) {
-    super({
-      ...config,
-      schema,
-      promptBuilders
-    });
-  };
-  
-}
+export const JobGenie = derivedGenie(schema, promptBuilders);

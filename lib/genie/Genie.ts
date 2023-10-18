@@ -2,13 +2,15 @@ import _ from "lodash";
 import { Asset, ChatController, ChatControllerConfig, GenieData, GenieState, PromptBuilder, ResponderMixinConfig, GenieSchema, Tool, defaultGenieState, findBy } from ".";
 import { $throw } from "vovas-utils";
 
+export type PromptBuilders<S extends GenieSchema> = {
+  readonly [T in Tool<S>]: PromptBuilder<S, T, any>;
+};
+
 export type GenieConfig<S extends GenieSchema> = {
   schema: S;
   data: GenieData<S>;
   globalState: GenieState<S>;
-  promptBuilders: {
-    readonly [T in Tool<S>]: PromptBuilder<S, T, any>;
-  };
+  promptBuilders: PromptBuilders<S>;
 } & ResponderMixinConfig;
 
 export class Genie<
