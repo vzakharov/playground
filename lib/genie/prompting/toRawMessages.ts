@@ -1,10 +1,10 @@
 import { $throw } from 'vovas-utils';
 import { ChatFunction, ChatMessage, ChatRole } from '~/lib/vovas-openai';
-import { BuilderFunctionParameters, GenieMessage, Schema, Tool } from '..';
+import { BuilderFunctionParameters, GenieMessage, GenieSchema, Tool } from '..';
 
 
 export function toRawMessage<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>
 >(fn?: ChatFunction<string, BuilderFunctionParameters<S, T>, never>) {
 

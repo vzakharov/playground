@@ -16,11 +16,10 @@ import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { Genie } from '~/lib/genie';
-import { defaultData, schema } from '~/lib/jobgenie';
+import { JobGenie, Schema, defaultData, promptBuilders, schema } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
 
-const genie = new Genie({
-  schema,
+const genie = new JobGenie({
   data,
   globalState,
   watch,
@@ -76,7 +75,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
           },
         ]"
       />
-      <GenieSettings appId="jobgenie" />
+      <GenieSettings appId="jobgenie" :="{genie}"/>
     </template>
     <Login v-if="!data.username || !openaiKey" @="{ login }" />
     <template v-else>

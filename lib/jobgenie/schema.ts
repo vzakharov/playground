@@ -1,4 +1,5 @@
-import { literalKeys } from "lib/utils";
+import { Tool as GenieTool } from "~/lib/genie";
+import { literalKeys } from "~/lib/utils";
 import _ from "lodash";
 
 export const schema = {
@@ -30,5 +31,7 @@ export const schema = {
 } as const;
 
 export type Schema = typeof schema;
+
+export type Tool = GenieTool<Schema>
 
 // export const tools = literalKeys(schema);

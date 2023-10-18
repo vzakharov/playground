@@ -2,7 +2,7 @@ import { Defaults, defaultable } from "~/lib/utils";
 import _ from "lodash";
 import { $if, $try, JsonableObject, give, give$, is } from "vovas-utils"
 
-export function useLocalReactive<D extends Defaults>(key: string, defaults: D) {
+export function useLocalReactive<T extends object>(key: string, defaults: Defaults<T>) {
 
   const localValue = 
     $if(
@@ -18,6 +18,6 @@ export function useLocalReactive<D extends Defaults>(key: string, defaults: D) {
 
   watch( value, () => localStorage.setItem(key, JSON.stringify(value)), { immediate: true } );
 
-  return value;
+  return value as T;
   
 };

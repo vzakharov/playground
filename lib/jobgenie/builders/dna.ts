@@ -1,8 +1,8 @@
 import dedent from "dedent-js";
 import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { mainSystemMessage, schema } from "..";
 
-export const dnaBuilder = new PromptBuilder('dna', { 
+export const dna = new PromptBuilder('dna', { 
 
   schema,
   mainSystemMessage,

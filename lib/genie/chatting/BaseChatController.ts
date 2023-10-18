@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
-import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, PromptBuilder, Schema, Tool, editMessage, findOrCreateChat, says } from '..';
+import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, PromptBuilder, GenieSchema, Tool, editMessage, findOrCreateChat, says } from '..';
 import { ChatControllerState } from './ChatController';
 
 
 export type BaseChatControllerConfig<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>,
 > = {
   tool: T;
@@ -18,7 +18,7 @@ export type BaseChatControllerConfig<
 };
 
 export class BaseChatController<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>,
 > {
 

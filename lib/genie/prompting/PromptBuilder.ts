@@ -4,16 +4,16 @@ import { ArrayItem, Falsible } from "~/lib/utils";
 import {
   SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, Schema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets } from "..";
+import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, GenieSchema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets } from "..";
 
 
 export type BuilderFunctionParameters<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>
 > = 'content' | Asset<S, T>;
 
 export type PromptBuilderConfig<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>,
   Pres extends OtherTools<S, T>
 > = {
@@ -32,13 +32,13 @@ export type PromptBuilderConfig<
   prerequisites?: Pres;
 };
 
-export type PromptBuilderInput<S extends Schema, T extends Tool<S>> = {
+export type PromptBuilderInput<S extends GenieSchema, T extends Tool<S>> = {
   messages: GenieMessage<S, T>[];
   data: GenieData<S>;
 };
 
 export class PromptBuilder<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>,
   Pres extends OtherTools<S, T>
 > {

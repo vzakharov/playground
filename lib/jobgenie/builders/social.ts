@@ -1,8 +1,8 @@
 import dedent from "dedent-js";
 import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { mainSystemMessage, schema } from "..";
 
-export const socialBuilder = new PromptBuilder('social', {
+export const social = new PromptBuilder('social', {
 
   schema,
   mainSystemMessage,

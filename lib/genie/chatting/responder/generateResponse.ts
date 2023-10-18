@@ -4,11 +4,11 @@ import {
   UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst
 } from '~/lib/vovas-openai';
 import {
-  GenieMessage, Responder, Schema, Tool, temperatureForDescriptor, withUniqueId
+  GenieMessage, Responder, GenieSchema, Tool, temperatureForDescriptor, withUniqueId
 } from '../..';
 
 export async function generateResponse<
-  S extends Schema,
+  S extends GenieSchema,
   T extends Tool<S>
 >(
   this: Responder<S, T>
