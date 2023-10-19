@@ -61,18 +61,3 @@ export type BuildSystemMessages<Reqs extends Toolset> = (params: {
   assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;
 }) => Record<'pre' | 'post', StackUpable>;
-
-
-export type ToolConfig<
-  Asset extends string,
-  Reqs extends Toolset
-> = {
-  mainSystemMessage: string;
-  accompanyingTextKey?: string;
-  requestFunctionCallAfter: number;
-  addAssetsAfter?: number;
-  buildSystemMessages: BuildSystemMessages<Reqs>;
-  // fnArgs: SimplifiedChatFunction<string, Asset, never>;
-  assets: Dict<Asset>;
-  requires: Reqs;
-};

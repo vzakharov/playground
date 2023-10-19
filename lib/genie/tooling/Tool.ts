@@ -3,8 +3,21 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValuesForSet, BuildInput, ToolConfig, ToolFrom, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AssetValuesForSet, BuildInput, BuildSystemMessages, Dict, ToolFrom, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
 
+export type ToolConfig<
+  Asset extends string,
+  Reqs extends Toolset
+> = {
+  mainSystemMessage: string;
+  accompanyingTextKey?: string;
+  requestFunctionCallAfter: number;
+  addAssetsAfter?: number;
+  buildSystemMessages: BuildSystemMessages<Reqs>;
+  // fnArgs: SimplifiedChatFunction<string, Asset, never>;
+  assets: Dict<Asset>;
+  requires: Reqs;
+};
 
 export class Tool<
   Id extends string,
