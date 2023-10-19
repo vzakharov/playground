@@ -1,12 +1,11 @@
-import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { Tool } from "~/lib/genie";
+import { dna, mainSystemMessage, schema } from "../..";
 
-export const job = new PromptBuilder('job', { 
+export const job = new Tool('job', { 
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 1,
-  prerequisites: ['dna'],
+  prerequisites: [dna],
 
   buildSystemMessages({ requestFunctionCall }) { return {
 
@@ -22,16 +21,11 @@ export const job = new PromptBuilder('job', {
 
   }},
 
-  fnArgs: [
-    'addJob',
-    'Adds the job title and description to the user data',
-    {
-      title: 'The job title to add',
-      description: 'The job description to add, in first person and future tense (“I will ...”)',
-      whyMe: 'A markdown-formatted bullet list of reasons why the user is a good fit for the job',
-      whyJob: 'A markdown-formatted bullet list of reasons why the job is a good fit for the user',
-      content: 'Some short accompanying text to add before the generated data, in the same tone as the previous messages'
-    }
-  ]
+  assets: {
+    title: 'The job title to add',
+    description: 'The job description to add, in first person and future tense (“I will ...”)',
+    whyMe: 'A markdown-formatted bullet list of reasons why the user is a good fit for the job',
+    whyJob: 'A markdown-formatted bullet list of reasons why the job is a good fit for the user',
+  }
 
 });

@@ -1,10 +1,9 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "~/lib/genie";
+import { Tool } from "~/lib/genie";
 import { mainSystemMessage, schema } from "../..";
 
-export const dna = new PromptBuilder('dna', { 
+export const dna = new Tool('dna', { 
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 3,
 
@@ -30,13 +29,8 @@ export const dna = new PromptBuilder('dna', {
     ]
   } },
 
-  fnArgs: [
-    'addDna',
-    'Adds the DNA (summary) to the user data',
-    {
-      dna: 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves',
-      content: 'Some short explanatory text to add before the DNA, from yourself'
-    }
-  ]
+  assets: {
+    dna: 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves',
+  }
 
 });

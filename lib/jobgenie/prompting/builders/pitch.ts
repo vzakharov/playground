@@ -1,13 +1,12 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { Tool } from "~/lib/genie";
+import { dna, mainSystemMessage, schema } from "../..";
 
-export const pitch = new PromptBuilder('pitch', {
+export const pitch = new Tool('pitch', {
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 0,
-  prerequisites: ['dna'],
+  prerequisites: [dna],
 
   buildSystemMessages({ numResponses, functionCalled }) { return {
 
@@ -35,14 +34,9 @@ export const pitch = new PromptBuilder('pitch', {
 
   } },
 
-  fnArgs: [
-    'addPitch',
-    'Adds the pitch to the user data',
-    {
-      content: 'Accompanying comment for the user to introduce the pitch and your reasoning behind it',
-      headline: 'Headline for the pitch (e.g. subject line of an email)',
-      pitch: 'The body of the pitch, in Markdown format'
-    }
-  ]
+  assets: {
+    headline: 'Headline for the pitch (e.g. subject line of an email)',
+    pitch: 'The body of the pitch, in Markdown format'
+  }
 
 });

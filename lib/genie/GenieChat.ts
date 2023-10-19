@@ -1,16 +1,12 @@
-import { Asset, Branded, GenieMessage, GenieSchema, Tool } from ".";
+import { AnyTool, AssetName, Branded, GenieMessage, GenieSchema, ToolName } from ".";
 
 const $genieChatId = Symbol('$GenieChatId');
 export type $GenieChatId = typeof $genieChatId;
 
 export type ChatId = Branded<string, $GenieChatId>;
 
-export type GenieChat<S extends GenieSchema, T extends Tool<S>> = {
+export type GenieChat<T extends AnyTool> = {
   tool: T;
   id: ChatId;
-  messages: GenieMessage<S, T>[];
-};
-
-export function getChatTypes<S extends GenieSchema, T extends Tool<S>>(chats: GenieChat<S, T>[]) {
-  return chats.map(chat => chat.tool);
+  messages: GenieMessage<T>[];
 };

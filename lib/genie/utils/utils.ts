@@ -16,7 +16,7 @@ export function withUniqueId<Brand extends symbol = typeof idBrand>() {
   } as WithId<Brand>;
 };
 
-export type WithKeys<K extends string> = {
+export type Dict<K extends string> = {
   [P in K]: string;
 };
 

@@ -1,25 +1,25 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
-import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, PromptBuilder, GenieSchema, Tool, editMessage, findOrCreateChat, says } from '..';
+import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says } from '..';
 import { ChatControllerState } from './ChatController';
 
 
 export type BaseChatControllerConfig<
   S extends GenieSchema,
-  T extends Tool<S>,
+  T extends ToolName<S>,
 > = {
   tool: T;
   data: GenieData<S>;
   state: ChatControllerState<S, T>;
   globalState: GenieState<S>;
   chatId: ChatId;
-  promptBuilder: PromptBuilder<S, T, any>;
+  promptBuilder: Tool<S, T, any>;
   autoMessage?: (data: GenieData<S>) => GenieMessage<S, T, 'assistant'>;
 };
 
 export class BaseChatController<
   S extends GenieSchema,
-  T extends Tool<S>,
+  T extends ToolName<S>,
 > {
 
   constructor(

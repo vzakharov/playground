@@ -1,13 +1,12 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { Tool } from "~/lib/genie";
+import { dna, mainSystemMessage, schema } from "../..";
 
-export const resumé = new PromptBuilder('resumé', {
+export const resumé = new Tool('resumé', {
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 0,
-  prerequisites: ['dna'],
+  prerequisites: [dna],
 
   buildSystemMessages({ numResponses }) { return {
 
@@ -32,15 +31,10 @@ export const resumé = new PromptBuilder('resumé', {
 
   }},
 
-  fnArgs: [
-    'addResume',
-    'Sets the resumé based on the user’s DNA and resume/experience',
-    {
-      content: 'Accompanying text to go before the actual data, explaining the stylistic and other choices taken',
-      tagline: 'The tagline to use in the resumé',
-      bio: 'The bio to use in the resumé',
-      experience: 'The experience to use in the resumé, in Markdown format',
-    }
-  ]
+  assets: {
+    tagline: 'The tagline to use in the resumé',
+    bio: 'The bio to use in the resumé',
+    experience: 'The experience to use in the resumé, in Markdown format',
+  }
 
 });

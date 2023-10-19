@@ -1,14 +1,13 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { Tool } from "~/lib/genie";
+import { dna, mainSystemMessage, schema } from "../..";
 
-export const social = new PromptBuilder('social', {
+export const social = new Tool('social', {
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 2,
   addAssetsAfter: 1,
-  prerequisites: ['dna'],
+  prerequisites: [dna],
   buildSystemMessages({ numResponses, functionCalled, username }) { return {
     pre: `In this specific flow, you help ${username || 'the user'} come up with social posts on topics related to their professional profile, reflecting their personality, stance and tone.`,
 
@@ -38,12 +37,7 @@ export const social = new PromptBuilder('social', {
 
 
   } },
-  fnArgs: [
-    'addSocial',
-    'Adds a social post to the user data',
-    {
-      content: 'Some short comment introducing the post (to the user, not the audience), in the same tone as the previous `content`.',
-      post: 'The body of the post, written to reflect both the user’s personality and their tone on social media'
-    }
-  ]
+  assets: {
+    post: 'The body of the post, written to reflect both the user’s personality and their tone on social media'
+  }
 });

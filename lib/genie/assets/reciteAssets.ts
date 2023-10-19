@@ -1,11 +1,11 @@
 import yaml from "js-yaml";
 import _ from "lodash";
-import { AssetValues, GenieSchema, Tool, getAssetCaptions } from "..";
+import { AssetValues, GenieSchema, ToolName, getAssetCaptions } from "..";
 
 
 export function reciteAssets<
   S extends GenieSchema,
-  Ts extends Tool<S>
+  Ts extends ToolName<S>
 >(assetValues: AssetValues<S, Ts>, schema: S, tools: Ts[]) {
 
   return yaml.dump(

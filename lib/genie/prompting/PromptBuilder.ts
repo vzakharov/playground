@@ -1,63 +1,81 @@
 import dedent from "dedent-js";
-import _ from "lodash";
+import { StringKey } from "vovas-utils";
 import { ArrayItem, Falsible } from "~/lib/utils";
 import {
-  SimplifiedChatFunction, StackUpable, chatFunction, messagesBy, says, stackUp
+  StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValues, Asset, GenieData, GenieMessage, OtherTools, GenieSchema, Tool, getActiveAssets, getMissingTools, hasAssetsForTools, toRawMessage, reciteAssets, PartialAssetValues } from "..";
-import { $throw } from "vovas-utils";
+import { Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues, getActiveAssets, getMissingTools, getPrerequisites, hasAssetsForTools, reciteAssets, toRawMessage } from "..";
 
 
-export type BuilderFunctionParameters<
-  S extends GenieSchema,
-  T extends Tool<S>
-> = 'content' | Asset<S, T>;
+export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
-export type PromptBuilderConfig<
-  S extends GenieSchema,
-  T extends Tool<S>,
-  Pres extends OtherTools<S, T>
-> = {
-  schema: S;
-  mainSystemMessage: string;
-  requestFunctionCallAfter: number;
-  addAssetsAfter?: number;
-  buildSystemMessages: (params: PromptBuilderInput<S, T> & {
-    numResponses: number;
-    requestFunctionCall: boolean;
-    functionCalled: boolean;
-    assetValues: AssetValues<S, ArrayItem<Pres>>;
-    username: Falsible<string>;
-  }) => Record<'pre' | 'post', StackUpable>;
-  fnArgs: SimplifiedChatFunction<string, BuilderFunctionParameters<S, T>, never>;
-  prerequisites?: Pres;
-};
+export type AnyTool = Tool<any, any>;
 
-export type PromptBuilderInput<S extends GenieSchema, T extends Tool<S>> = {
-  messages: GenieMessage<S, T>[];
+export type Toolset = AnyTool[] | undefined;
+
+export type ToolFrom<S extends Toolset> = ArrayItem<S>;
+
+export type AssetForTool<T extends AnyTool> = T extends Tool<infer A, any> ? A : never;
+
+export type ToTool<ST extends Toolset | AnyTool> = 
+  ST extends Toolset ? ToolFrom<ST> : ST;
+
+export type Asset<ST extends Toolset | AnyTool> = 
+  AssetForTool<ToTool<ST>>;
+
+export type AssetValues<T extends Toolset | AnyTool> = Dict<Asset<T>>;
+
+export type BuildInput<S extends Toolset, T extends AnyTool> = {
+  messages: GenieMessage<T>[];
   data: GenieData<S>;
 };
 
-export class PromptBuilder<
-  S extends GenieSchema,
-  T extends Tool<S>,
-  Pres extends OtherTools<S, T>
+export type BuildSystemMessages<Prereqs extends Toolset> = (params: {
+  numResponses: number;
+  requestFunctionCall: boolean;
+  functionCalled: boolean;
+  assetValues: AssetValues<Prereqs>;
+  username: Falsible<string>;
+}) => Record<'pre' | 'post', StackUpable>;
+
+
+export type ToolConfig<
+  Asset extends string,
+  Prereqs extends Toolset,
+> = {
+  mainSystemMessage: string;
+  accompanyingTextKey?: string;
+  requestFunctionCallAfter: number;
+  addAssetsAfter?: number;
+  buildSystemMessages: BuildSystemMessages<Prereqs>;
+  // fnArgs: SimplifiedChatFunction<string, Asset, never>;
+  assets: Dict<Asset>;
+  prerequisites?: Prereqs;
+};
+
+
+export class Tool<
+  A extends string,
+  P extends Toolset,
 > {
 
   constructor(
-    public tool: T,
-    public config: PromptBuilderConfig<S, T, Pres>
+    public id: string,
+    public config: ToolConfig<A, P>,
   ) { }
 
-  build(input: PromptBuilderInput<S, T>) {
+  build(input: BuildInput<P, this>) {
 
     const { messages, data } = input;
     const { 
       mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, fnArgs, prerequisites = [], schema
+      buildSystemMessages, assets, accompanyingTextKey = 'replyMessage'
     } = this.config;
 
-    const fn = chatFunction(...fnArgs);
+    const fn = chatFunction('reply', 'Replies to the user with structured data', {
+      [accompanyingTextKey]: 'Accompanying text to go before the structured data, narratively continuing the conversation',
+      ...assets
+    });
 
     const numResponses = messagesBy.assistant(messages).length;
     const requestFunctionCall = numResponses >= requestFunctionCallAfter;
@@ -67,6 +85,7 @@ export class PromptBuilder<
     const functionCalled = rawMessages.some(message => message.function_call);
 
     const assetValues = getActiveAssets(data, schema);
+    const prerequisites = getPrerequisites(schema, this.tool);
 
     if ( !hasAssetsForTools(assetValues, prerequisites) )
       throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);

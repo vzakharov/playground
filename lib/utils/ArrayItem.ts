@@ -1,1 +1,2 @@
-export type ArrayItem<T extends any[] | undefined> = T extends any[] ? T[number] : never;
+export type ArrayItem<T extends U[] | undefined, U = any> = 
+  T extends (infer I extends U)[] ? I : never;

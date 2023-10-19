@@ -1,6 +1,6 @@
-import { Asset, BaseChatController, GenieChatType, GenieMessage } from "..";
+import { AssetName, BaseChatController, GenieChatType, GenieMessage } from "..";
 
-export function editMessage<Ts extends GenieChatType, T extends Ts, A extends Asset>(
+export function editMessage<Ts extends GenieChatType, T extends Ts, A extends AssetName>(
   this: BaseChatController<Ts, T, A>,
   message: GenieMessage<A, 'user'>) {
 

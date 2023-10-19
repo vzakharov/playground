@@ -1,14 +1,13 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "~/lib/genie";
-import { mainSystemMessage, schema } from "../..";
+import { Tool } from "~/lib/genie";
+import { dna, job, mainSystemMessage, resumé, schema } from "../..";
 
-export const challenge = new PromptBuilder('challenge', {
+export const challenge = new Tool('challenge', {
 
-  schema,
   mainSystemMessage,
   requestFunctionCallAfter: 1,
   addAssetsAfter: 1,
-  prerequisites: ['dna', 'resumé', 'job'],
+  prerequisites: [dna, resumé, job],
 
   buildSystemMessages({ numResponses, functionCalled, username }) { return {
 
@@ -32,14 +31,9 @@ export const challenge = new PromptBuilder('challenge', {
 
   } },
 
-  fnArgs: [
-    'addQA',
-    'Adds the Q&A to the user data',
-    {
-      content: 'Some short comment introducing the Q&A, in the same tone as your previous messages.',
-      question: 'The question to add, rephrased in a way to be as concise and reusable as possible',
-      answer: 'The answer to add, in first person and future tense, as if the user is answering the question during the interview',
-    }
-  ]
+  assets: {
+    question: 'The question to add, rephrased in a way to be as concise and reusable as possible',
+    answer: 'The answer to add, in first person and future tense, as if the user is answering the question during the interview',
+  }
 
 });

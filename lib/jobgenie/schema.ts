@@ -1,4 +1,4 @@
-import { Tool as GenieTool } from "~/lib/genie";
+import { ToolName as GenieTool } from "~/lib/genie";
 import { literalKeys } from "~/lib/utils";
 import _ from "lodash";
 
