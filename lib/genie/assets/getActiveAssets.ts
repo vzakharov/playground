@@ -2,8 +2,8 @@ import _ from "lodash";
 import { GenieData, PartialAssetValues, GenieSchema, ToolName, assetsComplyWithSchema } from "..";
 
 export function getActiveAssets<
-  S extends GenieSchema
->(data: GenieData<S>, schema: S): PartialAssetValues<S, ToolName<S>> {
+  S extends Toolset
+>(data: GenieData<S>, schema: S): PartialAssetValues<S, ToolFrom<S>> {
 
   const result = _.mapValues(schema, (toolSchema, toolName) => {
 

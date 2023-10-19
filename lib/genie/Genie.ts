@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { AssetName, ChatController, ChatControllerConfig, GenieData, GenieState, Tool, ResponderMixinConfig, GenieSchema, ToolName, defaultGenieState, findBy, getActiveAssets, Toolset, ValidToolset } from ".";
+import { AssetName, ChatController, ChatControllerConfig, GenieData, GenieState, Tool, ResponderMixinConfig, GenieSchema, ToolName, defaultGenieState, findBy, getActiveAssets, Toolset, ValidToolset, ToolFrom } from ".";
 import { $throw } from "vovas-utils";
 
 export type GenieConfig<S extends Toolset> = {
-  tools: ValidToolset<S>;
+  // tools: ValidToolset<S>;
   data: GenieData<S>;
   globalState: GenieState<S>;
 } & ResponderMixinConfig;
@@ -13,11 +13,11 @@ export class Genie<
 > {
 
   chatControllers: {
-    [T in ToolName<S>]?: ChatController<S, T>[];
+    [T in ToolFrom<S>]?: ChatController<S, T>[];
   } = {};
 
   constructor(
-    // public readonly schema: S,
+    public tools: ValidToolset<S>,
     public readonly config: GenieConfig<S>,
   ) { };
 
@@ -27,7 +27,7 @@ export class Genie<
     const { chatControllers } = this;
     
 
-    return class BoundChatController<T extends ToolName<S>> extends ChatController<S, T> {
+    return class BoundChatController<T extends ToolFrom<S>> extends ChatController<S, T> {
 
       constructor(
         config: Omit<ChatControllerConfig<S, T>, keyof GenieConfig<S> | 'promptBuilder'>
@@ -50,7 +50,7 @@ export class Genie<
 
   };
 
-  getPromptBuilder<T extends ToolName<S>>(tool: T) {
+  getPromptBuilder<T extends ToolFrom<S>>(tool: T) {
     return this.config.promptBuilders[tool];
   };
 
@@ -62,7 +62,7 @@ export class Genie<
     return getActiveAssets(this.config.data, this.config.schema);
   };
 
-  messageWithActiveAssets<T extends ToolName<S>>(
+  messageWithActiveAssets<T extends ToolFrom<S>>(
     controller: ChatController<S, T>
   ) {
     const { messages, config: { tool }} = controller;

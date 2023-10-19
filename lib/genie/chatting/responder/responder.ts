@@ -13,8 +13,8 @@ export type ResponderMixinConfig = {
 };
 
 export class Responder<
-  S extends GenieSchema,
-  T extends ToolName<S>,
+  S extends Toolset,
+  T extends ToolFrom<S>,
 > extends LeftoversController<S, T> {
 
   constructor(

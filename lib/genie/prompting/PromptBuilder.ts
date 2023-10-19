@@ -9,21 +9,27 @@ import { Branded, Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues,
 
 export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
-export type AnyTool = Tool<any, any, any>;
+export type AnyTool = Tool<string, string, Toolset>;
 
 export type Toolset = AnyTool[];
 
+export type Requires<T extends AnyTool> = T['config']['requires'];
+
+export type MinimumToolset<T extends AnyTool> = ( T | ArrayItem<Requires<T>> )[];
+
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
+
+export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
 
 export type ToolWithId<S extends Toolset, Id extends ToolFrom<S>['id']> =
   Extract<ToolFrom<S>, { id: Id }>;
 
-export type RequiredId<S extends Toolset> = ArrayItem<ToolFrom<S>['config']['requires']>['id'];
+export type MissingTool<S extends Toolset> = Exclude<ToolFrom<MinimumToolset<ToolFrom<S>>>, ToolFrom<S>>['id'];
 
 export type ValidToolset<S extends Toolset> =
-  RequiredId<S> extends ToolFrom<S>['id'] 
-    ? S 
-    : `Required tool missing, id = ${Exclude<RequiredId<S>, ToolFrom<S>['id']>}`;
+  MissingTool<S> extends never
+    ? S
+    : `Required tool missing, id = ${MissingTool<S>}`;
 
 export type AssetForTool<T extends AnyTool> = T extends Tool<any, infer A, any> ? A : never;
 

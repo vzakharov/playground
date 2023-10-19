@@ -8,8 +8,8 @@ import {
 export class GenerationCanceledException extends Error {}
 
 export async function handleResponseGeneration<
-S extends GenieSchema,
-T extends ToolName<S>
+S extends Toolset,
+T extends ToolFrom<S>
 >(
   this: Responder<S, T>
 ) {

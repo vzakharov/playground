@@ -4,8 +4,8 @@ import { BuilderFunctionParameters, GenieMessage, GenieSchema, ToolName } from '
 
 
 export function toRawMessage<
-  S extends GenieSchema,
-  T extends ToolName<S>
+  S extends Toolset,
+  T extends ToolFrom<S>
 >(fn?: ChatFunction<string, BuilderFunctionParameters<S, T>, never>) {
 
   return <R extends ChatRole>(appChatMessage: GenieMessage<S, T, R> ) => {

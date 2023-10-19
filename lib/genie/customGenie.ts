@@ -9,10 +9,7 @@ export function customGenie<S extends Toolset>(
     constructor(
       config: Omit<GenieConfig<S>, 'tools'>,
     ) {
-      super({
-        ...config,
-        tools
-      });
+      super(tools, config);
     };
 
   };

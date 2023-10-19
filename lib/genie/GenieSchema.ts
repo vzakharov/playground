@@ -12,16 +12,16 @@ export type GenieSchema<T extends string=string> = {
   
 }
 
-export type ToolName<S extends GenieSchema> = StringKey<S>;
+export type ToolName<S extends Toolset> = StringKey<S>;
 
-export type OtherTools<S extends GenieSchema, T extends ToolName<S>> = Exclude<ToolName<S>, T>[] | undefined;
+export type OtherTools<S extends Toolset, T extends ToolFrom<S>> = Exclude<ToolFrom<S>, T>[] | undefined;
 
-export type AssetName<S extends GenieSchema, T extends ToolName<S>> = StringKey<S[T]['assets']>;
+export type AssetName<S extends Toolset, T extends ToolFrom<S>> = StringKey<S[T]['assets']>;
 
-export type Prerequisites<S extends GenieSchema, T extends ToolName<S>> = S[T]['prerequisites'];
+export type Prerequisites<S extends Toolset, T extends ToolFrom<S>> = S[T]['prerequisites'];
 
-// export type Prerequisite<S extends GenieSchema, T extends ToolName<S>> = ArrayItem<Prerequisites<S, T>>;
+// export type Prerequisite<S extends Toolset, T extends ToolFrom<S>> = ArrayItem<Prerequisites<S, T>>;
 
-export function getPrerequisites<S extends GenieSchema, T extends ToolName<S>>(schema: S, toolName: T) {
+export function getPrerequisites<S extends Toolset, T extends ToolFrom<S>>(schema: S, toolName: T) {
   return schema[toolName].prerequisites as Prerequisites<S, T>;
 };

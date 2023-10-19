@@ -1,14 +1,14 @@
 import _ from "lodash";
-import { ChatId, GenieChat, GenieData, GenieSchema, ToolName, findBy } from "..";
+import { ChatId, GenieChat, GenieData, GenieSchema, ToolFrom, ToolName, Toolset, findBy } from "..";
 
-export function findOrCreateChat<S extends GenieSchema, T extends ToolName<S>>(
+export function findOrCreateChat<S extends Toolset, T extends ToolFrom<S>>(
   { chats }: GenieData<S>,
   tool: T,
   id: ChatId
 ) {
-  const chat = _.find(chats, { tool, id }) as GenieChat<S, T> | undefined;
+  const chat = _.find(chats, { tool, id }) as GenieChat<T> | undefined;
   if (!chat) {
-    const newChat: GenieChat<S, T> = {
+    const newChat: GenieChat<T> = {
       tool,
       id,
       messages: []

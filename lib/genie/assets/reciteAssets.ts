@@ -4,8 +4,8 @@ import { AssetValues, GenieSchema, ToolName, getAssetCaptions } from "..";
 
 
 export function reciteAssets<
-  S extends GenieSchema,
-  Ts extends ToolName<S>
+  S extends Toolset,
+  Ts extends ToolFrom<S>
 >(assetValues: AssetValues<S, Ts>, schema: S, tools: Ts[]) {
 
   return yaml.dump(

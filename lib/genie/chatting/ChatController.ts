@@ -1,10 +1,10 @@
 import { Resolvable } from '~/lib/utils';
 import {
-  GenieMessage, Responder, GenieSchema, ToolName
+  GenieMessage, Responder, GenieSchema, ToolName, Toolset, ToolFrom
 } from '..';
 
-export type ChatControllerState<S extends GenieSchema, T extends ToolName<S>> = {
-  generating: Resolvable<GenieMessage<S, T, 'assistant'>> | undefined;
+export type ChatControllerState<S extends Toolset, T extends ToolFrom<S>> = {
+  generating: Resolvable<GenieMessage<T, 'assistant'>> | undefined;
   userMessage: string;
   userMessageComponent: {
     textarea?: HTMLTextAreaElement;
@@ -12,8 +12,8 @@ export type ChatControllerState<S extends GenieSchema, T extends ToolName<S>> = 
   msExpected: number | undefined;
 };
 
-export class ChatController<S extends GenieSchema, T extends ToolName<S>>
+export class ChatController<S extends Toolset, T extends ToolFrom<S>>
   extends Responder<S, T> { };
 
-export type ChatControllerConfig<S extends GenieSchema, T extends ToolName<S>> =
+export type ChatControllerConfig<S extends Toolset, T extends ToolFrom<S>> =
   ConstructorParameters<typeof ChatController<S, T>>[0];

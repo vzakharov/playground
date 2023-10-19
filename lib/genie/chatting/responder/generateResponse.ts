@@ -8,8 +8,8 @@ import {
 } from '../..';
 
 export async function generateResponse<
-  S extends GenieSchema,
-  T extends ToolName<S>
+  S extends Toolset,
+  T extends ToolFrom<S>
 >(
   this: Responder<S, T>
 ): Promise<GenieMessage<S, T, 'assistant'>> {

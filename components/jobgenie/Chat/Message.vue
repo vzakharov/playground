@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="S extends GenieSchema, T extends Tool<S>">
+<script setup lang="ts" generic="S extends Toolset, T extends Tool<S>">
 
 import { Marked } from '@ts-stack/markdown';
 import Button from '~/components/shared/Button.vue';

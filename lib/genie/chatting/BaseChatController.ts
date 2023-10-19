@@ -1,38 +1,37 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
-import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says } from '..';
-import { ChatControllerState } from './ChatController';
+import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, MinimumToolset } from '..';
 
 
 export type BaseChatControllerConfig<
-  S extends GenieSchema,
-  T extends ToolName<S>,
+  T extends AnyTool,
+  S extends MinimumToolset<T> = MinimumToolset<T>,
 > = {
   tool: T;
   data: GenieData<S>;
   state: ChatControllerState<S, T>;
   globalState: GenieState<S>;
   chatId: ChatId;
-  promptBuilder: Tool<S, T, any>;
-  autoMessage?: (data: GenieData<S>) => GenieMessage<S, T, 'assistant'>;
+  autoMessage?: (data: GenieData<S>) => GenieMessage<T, 'assistant'>;
 };
 
 export class BaseChatController<
-  S extends GenieSchema,
-  T extends ToolName<S>,
+  S extends Toolset,
+  T extends ToolFrom<S>,
 > {
 
   constructor(
     public readonly config: BaseChatControllerConfig<S, T>,
   ) {
+    this.config.tool.id
     const { config: { data, tool, chatId } } = this;
     this.chat = findOrCreateChat(data, tool, chatId);
     this.messages = this.chat.messages;
   };
 
-  readonly chat: GenieChat<S, T>;
-  readonly messages: GenieMessage<S, T>[];
-  previousGeneration?: GenieMessage<S, T, 'assistant'>;
+  readonly chat: GenieChat<T>;
+  readonly messages: GenieMessage<T>[];
+  previousGeneration?: GenieMessage<T, 'assistant'>;
 
   get lastMessageIsFromUser() {
     const { messages } = this;
@@ -40,14 +39,14 @@ export class BaseChatController<
     return lastMessage && isBy.user(lastMessage);
   };
 
-  removeMessagesFrom(message: GenieMessage<S, T>) {
+  removeMessagesFrom(message: GenieMessage<T>) {
     const { messages } = this;
     messages.splice(messages.indexOf(message), messages.length - messages.indexOf(message));
   };
 
   editMessage = editMessage;
 
-  regenerate(message: GenieMessage<S, T, 'assistant'>) {
+  regenerate(message: GenieMessage<T, 'assistant'>) {
     this.previousGeneration = message;
     this.removeMessagesFrom(message);
   };
