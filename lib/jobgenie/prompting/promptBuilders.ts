@@ -20,5 +20,7 @@ export const tools = [
   social
 ];
 
+export type Tools = typeof tools;
+
 const test = <T extends Toolset>(tools: ValidToolset<T>) => { };
 test(tools);
