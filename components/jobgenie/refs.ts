@@ -1,7 +1,7 @@
-import { JobGenie, schema } from "~/lib/jobgenie";
+import { JobGenie, Tools, schema, tools } from "~/lib/jobgenie";
 import { data } from "./data";
 import { globalState } from "./state";
-import { ChatController, ToolName, getActiveAssets } from "~/lib/genie";
+import { ChatController, Genie, ToolName, getActiveAssets } from "~/lib/genie";
 
 export const genie = new JobGenie({
   data,

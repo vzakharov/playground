@@ -15,8 +15,6 @@ export type Toolset = AnyTool[];
 
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
-export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
-
 export type ToolWithId<S extends Toolset, Id extends ToolFrom<S>['id']> =
   Extract<ToolFrom<S>, { id: Id }>;
 
