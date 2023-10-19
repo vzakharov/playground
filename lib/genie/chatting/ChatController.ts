@@ -1,5 +1,6 @@
 import { Resolvable } from '~/lib/utils';
-import { AnyTool, GenieMessage, GenieSchema, Responder, ToolFrom } from '..';
+import { AnyTool, GenieMessage, GenieSchema, Responder, Tool, ToolFrom, Toolset } from '..';
+import { S } from 'docs/assets/entry.e5bb04e0';
 
 export type ChatControllerState<T extends AnyTool> = {
   generating: Resolvable<GenieMessage<T, 'assistant'>> | undefined;
@@ -10,8 +11,11 @@ export type ChatControllerState<T extends AnyTool> = {
   msExpected: number | undefined;
 };
 
-export class ChatController<S extends GenieSchema, T extends ToolFrom<S>>
-  extends Responder<S, T> { };
+export class ChatController<  
+  Id extends string,
+  T extends AnyTool<Id>,
+>
+  extends Responder<Id, T> { };
 
-export type ChatControllerConfig<S extends GenieSchema, T extends ToolFrom<S>> =
-  ConstructorParameters<typeof ChatController<S, T>>[0];
+export type ChatControllerConfig<Id extends string, T extends AnyTool<Id>> =
+  ConstructorParameters<typeof ChatController<Id, T>>[0];

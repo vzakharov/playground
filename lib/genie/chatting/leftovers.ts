@@ -13,7 +13,7 @@ export type Leftovers<T extends AnyTool> = ReturnType<typeof getDefaultLeftovers
 
 export class LeftoversController<
   Id extends string,
-  T extends Tool<Id, string, Toolset>,
+  T extends AnyTool<Id>,
 > extends BaseChatController<Id, T> {
 
   get defaultLeftovers() { return getDefaultLeftovers(this.config.tool); };

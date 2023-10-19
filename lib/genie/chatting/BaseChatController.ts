@@ -5,7 +5,7 @@ import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSche
 
 export type BaseChatControllerConfig<
   Id extends string,
-  T extends Tool<Id, string, Toolset>,
+  T extends AnyTool<Id>,
 > = {
   tool: T;
   data: GenieData<SetFor<T>>;
@@ -17,7 +17,7 @@ export type BaseChatControllerConfig<
 
 export class BaseChatController<
   Id extends string,
-  T extends Tool<Id, string, Toolset>,
+  T extends AnyTool<Id>,
 > {
 
   constructor(

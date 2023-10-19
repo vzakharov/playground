@@ -9,7 +9,11 @@ import { Branded, Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues,
 
 export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
-export type AnyTool = Tool<string, string, Toolset>;
+export type AnyTool<
+  Id extends string=string, 
+  Asset extends string=string, 
+  Set extends Toolset=Toolset
+> = Tool<Id, Asset, Set>;
 
 export type Toolset = AnyTool[];
 
