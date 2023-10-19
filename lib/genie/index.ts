@@ -10,4 +10,5 @@ export * from './customGenie';
 export * from './prompting';
 export * from './says';
 export * from './temperatureDescriptors';
+export * from './tooling';
 export * from './utils';
