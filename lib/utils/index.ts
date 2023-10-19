@@ -2,6 +2,7 @@ export * from './ArrayItem';
 export * from './PickByArray';
 export * from './concat';
 export * from './defaultable';
+export * from './isKeyof';
 export * from './literalKeys';
 export * from './mixin';
 export * from './objectWithKeys';

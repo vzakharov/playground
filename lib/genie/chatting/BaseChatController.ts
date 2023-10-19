@@ -1,29 +1,28 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
-import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, MinimumToolset } from '..';
+import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, SetFor } from '..';
 
 
 export type BaseChatControllerConfig<
-  T extends AnyTool,
-  S extends MinimumToolset<T> = MinimumToolset<T>,
+  Id extends string,
+  T extends Tool<Id, string, Toolset>,
 > = {
   tool: T;
-  data: GenieData<S>;
-  state: ChatControllerState<S, T>;
-  globalState: GenieState<S>;
+  data: GenieData<SetFor<T>>;
+  state: ChatControllerState<T>;
+  globalState: GenieState<SetFor<T>>;
   chatId: ChatId;
-  autoMessage?: (data: GenieData<S>) => GenieMessage<T, 'assistant'>;
+  autoMessage?: (data: GenieData<SetFor<T>>) => GenieMessage<T, 'assistant'>;
 };
 
 export class BaseChatController<
-  S extends Toolset,
-  T extends ToolFrom<S>,
+  Id extends string,
+  T extends Tool<Id, string, Toolset>,
 > {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<S, T>,
+    public readonly config: BaseChatControllerConfig<Id, T>,
   ) {
-    this.config.tool.id
     const { config: { data, tool, chatId } } = this;
     this.chat = findOrCreateChat(data, tool, chatId);
     this.messages = this.chat.messages;

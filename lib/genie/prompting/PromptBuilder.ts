@@ -15,7 +15,7 @@ export type Toolset = AnyTool[];
 
 export type Requires<T extends AnyTool> = T['config']['requires'];
 
-export type MinimumToolset<T extends AnyTool> = ( T | ArrayItem<Requires<T>> )[];
+export type SetFor<T extends AnyTool> = ( T | ArrayItem<Requires<T>> )[];
 
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
@@ -24,7 +24,7 @@ export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
 export type ToolWithId<S extends Toolset, Id extends ToolFrom<S>['id']> =
   Extract<ToolFrom<S>, { id: Id }>;
 
-export type MissingTool<S extends Toolset> = Exclude<ToolFrom<MinimumToolset<ToolFrom<S>>>, ToolFrom<S>>['id'];
+export type MissingTool<S extends Toolset> = Exclude<ToolFrom<SetFor<ToolFrom<S>>>, ToolFrom<S>>['id'];
 
 export type ValidToolset<S extends Toolset> =
   MissingTool<S> extends never

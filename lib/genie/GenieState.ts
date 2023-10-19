@@ -1,6 +1,15 @@
 import { is, itselfIf } from "vovas-utils";
 import { Defaults, InferDefaultTypes } from "~/lib/utils";
-import { Genie, LeftoversStore, GenieSchema, temperatureDescriptors, Toolset } from ".";
+import { AnyTool, ChatId, Leftovers, ToolIdFrom, ToolWithId, Toolset, temperatureDescriptors } from ".";
+
+export type ToolLeftoversStore<T extends AnyTool> = {
+  [CId in ChatId]?: Leftovers<T>;
+};
+
+export type LeftoversStore<S extends Toolset> = {
+  [TId in ToolIdFrom<S>]?: ToolLeftoversStore<ToolWithId<S, TId>>;
+};
+
 
 export function defaultGenieState<S extends Toolset>(tools: S) {
   return ({
