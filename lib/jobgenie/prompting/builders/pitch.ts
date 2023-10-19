@@ -6,7 +6,7 @@ export const pitch = new Tool('pitch', {
 
   mainSystemMessage,
   requestFunctionCallAfter: 0,
-  prerequisites: [dna],
+  requires: [dna],
 
   buildSystemMessages({ numResponses, functionCalled }) { return {
 

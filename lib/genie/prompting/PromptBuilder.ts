@@ -4,18 +4,25 @@ import { ArrayItem, Falsible } from "~/lib/utils";
 import {
   StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues, getActiveAssets, getMissingTools, getPrerequisites, hasAssetsForTools, reciteAssets, toRawMessage } from "..";
+import { Branded, Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues, getActiveAssets, getMissingTools, getPrerequisites, hasAssetsForTools, reciteAssets, toRawMessage } from "..";
 
 
 export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
-export type AnyTool = Tool<any, any>;
+export type AnyTool = Tool<any, any, any>;
 
-export type Toolset = AnyTool[] | undefined;
+export type Toolset = readonly AnyTool[];
 
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
-export type AssetForTool<T extends AnyTool> = T extends Tool<infer A, any> ? A : never;
+export type RequiredId<S extends Toolset> = ArrayItem<ToolFrom<S>['config']['requires']>['id'];
+
+export type ValidToolset<S extends Toolset> =
+  RequiredId<S> extends ToolFrom<S>['id'] 
+    ? S 
+    : `Required tool missing, id = ${Exclude<RequiredId<S>, ToolFrom<S>['id']>}`;
+
+export type AssetForTool<T extends AnyTool> = T extends Tool<any, infer A, any> ? A : never;
 
 export type ToTool<ST extends Toolset | AnyTool> = 
   ST extends Toolset ? ToolFrom<ST> : ST;
@@ -30,41 +37,41 @@ export type BuildInput<S extends Toolset, T extends AnyTool> = {
   data: GenieData<S>;
 };
 
-export type BuildSystemMessages<Prereqs extends Toolset> = (params: {
+export type BuildSystemMessages<Reqs extends Toolset> = (params: {
   numResponses: number;
   requestFunctionCall: boolean;
   functionCalled: boolean;
-  assetValues: AssetValues<Prereqs>;
+  assetValues: AssetValues<Reqs>;
   username: Falsible<string>;
 }) => Record<'pre' | 'post', StackUpable>;
 
 
 export type ToolConfig<
   Asset extends string,
-  Prereqs extends Toolset,
+  Reqs extends Toolset,
 > = {
   mainSystemMessage: string;
   accompanyingTextKey?: string;
   requestFunctionCallAfter: number;
   addAssetsAfter?: number;
-  buildSystemMessages: BuildSystemMessages<Prereqs>;
+  buildSystemMessages: BuildSystemMessages<Reqs>;
   // fnArgs: SimplifiedChatFunction<string, Asset, never>;
   assets: Dict<Asset>;
-  prerequisites?: Prereqs;
+  requires: Reqs;
 };
 
-
 export class Tool<
+  Id extends string,
   A extends string,
-  P extends Toolset,
+  Reqs extends Toolset,
 > {
 
   constructor(
-    public id: string,
-    public config: ToolConfig<A, P>,
+    public id: Id,
+    public config: ToolConfig<A, Reqs>,
   ) { }
 
-  build(input: BuildInput<P, this>) {
+  build(input: BuildInput<Reqs, this>) {
 
     const { messages, data } = input;
     const { 
@@ -124,7 +131,7 @@ export class Tool<
   };
 
   getMissingTools(assetValues: PartialAssetValues<S, ArrayItem<OtherTools<S, T>>>) {
-    const { prerequisites } = this.config;
+    const { requires: prerequisites } = this.config;
     if ( !prerequisites ) return [];
     return getMissingTools(assetValues, prerequisites);
   };

@@ -7,7 +7,7 @@ export const social = new Tool('social', {
   mainSystemMessage,
   requestFunctionCallAfter: 2,
   addAssetsAfter: 1,
-  prerequisites: [dna],
+  requires: [dna],
   buildSystemMessages({ numResponses, functionCalled, username }) { return {
     pre: `In this specific flow, you help ${username || 'the user'} come up with social posts on topics related to their professional profile, reflecting their personality, stance and tone.`,
 

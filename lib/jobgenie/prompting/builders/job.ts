@@ -5,7 +5,7 @@ export const job = new Tool('job', {
 
   mainSystemMessage,
   requestFunctionCallAfter: 1,
-  prerequisites: [dna],
+  requires: [dna],
 
   buildSystemMessages({ requestFunctionCall }) { return {
 

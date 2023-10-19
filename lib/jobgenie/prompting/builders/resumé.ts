@@ -6,7 +6,7 @@ export const resumé = new Tool('resumé', {
 
   mainSystemMessage,
   requestFunctionCallAfter: 0,
-  prerequisites: [dna],
+  requires: [dna],
 
   buildSystemMessages({ numResponses }) { return {
 

@@ -6,6 +6,7 @@ export const dna = new Tool('dna', {
 
   mainSystemMessage,
   requestFunctionCallAfter: 3,
+  requires: [],
 
   buildSystemMessages({ numResponses, requestFunctionCall }) { return { 
       

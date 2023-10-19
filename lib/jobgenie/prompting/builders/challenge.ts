@@ -7,7 +7,7 @@ export const challenge = new Tool('challenge', {
   mainSystemMessage,
   requestFunctionCallAfter: 1,
   addAssetsAfter: 1,
-  prerequisites: [dna, resumé, job],
+  requires: [dna, resumé, job],
 
   buildSystemMessages({ numResponses, functionCalled, username }) { return {
 

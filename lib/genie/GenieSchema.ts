@@ -20,7 +20,7 @@ export type AssetName<S extends GenieSchema, T extends ToolName<S>> = StringKey<
 
 export type Prerequisites<S extends GenieSchema, T extends ToolName<S>> = S[T]['prerequisites'];
 
-export type Prerequisite<S extends GenieSchema, T extends ToolName<S>> = ArrayItem<Prerequisites<S, T>>;
+// export type Prerequisite<S extends GenieSchema, T extends ToolName<S>> = ArrayItem<Prerequisites<S, T>>;
 
 export function getPrerequisites<S extends GenieSchema, T extends ToolName<S>>(schema: S, toolName: T) {
   return schema[toolName].prerequisites as Prerequisites<S, T>;
