@@ -1,22 +1,21 @@
 import yaml from "js-yaml";
+import { objectWithKeys } from "lib/utils";
 import _ from "lodash";
-import { AssetValues, GenieSchema, ToolName, getAssetCaptions } from "..";
+import { AssetValuesForSet, Toolset, toolIds } from "..";
 
 
 export function reciteAssets<
-  S extends Toolset,
-  Ts extends ToolFrom<S>
->(assetValues: AssetValues<S, Ts>, schema: S, tools: Ts[]) {
+  S extends Toolset
+>(assetValues: AssetValuesForSet<S>, tools: S) {
 
   return yaml.dump(
-    _.fromPairs(
-      tools.map(tool => [
-        tool,
-        _.mapKeys(
-          assetValues[tool],
-          (value, asset) => getAssetCaptions(schema, tool)[asset],
-        ),
-      ]),
+    objectWithKeys(
+      toolIds(tools),
+      toolId => _.mapKeys(
+        assetValues[toolId],
+        (value, asset) => _.startCase(asset),
+        // TODO: Add asset captions instead of start casing
+      ),
     ),
   );
 

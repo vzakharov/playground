@@ -6,7 +6,7 @@ export type $GenieChatId = typeof $genieChatId;
 export type ChatId = Branded<string, $GenieChatId>;
 
 export type GenieChat<T extends AnyTool> = {
-  tool: T;
+  toolId: T['id'];
   id: ChatId;
   messages: GenieMessage<T>[];
 };

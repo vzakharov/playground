@@ -14,4 +14,4 @@ export function objectWithKeys<
   ) as {
     [key in Key]: ReturnType;
   };
-}
+};

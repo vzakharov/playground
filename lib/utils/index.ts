@@ -1,5 +1,6 @@
 export * from './ArrayItem';
 export * from './PickByArray';
+export * from './allPropsDefined';
 export * from './concat';
 export * from './defaultable';
 export * from './isKeyof';

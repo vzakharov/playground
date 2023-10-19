@@ -22,13 +22,6 @@ import { AssetName, Branded, GenieSchema, ToolName } from "..";
 //   return !getMissingTools(assetValues, tools).length;
 // };
 
-// export function getMissingTools<
-//   S extends Toolset,
-//   Ts extends ToolFrom<S>
-// >(assetValues: PartialAssetValues<S, Ts>, tools: Ts[]) {
-//   return tools.filter(tool => !(tool in assetValues));
-// };
-
 // export type ToolAssetValues<S extends Toolset, T extends ToolFrom<S>> = {
 //   [A in AssetName<S, T>]: string;
 // };

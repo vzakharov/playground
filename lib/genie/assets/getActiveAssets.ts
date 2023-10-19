@@ -1,31 +1,31 @@
 import _ from "lodash";
-import { GenieData, PartialAssetValues, GenieSchema, ToolName, assetsComplyWithSchema } from "..";
+import { AssetValues, AssetValuesForSet, GenieData, ToolIdFrom, ToolWithId, Toolset, findBy, toolIds } from "..";
+import { objectWithKeys } from "lib/utils";
 
 export function getActiveAssets<
   S extends Toolset
->(data: GenieData<S>, schema: S): PartialAssetValues<S, ToolFrom<S>> {
+>(data: GenieData<S>, tools: S): Partial<AssetValuesForSet<S>> {
 
-  const result = _.mapValues(schema, (toolSchema, toolName) => {
+  return objectWithKeys(
+    toolIds(tools), 
+    toolId => {
+      const chat = findBy({ toolId }, data.chats);
 
-    const chat = data.chats.find(chat => chat.tool === toolName);
-    // TODO: Search by id in addition to type
+      if (!chat) return undefined;
 
-    if (!chat) return undefined;
+      const { messages } = chat;
 
-    const { tool, messages } = chat; 
+      const { assets } = _(messages)
+        .filter(m => !!m.assets)
+        .sortBy(m => m.assetsPickedAt ?? 0)
+        .last() ?? {};
 
-    const { assets } = _(messages)
-      .filter(m => !!m.assets)
-      .sortBy(m => m.assetsPickedAt ?? 0)
-      .last() ?? {};
-    
-    if ( !assets || !assetsComplyWithSchema(assets, schema, tool) ) 
-      return undefined;
+      if (!assets) return undefined;
 
-    return assets;
+      // TODO: check that assets are actually for this tool
 
-  });
-  
-  return result;
+      return assets;
+    }
+  );
 
 };

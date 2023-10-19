@@ -1,13 +1,10 @@
 import dedent from "dedent-js";
-import { StringKey } from "vovas-utils";
-import { ArrayItem, Falsible } from "~/lib/utils";
+import { ArrayItem, Falsible, StringKey, allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   StackUpable, chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { Branded, Dict, GenieData, GenieMessage, OtherTools, PartialAssetValues, getActiveAssets, getMissingTools, getPrerequisites, hasAssetsForTools, reciteAssets, toRawMessage } from "..";
+import { Dict, GenieData, GenieMessage, getActiveAssets, reciteAssets, toRawMessage } from "..";
 
-
-export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
 export type AnyTool<
   Id extends string=string, 
@@ -25,8 +22,16 @@ export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
 export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
 
-export type ToolWithId<S extends Toolset, Id extends ToolFrom<S>['id']> =
+export function toolIds<S extends Toolset>(tools: S): ToolIdFrom<S>[] {
+  return tools.map(tool => tool.id);
+};
+
+export type ToolWithId<S extends Toolset, Id extends ToolIdFrom<S>> =
   Extract<ToolFrom<S>, { id: Id }>;
+
+export function toolWithId<S extends Toolset, Id extends ToolIdFrom<S>>(tools: S, id: Id): ToolWithId<S, Id> {
+  return tools.find(tool => tool.id === id) as ToolWithId<S, Id>;
+};
 
 export type MissingTool<S extends Toolset> = Exclude<ToolFrom<SetFor<ToolFrom<S>>>, ToolFrom<S>>['id'];
 
@@ -35,7 +40,7 @@ export type ValidToolset<S extends Toolset> =
     ? S
     : `Required tool missing, id = ${MissingTool<S>}`;
 
-export type AssetForTool<T extends AnyTool> = T extends Tool<any, infer A, any> ? A : never;
+export type AssetForTool<T extends AnyTool> = StringKey<T['config']['assets']>;
 
 export type ToTool<ST extends Toolset | AnyTool> = 
   ST extends Toolset ? ToolFrom<ST> : ST;
@@ -50,11 +55,17 @@ export type BuildInput<S extends Toolset, T extends AnyTool> = {
   data: GenieData<S>;
 };
 
+export type AssetValuesForSet<S extends Toolset> = {
+  [Id in ToolIdFrom<S>]: {
+    [A in AssetForTool<ToolWithId<S, Id>>]: string;
+  };
+};
+
 export type BuildSystemMessages<Reqs extends Toolset> = (params: {
   numResponses: number;
   requestFunctionCall: boolean;
   functionCalled: boolean;
-  assetValues: AssetValues<Reqs>;
+  assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;
 }) => Record<'pre' | 'post', StackUpable>;
 
@@ -89,12 +100,12 @@ export class Tool<
     const { messages, data } = input;
     const { 
       mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, assets, accompanyingTextKey = 'replyMessage'
+      buildSystemMessages, assets: assetDescriptions, accompanyingTextKey = 'replyMessage', requires
     } = this.config;
 
     const fn = chatFunction('reply', 'Replies to the user with structured data', {
       [accompanyingTextKey]: 'Accompanying text to go before the structured data, narratively continuing the conversation',
-      ...assets
+      ...assetDescriptions
     });
 
     const numResponses = messagesBy.assistant(messages).length;
@@ -104,10 +115,9 @@ export class Tool<
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetValues = getActiveAssets(data, schema);
-    const prerequisites = getPrerequisites(schema, this.tool);
+    const assetValues = getActiveAssets(data, requires);
 
-    if ( !hasAssetsForTools(assetValues, prerequisites) )
+    if ( !allPropsDefined(assetValues) )
       throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);
 
     const { username } = data;
@@ -116,7 +126,7 @@ export class Tool<
       pre: preMessage, 
       post: postMessage 
     } = buildSystemMessages({ 
-      functionCalled, numResponses, requestFunctionCall, assetValues, 
+      functionCalled, numResponses, requestFunctionCall, assets: assetValues, 
       username,
       ...input
     });
@@ -127,11 +137,11 @@ export class Tool<
           stackUp([
             mainSystemMessage,
             preMessage, 
-            prerequisites && numResponses >= addAssetsAfter && dedent`
+            requires && numResponses >= addAssetsAfter && dedent`
               For reference:
 
               ===
-              ${reciteAssets(assetValues, schema, prerequisites)}
+              ${reciteAssets(assetValues, requires)}
               ===
             `
           ])
@@ -143,10 +153,8 @@ export class Tool<
     };
   };
 
-  getMissingTools(assetValues: PartialAssetValues<S, ArrayItem<OtherTools<S, T>>>) {
-    const { requires: prerequisites } = this.config;
-    if ( !prerequisites ) return [];
-    return getMissingTools(assetValues, prerequisites);
+  getMissingTools(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
+    return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
   };
 
 };

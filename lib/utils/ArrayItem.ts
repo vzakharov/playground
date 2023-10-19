@@ -1,6 +1,6 @@
-export type ArrayItem<T extends readonly any[] | any[] | unknown, U = any> = 
-  T extends (infer I extends U)[]
+export type ArrayItem<T extends readonly any[] | any[] | unknown> = 
+  T extends (infer I)[]
     ? I
-  : T extends readonly (infer I extends U)[]
+  : T extends readonly (infer I)[]
     ? I
   : never;
