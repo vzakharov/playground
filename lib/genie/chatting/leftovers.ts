@@ -1,19 +1,19 @@
 import { $throw } from "vovas-utils";
-import { AssetName, BaseChatController, ChatId, GenieMessage, MessageId, GenieSchema, ToolName } from "..";
+import { AssetName, BaseChatController, ChatId, GenieMessage, MessageId, GenieSchema, ToolName, AnyTool, Toolset, ToolWithId, ToolFrom, ToolIdFrom } from "..";
 
-export function getDefaultLeftovers<S extends GenieSchema, T extends ToolName<S>>(controller: LeftoversController<S, T>) {
+export function getDefaultLeftovers<T extends AnyTool>(tool: T) {
   return {
-    results: [] as GenieMessage<S, T, 'assistant'>[],
+    results: [] as GenieMessage<T, 'assistant'>[],
     baseId: null as MessageId | null,
     activeMessageOriginalIndex: 1,
   }
 };
 
-export type Leftovers<S extends GenieSchema, T extends ToolName<S>> = ReturnType<typeof getDefaultLeftovers<S, T>>;
+export type Leftovers<T extends AnyTool> = ReturnType<typeof getDefaultLeftovers<T>>;
 
-export type LeftoversStore<S extends GenieSchema> = {
-  [T in ToolName<S>]?: {
-    [id in ChatId]?: Leftovers<S, T>
+export type LeftoversStore<S extends Toolset> = {
+  [TId in ToolIdFrom<S>]?: {
+    [CId in ChatId]?: Leftovers<ToolWithId<S, TId>>;
   };
 };
 

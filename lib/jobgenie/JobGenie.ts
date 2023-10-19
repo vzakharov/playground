@@ -1,4 +1,4 @@
 import { customGenie } from "~/lib/genie";
-import { promptBuilders, schema } from ".";
+import { tools } from ".";
 
-export const JobGenie = customGenie(schema, promptBuilders);
+export const JobGenie = customGenie({ tools });

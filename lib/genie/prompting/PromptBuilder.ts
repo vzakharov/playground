@@ -11,9 +11,14 @@ export type BuilderFunctionParameters<Asset extends string> = 'content' | Asset;
 
 export type AnyTool = Tool<any, any, any>;
 
-export type Toolset = readonly AnyTool[];
+export type Toolset = AnyTool[];
 
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
+
+export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
+
+export type ToolWithId<S extends Toolset, Id extends ToolFrom<S>['id']> =
+  Extract<ToolFrom<S>, { id: Id }>;
 
 export type RequiredId<S extends Toolset> = ArrayItem<ToolFrom<S>['config']['requires']>['id'];
 

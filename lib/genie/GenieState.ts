@@ -1,8 +1,8 @@
 import { is, itselfIf } from "vovas-utils";
 import { Defaults, InferDefaultTypes } from "~/lib/utils";
-import { Genie, LeftoversStore, GenieSchema, temperatureDescriptors } from ".";
+import { Genie, LeftoversStore, GenieSchema, temperatureDescriptors, Toolset } from ".";
 
-export function defaultGenieState<S extends GenieSchema>(schema: S) {
+export function defaultGenieState<S extends Toolset>(tools: S) {
   return ({
     openaiKey: '',
     usdSpent: 0,
@@ -17,4 +17,4 @@ export function defaultGenieState<S extends GenieSchema>(schema: S) {
 }
 
 // export type GenieState = InferDefaultTypes<typeof defaultGenieState>;
-export type GenieState<S extends GenieSchema> = InferDefaultTypes<ReturnType<typeof defaultGenieState<S>>>;
+export type GenieState<S extends Toolset> = InferDefaultTypes<ReturnType<typeof defaultGenieState<S>>>;
