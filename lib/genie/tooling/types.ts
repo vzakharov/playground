@@ -24,7 +24,7 @@ export function toolIds<S extends Toolset>(tools: S): ToolIdFrom<S>[] {
 }
 ;
 
-export type ToolWithId<S extends Toolset, Id extends ToolIdFrom<S>> = Extract<ToolFrom<S>, { id: Id; }>;
+export type ToolWithId<S extends Toolset, Id extends ToolIdFrom<S>> = ToolFrom<S> & AnyTool<Id>;
 
 export function toolWithId<S extends Toolset, Id extends ToolIdFrom<S>>(tools: S, id: Id): ToolWithId<S, Id> {
   return tools.find(tool => tool.id === id) as ToolWithId<S, Id>;

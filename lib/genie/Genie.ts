@@ -29,34 +29,41 @@ export class Genie<
     public readonly config: GenieConfig<S>,
   ) { };
 
-  get ChatController() {
+  // get ChatController() {
 
-    const genie: Genie<S> = this;
-    const { chatControllers } = this;
+  //   const genie: Genie<S> = this;
+  //   const { chatControllers } = this;
     
 
-    return class BoundChatController<
-      Id extends ToolIdFrom<S>
-    > extends ChatController<Id, ToolWithId<S, Id>> {
+  //   return class BoundChatController<
+  //     Id extends ToolIdFrom<S>,
+  //     T extends ToolWithId<S, Id>
+  //   > extends ChatController<Id, ToolWithId<S, Id>> {
 
-      constructor(
-        config: Omit<ChatControllerConfig<Id, ToolWithId<S, Id>>, keyof GenieConfig<S>>
-      ) {
-        const { tool, chatId } = config;
-        const controllers = chatControllers[tool.id] ??= [];
-        const oldController = findBy({ config: { chatId } }, controllers);
-        if (oldController)
-          _.pull(controllers, oldController);
+  //     constructor(
+  //       config: Omit<ChatControllerConfig<Id, T>, keyof GenieConfig<S>>
+  //     ) {
+  //       const { tool, chatId } = config;
+  //       const controllers = chatControllers[tool.id] ??= [];
+  //       const oldController = findBy({ config: { chatId } }, controllers);
+  //       if (oldController)
+  //         _.pull(controllers, oldController);
 
-        super({ ...genie.config, ...config } as unknown as ChatControllerConfig<Id, ToolWithId<S, Id>>);
+  //       super({ ...genie.config, ...config } as unknown as ChatControllerConfig<Id, T>);
 
-        controllers.push(this);
+  //       controllers.push(this);
 
-      };
+  //     };
 
-    };
+  //   };
 
-  };
+  // };
+
+  createChatController<
+    T extends ToolFrom<S>,
+  >(config: Omit<ChatControllerConfig<T['id'], T>, keyof GenieConfig<S>>) {
+    return new ChatController({ ...this.config, ...config } as unknown as ChatControllerConfig<T['id'], T>);
+  }
 
   get defaultState() {
     return defaultGenieState(this.tools);

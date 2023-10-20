@@ -5,13 +5,11 @@ import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
+import { $GenieChatId, AnyTool, Genie, GenieMessage, SetFor, branded } from '~/lib/genie';
+import { Resolvable, refsToReactive } from '~/lib/utils';
 import { data } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
-import { renewChatController } from './controller';
-import { ChatControllerState, Genie, GenieMessage, GenieState, Schema, Tool, branded, $GenieChatId, Toolset, AnyTool, SetFor } from '~/lib/genie';
-import { Resolvable, refsToReactive } from '~/lib/utils';
-import { promptBuilders } from '~/lib/jobgenie';
 
 const { genie, tool } = defineProps<{
   genie: Genie<SetFor<T>>;
@@ -25,9 +23,10 @@ const userMessageComponent = refForInstance(Textarea);
 
 const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
-const c = new genie.ChatController({
+const c = genie.createChatController({
+  // ...genie.config,
   tool, state, 
-  chatId: branded<$GenieChatId>(tool), // TODO: Implement multiple chat ids per tool
+  chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });
 
 addProperties(window, { _, genie, c, data, state, globalState });

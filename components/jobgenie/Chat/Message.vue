@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="Id extends string, T extends AnyTool<Id>" >
+<script setup lang="ts" generic="T extends AnyTool" >
 
 import { Marked } from '@ts-stack/markdown';
 import Button from '~/components/shared/Button.vue';
@@ -14,7 +14,7 @@ import { genie } from '../refs';
 
 const props = defineProps<{
   message: GenieMessage<T>,
-  c: ChatController<Id, T>
+  c: ChatController<T['id'], T>
 }>();
 
 const { message, c } = props;
