@@ -3,22 +3,13 @@ import { also } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
 import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration } from '../..';
 
-export type ResponderMixinConfig = {
-  watch: <T>(
-    watched: T,
-    callback: (value: T) => void,
-    options?: { immediate: boolean }
-  ) => void;
-  alert: (message: string) => void;
-};
-
 export class Responder<
   Id extends string,
   T extends AnyTool<Id>,
 > extends LeftoversController<Id, T> {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Id, T> & ResponderMixinConfig
+    public readonly config: BaseChatControllerConfig<Id, T>
   ) {
     super(config);
     this.watchForResponseGeneration();

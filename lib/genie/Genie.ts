@@ -1,46 +1,54 @@
 import _ from "lodash";
-import { AssetName, ChatController, ChatControllerConfig, GenieData, GenieState, Tool, ResponderMixinConfig, GenieSchema, ToolName, defaultGenieState, findBy, getActiveAssetsForSet, Toolset, ValidToolset, ToolFrom } from ".";
 import { $throw } from "vovas-utils";
+import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, defaultGenieState, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
 
 export type GenieConfig<S extends Toolset> = {
-  // tools: ValidToolset<S>;
+
   data: GenieData<S>;
   globalState: GenieState<S>;
-} & ResponderMixinConfig;
+
+  watch: <T>(
+    watched: T,
+    callback: (value: T) => void,
+    options?: { immediate: boolean }
+  ) => void;
+  alert: (message: string) => void;
+
+};
 
 export class Genie<
   S extends Toolset
 > {
 
   chatControllers: {
-    [T in ToolFrom<S>]?: ChatController<S, T>[];
+    [Id in ToolIdFrom<S>]?: ChatController<Id, ToolWithId<S, Id>>[];
   } = {};
 
   constructor(
-    public tools: ValidToolset<S>,
+    public tools: S & ValidToolset<S>,
     public readonly config: GenieConfig<S>,
   ) { };
 
   get ChatController() {
 
-    const genie = this;
+    const genie: Genie<S> = this;
     const { chatControllers } = this;
     
 
-    return class BoundChatController<T extends ToolFrom<S>> extends ChatController<S, T> {
+    return class BoundChatController<
+      Id extends ToolIdFrom<S>
+    > extends ChatController<Id, ToolWithId<S, Id>> {
 
       constructor(
-        config: Omit<ChatControllerConfig<S, T>, keyof GenieConfig<S> | 'promptBuilder'>
+        config: Omit<ChatControllerConfig<Id, ToolWithId<S, Id>>, keyof GenieConfig<S>>
       ) {
         const { tool, chatId } = config;
-        const controllers = chatControllers[tool] ??= [];
+        const controllers = chatControllers[tool.id] ??= [];
         const oldController = findBy({ config: { chatId } }, controllers);
         if (oldController)
           _.pull(controllers, oldController);
 
-        const promptBuilder = genie.getPromptBuilder(tool);
-
-        super({ ...genie.config, ...config, promptBuilder });
+        super({ ...genie.config, ...config } as unknown as ChatControllerConfig<Id, ToolWithId<S, Id>>);
 
         controllers.push(this);
 
@@ -50,25 +58,12 @@ export class Genie<
 
   };
 
-  getPromptBuilder<T extends ToolFrom<S>>(tool: T) {
-    return this.config.promptBuilders[tool];
-  };
-
   get defaultState() {
-    return defaultGenieState(this.config.schema);
+    return defaultGenieState(this.tools);
   };
 
   get activeAssets() {
-    return getActiveAssetsForSet(this.config.data, this.config.schema);
+    return getActiveAssets(this.config.data, this.tools);
   };
-
-  messageWithActiveAssets<T extends ToolFrom<S>>(
-    controller: ChatController<S, T>
-  ) {
-    const { messages, config: { tool }} = controller;
-    return messages.find(({ assets }) => assets && assets === this.activeAssets[tool])
-      ?? $throw(`No message with active assets for ${tool}`);
-  };
-
 
 };

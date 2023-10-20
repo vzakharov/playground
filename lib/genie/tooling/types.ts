@@ -33,7 +33,9 @@ export function toolWithId<S extends Toolset, Id extends ToolIdFrom<S>>(tools: S
 
 export type MissingTool<S extends Toolset> = Exclude<ToolFrom<SetFor<ToolFrom<S>>>, ToolFrom<S>>['id'];
 
-export type ValidToolset<S extends Toolset> = MissingTool<S> extends never ? S : `Required tool missing, id = ${MissingTool<S>}`;
+export type ValidToolset<S extends Toolset> = MissingTool<S> extends never 
+  ? S 
+  : `Required tool missing, id = ${MissingTool<S>}`;
 
 export type AssetForTool<T extends AnyTool> = StringKey<T['config']['assets']>;
 

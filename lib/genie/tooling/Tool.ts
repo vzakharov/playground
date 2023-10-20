@@ -3,7 +3,7 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValuesForSet, BuildInput, BuildSystemMessages, Dict, ToolFrom, Toolset, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AnyTool, AssetValuesForSet, BuildInput, BuildSystemMessages, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -49,7 +49,7 @@ export class Tool<
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetValues = getActiveAssetsForSet(data, requires);
+    const assetValues = getActiveAssets(data, requires);
 
     if ( !allPropsDefined(assetValues) )
       throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);
@@ -90,6 +90,6 @@ export class Tool<
 
   getMissingTools(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
     return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
-  };    
+  };
 
 };

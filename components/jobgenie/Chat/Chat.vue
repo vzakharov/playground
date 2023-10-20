@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="S extends Schema, T extends Tool<S>">
+<script setup lang="ts" generic="T extends AnyTool">
 
 import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
@@ -9,16 +9,16 @@ import { data } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
 import { renewChatController } from './controller';
-import { ChatControllerState, Genie, GenieMessage, GenieState, Schema, Tool, branded, $GenieChatId } from '~/lib/genie';
+import { ChatControllerState, Genie, GenieMessage, GenieState, Schema, Tool, branded, $GenieChatId, Toolset, AnyTool, SetFor } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
 import { promptBuilders } from '~/lib/jobgenie';
 
 const { genie, tool } = defineProps<{
-  genie: Genie<S, T>;
+  genie: Genie<SetFor<T>>;
   tool: T;
 }>();
 
-const generating = ref<Resolvable<GenieMessage<S, T, 'assistant'>>>();
+const generating = ref<Resolvable<GenieMessage<T, 'assistant'>>>();
 const msExpected = ref<number>();
 const userMessage = toRefs(globalState).userMessage;
 const userMessageComponent = refForInstance(Textarea);

@@ -44,3 +44,18 @@ export function getActiveAssetsForTool<
   return getActiveAssetsForToolId(data, tool.id);
 
 };
+
+export function getActiveAssets<S extends Toolset>(
+  ...args: Parameters<typeof getActiveAssetsForSet<S>>): ReturnType<typeof getActiveAssetsForSet<S>>;
+export function getActiveAssets<S extends Toolset, Id extends ToolIdFrom<S>>(
+  ...args: Parameters<typeof getActiveAssetsForToolId<S, Id>>): ReturnType<typeof getActiveAssetsForToolId<S, Id>>;
+export function getActiveAssets<Id extends string, T extends AnyTool<Id>, S extends SetFor<T>>(
+  ...args: Parameters<typeof getActiveAssetsForTool<Id, T, S>>): ReturnType<typeof getActiveAssetsForTool<Id, T, S>>;
+
+export function getActiveAssets(...args: any[]) {
+  return typeof args[1] === 'string'
+    ? getActiveAssetsForToolId(...args as Parameters<typeof getActiveAssetsForToolId>)
+  : Array.isArray(args[1])
+    ? getActiveAssetsForSet(...args as Parameters<typeof getActiveAssetsForSet>)
+  : getActiveAssetsForTool(...args as Parameters<typeof getActiveAssetsForTool>);
+};

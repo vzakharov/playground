@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
-import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, SetFor } from '..';
+import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, SetFor, GenieConfig } from '..';
 import { filter } from '~/lib/utils';
 
 
@@ -9,12 +9,10 @@ export type BaseChatControllerConfig<
   T extends AnyTool<Id>,
 > = {
   tool: T;
-  data: GenieData<SetFor<T>>;
   state: ChatControllerState<T>;
-  globalState: GenieState<SetFor<T>>;
   chatId: ChatId;
   autoMessage?: (data: GenieData<SetFor<T>>) => GenieMessage<T, 'assistant'>;
-};
+} & GenieConfig<SetFor<T>>;
 
 export class BaseChatController<
   Id extends string,
