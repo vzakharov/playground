@@ -48,10 +48,12 @@ export type BuildInput<S extends Toolset, T extends AnyTool> = {
   data: GenieData<S>;
 };
 
+export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
+  [A in AssetForTool<ToolWithId<S, Id>>]: string;
+};
+
 export type AssetValuesForSet<S extends Toolset> = {
-  [Id in ToolIdFrom<S>]: {
-    [A in AssetForTool<ToolWithId<S, Id>>]: string;
-  };
+  [Id in ToolIdFrom<S>]: AssetValuesForToolId<S, Id>;
 };
 
 export type BuildSystemMessages<Reqs extends Toolset> = (params: {

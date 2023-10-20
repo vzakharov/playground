@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="S extends Toolset, T extends Tool<S>">
+<script setup lang="ts" generic="Id extends string, T extends AnyTool<Id>" >
 
 import { Marked } from '@ts-stack/markdown';
 import Button from '~/components/shared/Button.vue';
@@ -8,14 +8,13 @@ import Card from '~/components/shared/Card.vue';
 import _ from 'lodash';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { ChatController, GenieMessage, GenieSchema, Tool } from '~/lib/genie';
+import { AnyTool, ChatController, GenieMessage } from '~/lib/genie';
 import { isBy } from '~/lib/vovas-openai';
-import { globalState as state } from '../state';
 import { genie } from '../refs';
 
 const props = defineProps<{
-  message: GenieMessage<S, T>,
-  c: ChatController<S, T>
+  message: GenieMessage<T>,
+  c: ChatController<Id, T>
 }>();
 
 const { message, c } = props;

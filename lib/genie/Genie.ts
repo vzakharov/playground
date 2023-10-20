@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { AssetName, ChatController, ChatControllerConfig, GenieData, GenieState, Tool, ResponderMixinConfig, GenieSchema, ToolName, defaultGenieState, findBy, getActiveAssets, Toolset, ValidToolset, ToolFrom } from ".";
+import { AssetName, ChatController, ChatControllerConfig, GenieData, GenieState, Tool, ResponderMixinConfig, GenieSchema, ToolName, defaultGenieState, findBy, getActiveAssetsForSet, Toolset, ValidToolset, ToolFrom } from ".";
 import { $throw } from "vovas-utils";
 
 export type GenieConfig<S extends Toolset> = {
@@ -59,7 +59,7 @@ export class Genie<
   };
 
   get activeAssets() {
-    return getActiveAssets(this.config.data, this.config.schema);
+    return getActiveAssetsForSet(this.config.data, this.config.schema);
   };
 
   messageWithActiveAssets<T extends ToolFrom<S>>(
