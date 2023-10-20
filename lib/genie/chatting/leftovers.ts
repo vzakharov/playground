@@ -1,5 +1,5 @@
 import { $throw } from "vovas-utils";
-import { AnyTool, BaseChatController, GenieMessage, MessageId, Tool, ToolLeftoversStore, Toolset, toolId } from "..";
+import { AnyTool, BaseChatController, GenieMessage, MessageId, Tool, ToolLeftoversStore, Toolset } from "..";
 
 export function getDefaultLeftovers<T extends AnyTool>(tool: T) {
   return {
@@ -12,14 +12,15 @@ export function getDefaultLeftovers<T extends AnyTool>(tool: T) {
 export type Leftovers<T extends AnyTool> = ReturnType<typeof getDefaultLeftovers<T>>;
 
 export class LeftoversController<
-  T extends AnyTool,
-> extends BaseChatController<T> {
+  Id extends string,
+  T extends AnyTool<Id>,
+> extends BaseChatController<Id, T> {
 
   get defaultLeftovers() { return getDefaultLeftovers(this.config.tool); };
 
   get store(): ToolLeftoversStore<T> {
     const { config: { globalState: { leftoversStore }, tool } } = this;
-    return leftoversStore[toolId(tool)] ??= {};
+    return leftoversStore[tool.id] ??= {};
   };
 
   get leftovers() {

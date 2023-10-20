@@ -3,13 +3,11 @@ import { StackUpable } from "~/lib/vovas-openai";
 import { Dict, GenieData, GenieMessage, Tool } from "..";
 
 
-export type AnyTool = Tool<string, string, Toolset>;
-
-export type ToolId<T extends AnyTool> = T['id'];
-
-export function toolId<T extends AnyTool>(tool: T): ToolId<T> {
-  return tool.id;
-};
+export type AnyTool<
+  Id extends string = string,
+  Asset extends string = string,
+  Set extends Toolset = Toolset
+> = Tool<Id, Asset, Set>;
 
 export type Toolset = AnyTool[];
 

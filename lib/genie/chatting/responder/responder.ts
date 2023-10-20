@@ -13,11 +13,12 @@ export type ResponderMixinConfig = {
 };
 
 export class Responder<
-  T extends AnyTool,
-> extends LeftoversController<T> {
+  Id extends string,
+  T extends AnyTool<Id>,
+> extends LeftoversController<Id, T> {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<T> & ResponderMixinConfig
+    public readonly config: BaseChatControllerConfig<Id, T> & ResponderMixinConfig
   ) {
     super(config);
     this.watchForResponseGeneration();

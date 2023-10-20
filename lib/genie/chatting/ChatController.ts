@@ -12,9 +12,10 @@ export type ChatControllerState<T extends AnyTool> = {
 };
 
 export class ChatController<  
-  T extends AnyTool,
+  Id extends string,
+  T extends AnyTool<Id>,
 >
-  extends Responder<T> { };
+  extends Responder<Id, T> { };
 
-export type ChatControllerConfig<T extends AnyTool> =
-  ConstructorParameters<typeof ChatController<T>>[0];
+export type ChatControllerConfig<Id extends string, T extends AnyTool<Id>> =
+  ConstructorParameters<typeof ChatController<Id, T>>[0];
