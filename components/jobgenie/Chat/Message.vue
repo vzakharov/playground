@@ -43,7 +43,7 @@ const buttons = computed(() => {
         tooltip: 'More alternatives',
         onClick: () => c.regenerate(message)
       },
-      message === genie.messageWithActiveAssets(c) && {
+      message === c.messageWithActiveAssets && {
         caption: 'Use this',
         tooltip: 'Set this asset globally for any relevant generations',
         onClick: () => message.assetsPickedAt = Date.now()
@@ -79,9 +79,9 @@ function copyToClipboard(content: string) {
     <div 
       :class="{
         [`msg msg-${message.role}`]: true,
-        'msg-picked-assets': isActiveAssetFor(c, message),
+        'msg-picked-assets': message === c.messageWithActiveAssets
       }"
-      :title="isActiveAssetFor(c, message) ? 'This asset will be used globally for any relevant generations' : ''"
+      :title="message === c.messageWithActiveAssets ? 'This asset will be used globally for any relevant generations' : ''"
     >
       <span 
         v-html="Marked.parse(message.content)" 

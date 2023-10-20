@@ -3,6 +3,7 @@ export * from './PickByArray';
 export * from './allPropsDefined';
 export * from './concat';
 export * from './defaultable';
+export * from './filter';
 export * from './isKeyof';
 export * from './literalKeys';
 export * from './mixin';

@@ -90,6 +90,6 @@ export class Tool<
 
   getMissingTools(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
     return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
-  };
+  };    
 
 };

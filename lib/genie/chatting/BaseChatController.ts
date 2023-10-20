@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { isBy } from '~/lib/vovas-openai';
 import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, SetFor } from '..';
+import { filter } from '~/lib/utils';
 
 
 export type BaseChatControllerConfig<
@@ -58,6 +59,15 @@ export class BaseChatController<
       state.userMessage = '';
     }
   };
+  
+  get messageWithActiveAssets(): GenieMessage<T, 'assistant'> | undefined {
 
-}
-;
+    return _(filter(isBy.assistant)(this.messages))
+      .filter(m => !!m.assets)
+      .sortBy(m => m.assetsPickedAt ?? 0)
+      .last();
+
+  };
+
+
+};
