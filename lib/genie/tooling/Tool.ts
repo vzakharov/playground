@@ -10,7 +10,6 @@ export type ToolConfig<
   Reqs extends Toolset
 > = {
   mainSystemMessage: string;
-  accompanyingTextKey?: string;
   requestFunctionCallAfter: number;
   addAssetsAfter?: number;
   buildSystemMessages: BuildSystemMessages<Reqs>;
@@ -35,11 +34,11 @@ export class Tool<
     const { messages, data } = input;
     const { 
       mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, assets: assetDescriptions, accompanyingTextKey = 'replyMessage', requires
+      buildSystemMessages, assets: assetDescriptions, requires
     } = this.config;
 
     const fn = chatFunction('reply', 'Replies to the user with structured data', {
-      [accompanyingTextKey]: 'Accompanying text to go before the structured data, narratively continuing the conversation',
+      replyMessage: 'Accompanying text to go before the structured data, narratively continuing the conversation',
       ...assetDescriptions
     });
 
