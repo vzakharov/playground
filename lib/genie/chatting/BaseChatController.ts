@@ -4,8 +4,7 @@ import { ChatId, GenieChat, GenieData, GenieMessage, GenieState, Tool, GenieSche
 
 
 export type BaseChatControllerConfig<
-  Id extends string,
-  T extends AnyTool<Id>,
+  T extends AnyTool,
 > = {
   tool: T;
   data: GenieData<SetFor<T>>;
@@ -16,12 +15,11 @@ export type BaseChatControllerConfig<
 };
 
 export class BaseChatController<
-  Id extends string,
-  T extends AnyTool<Id>,
+  T extends AnyTool,
 > {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Id, T>,
+    public readonly config: BaseChatControllerConfig<T>,
   ) {
     const { config: { data, tool, chatId } } = this;
     this.chat = findOrCreateChat(data, tool, chatId);
