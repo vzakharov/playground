@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { also, callWith, give, is } from 'vovas-utils';
 import { isBy } from '~/lib/vovas-openai';
 import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
-import { $if } from '~/lib/utils';
+import { $if, check, isFunction } from '~/lib/utils';
 
 export class Responder<
   T extends AnyTool,
@@ -22,10 +22,8 @@ export class Responder<
     watch(messages, messages => {
 
       const autoQuery = 
-        typeof autoQueryOrCallback === 'function'
-          ? autoQueryOrCallback({ globalData, globalState })
-          : autoQueryOrCallback;
-      // const autoQuery = $if(autoQueryOrCallback, is.function, callWith({ globalData, globalState })).else(give.itself);
+        $if(autoQueryOrCallback, isFunction, callWith({ globalData, globalState }))
+        .else(give.itself);
 
       const lastMessage = _.last(messages)
         ?? ( 

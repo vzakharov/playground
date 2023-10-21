@@ -1,34 +1,53 @@
-export type $IfResult<Arg, Guarded extends Arg, Result> = {
+export type Switch<Arg, Guarded extends Arg, Result, CombinedResult> = {
   if: <SubGuarded extends Exclude<Arg, Guarded>>(
     typeguard: (arg: Exclude<Arg, Guarded>) => arg is SubGuarded,
     transform: (guarded: SubGuarded) => Result
-  ) => $IfResult<Exclude<Arg, Guarded>, SubGuarded, Result>,
-  else: (transform: (arg: Exclude<Arg, Guarded>) => Result) => Result,
+  ) => Switch<Exclude<Arg, Guarded>, SubGuarded, Result, CombinedResult & Result>,
+  else: <R>(transform: (arg: Exclude<Arg, Guarded>) => R) => CombinedResult & R,
 };
 
-function dummyIfResult<Result>(result: Result) {
+function dummySwitch<Result>(result: Result) {
   return {
-    if: () => dummyIfResult(result),
+    if: () => dummySwitch(result),
     else: () => result,
   }
+};
+
+export function check<Arg>(arg: Arg): {
+  if: <Guarded extends Arg, Result>(
+    typeguard: (arg: Arg) => arg is Guarded,
+    transform: (guarded: Guarded) => Result
+  ) => Switch<Arg, Guarded, Result, Result>,
+} {
+
+  return {
+    if(
+      typeguard: (arg: any) => arg is any,
+      transform: (arg: any) => any
+    ) {
+      if ( typeguard(arg) ) {
+        return dummySwitch(transform(arg))
+      } else {
+        return {
+          if: (
+            subTypeguard: (arg: any) => arg is any,
+            subTransform: (arg: any) => any
+          ) => check<any>(arg).if(subTypeguard, subTransform),
+          else: (
+            elseTransform: (arg: any) => any
+          ) => elseTransform(arg),
+        }
+      }
+    }
+  };
 };
 
 export function $if<Arg, Guarded extends Arg, Result>(
   arg: Arg,
   typeguard: (arg: Arg) => arg is Guarded,
   transform: (guarded: Guarded) => Result
-): $IfResult<Arg, Guarded, Result> {
-  if ( typeguard(arg) ) {
-    return dummyIfResult(transform(arg))
-  } else {
-    return {
-      if: (
-        subTypeguard: (arg: any) => arg is any,
-        subTransform: (arg: any) => any
-      ) => $if(arg, subTypeguard, subTransform),
-      else: (
-        elseTransform: (arg: any) => any
-      ) => elseTransform(arg),
-    }
-  }
+): Switch<Arg, Guarded, Result, Result> {
+
+  return check(arg).if(typeguard, transform);
+
 };
