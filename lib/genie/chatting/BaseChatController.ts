@@ -1,12 +1,12 @@
 import _ from 'lodash';
-import { isBy } from '~/lib/vovas-openai';
-import { ChatId, ChatData, GenieData, GenieMessage, GenieState, Tool, GenieSchema, ToolName, editMessage, findOrCreateChat, says, Toolset, ChatControllerState, ToolFrom, AnyTool, SetFor, GenieConfig } from '..';
 import { filter } from '~/lib/utils';
+import { isBy } from '~/lib/vovas-openai';
+import { AnyTool, ChatControllerState, ChatData, ChatId, GenieConfig, GenieData, GenieMessage, LeftoversDefined, SetFor, editMessage, findOrCreateChat, says } from '..';
 
 
 export type BaseChatControllerConfig<
   Id extends string,
-  T extends AnyTool<Id>,
+  T extends AnyTool<Id>
 > = {
   tool: T;
   state: ChatControllerState<T>;
@@ -14,22 +14,21 @@ export type BaseChatControllerConfig<
   autoMessage?: (data: GenieData<SetFor<T>>) => GenieMessage<T, 'assistant'>;
 } & GenieConfig<SetFor<T>>;
 
-export type ChatTool<C extends BaseChatController<any, any>> = C extends BaseChatController<any, infer T> ? T : never;
-
 export class BaseChatController<
   Id extends string,
   T extends AnyTool<Id>,
+  LD extends LeftoversDefined
 > {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Id, T>,
+    public readonly config: BaseChatControllerConfig<Id, T>
   ) {
     const { config: { globalData, tool, chatId } } = this;
     this.data = findOrCreateChat(globalData, tool, chatId);
     this.messages = this.data.messages;
   };
 
-  readonly data: ChatData<T>;
+  readonly data: ChatData<T, LD>;
   readonly messages: GenieMessage<T>[];
   previousGeneration?: GenieMessage<T, 'assistant'>;
 

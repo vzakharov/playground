@@ -6,7 +6,7 @@ import { AnyTool, BaseChatControllerConfig, LeftoversController, generateRespons
 export class Responder<
   Id extends string,
   T extends AnyTool<Id>,
-> extends LeftoversController<Id, T> {
+> extends LeftoversController<Id, T, boolean> {
 
   constructor(
     public readonly config: BaseChatControllerConfig<Id, T>

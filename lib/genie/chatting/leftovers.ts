@@ -1,8 +1,7 @@
-import { $throw, either, ensure, is } from "vovas-utils";
-import { AnyTool, BaseChatController, GenieMessage, ChatTool, MessageId, Tool, ToolLeftoversStore, Toolset } from "..";
-import { bound } from "~/lib/utils";
-import _ from "lodash";
 import { isBy } from "lib/vovas-openai";
+import _ from "lodash";
+import { $throw, ensure } from "vovas-utils";
+import { AnyTool, BaseChatController, GenieMessage, LeftoversDefined, MessageId } from "..";
 
 export type Leftovers<T extends AnyTool> = {
   results: GenieMessage<T, 'assistant'>[];
@@ -10,24 +9,24 @@ export type Leftovers<T extends AnyTool> = {
   activeMessageOriginalIndex: number;
 };
 
-export type LeftoversDefined<T extends AnyTool> = {
-  data: {
-    leftovers: Leftovers<T>;
-  };
-};
-
 export class LeftoversController<
   Id extends string,
   T extends AnyTool<Id>,
-> extends BaseChatController<Id, T> { 
+  LD extends LeftoversDefined
+> extends BaseChatController<Id, T, LD> { 
 
-  areLeftoversDefined(): this is LeftoversDefined<T> {
+  areLeftoversDefined(): this is this & DefiniteLeftoversController<Id, T> {
     return !!this.data.leftovers;
   }
 
-  getMessageWithLeftovers(
-    this: this & LeftoversDefined<T>
-  ) {
+};
+
+export class DefiniteLeftoversController<
+  Id extends string,
+  T extends AnyTool<Id>
+> extends LeftoversController<Id, T, true> {
+
+  get messageWithLeftovers() {
     const { messages, data: { leftovers } } = this;
     const message = ensure(
       _.find(messages, { id: leftovers?.baseMessageId }),
@@ -39,25 +38,21 @@ export class LeftoversController<
     return message;
   };
 
-  setMessageWithLeftovers(
-    this: this & LeftoversDefined<T>,
+  set messageWithLeftovers(
     message: GenieMessage<T, 'assistant'>
   ) {
     this.data.leftovers.baseMessageId = message.id;
   };
 
 
-  replaceActiveMessageWithLeftover(
-    this: this & LeftoversDefined<T>
-  ) {
+  replaceActiveMessageWithLeftover() {
 
-    const { messages, data: { leftovers, leftovers: { results } } } = this;
-    const message = this.getMessageWithLeftovers();
+    const { messages, messageWithLeftovers: message, data: { leftovers, leftovers: { results } } } = this;
 
     const leftover = results.shift()
       ?? $throw('Leftovers are empty (this should not happen)');
 
-    this.setMessageWithLeftovers(leftover);
+    this.messageWithLeftovers = leftover;
 
     messages.splice(messages.indexOf(message), 1, leftover);
 
@@ -65,9 +60,7 @@ export class LeftoversController<
 
   };
 
-  cycleLeftovers(
-    this: this & LeftoversDefined<T>
-  ) {
+  cycleLeftovers() {
 
     const {
       deletedMessage,
