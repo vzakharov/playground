@@ -4,12 +4,12 @@ import { dna, job, mainSystemMessage, resumé, schema } from "../..";
 
 export const challenge = new Tool('challenge', {
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 1,
-  addAssetsAfter: 1,
+  system: mainSystemMessage,
+  generateAssetsAfter: 1,
+  reciteAssetsAfter: 1,
   requires: [dna, resumé, job],
 
-  buildSystemMessages({ numResponses, functionCalled, username }) { return {
+  build({ numResponses, functionCalled, username }) { return {
 
     pre: `In this specific flow, you help ${username || 'the user'} come up with ideas for how potential employers could challenge them during the interview process.`,
 

@@ -3,11 +3,11 @@ import { dna, mainSystemMessage, schema } from "../..";
 
 export const job = new Tool('job', { 
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 1,
+  system: mainSystemMessage,
+  generateAssetsAfter: 1,
   requires: [dna],
 
-  buildSystemMessages({ requestFunctionCall }) { return {
+  build({ requestFunctionCall }) { return {
 
     pre: 'In this specific flow, you help the user come up with ideas for jobs titles and descriptions that would be a good fit for them based on their “DNA” — a summary description that you prepared during initial interview, — and, optionally, a specific company they’re interested in.',
 

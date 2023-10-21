@@ -4,18 +4,17 @@ import {
   UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst
 } from '~/lib/vovas-openai';
 import {
-  GenieMessage, Responder, GenieSchema, ToolName, temperatureForDescriptor, withUniqueId
+  GenieMessage, Responder, GenieSchema, ToolName, temperatureForDescriptor, withUniqueId, AnyTool, AssetForTool, Requires, Tool, Toolset, GenieData, assertDataIsForTool
 } from '../..';
 
 export async function generateResponse<
-  S extends Toolset,
-  T extends ToolFrom<S>
+  T extends AnyTool,
 >(
-  this: Responder<S, T>
-): Promise<GenieMessage<S, T, 'assistant'>> {
-  const { config: { promptBuilder, globalData, globalState, state }, messages, previousGeneration } = this;
+  this: Responder<T>
+): Promise<GenieMessage<T, 'assistant'>> {
+  const { config: { tool, globalData, globalState, state }, messages, previousGeneration } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
-  const { promptMessages, fn } = promptBuilder.build({ messages, data: globalData });
+  const { promptMessages, fn } = tool.build({ messages, globalData });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });

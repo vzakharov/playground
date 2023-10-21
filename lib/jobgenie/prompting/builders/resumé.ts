@@ -4,11 +4,11 @@ import { dna, mainSystemMessage, schema } from "../..";
 
 export const resumé = new Tool('resumé', {
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 0,
+  system: mainSystemMessage,
+  generateAssetsAfter: 0,
   requires: [dna],
 
-  buildSystemMessages({ numResponses }) { return {
+  build({ numResponses }) { return {
 
     pre: 'In this specific flow, you help the user build or improve their resumé based on their DNA (a summary description that you prepared during initial interview, see below)',
 

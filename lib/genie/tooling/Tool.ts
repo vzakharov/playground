@@ -3,16 +3,16 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AnyTool, AssetValuesForSet, BuildInput, BuildSystemMessages, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AnyTool, AssetValuesForSet, BuildInput, BuildCallback, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
   Reqs extends Toolset
 > = {
-  mainSystemMessage: string;
-  requestFunctionCallAfter: number;
-  addAssetsAfter?: number;
-  buildSystemMessages: BuildSystemMessages<Reqs>;
+  system: string;
+  generateAssetsAfter: number;
+  reciteAssetsAfter?: number;
+  build: BuildCallback<Reqs>;
   // fnArgs: SimplifiedChatFunction<string, Asset, never>;
   assets: Dict<Asset>;
   requires: Reqs;
@@ -29,12 +29,12 @@ export class Tool<
     public config: ToolConfig<A, Reqs>,
   ) { }
 
-  build(input: BuildInput<Reqs, this>) {
+  build(input: BuildInput<this>) {
 
-    const { messages, data } = input;
+    const { messages, globalData } = input;
     const { 
-      mainSystemMessage, requestFunctionCallAfter, addAssetsAfter = 0,
-      buildSystemMessages, assets: assetDescriptions, requires
+      system: mainSystemMessage, generateAssetsAfter, reciteAssetsAfter = 0,
+      build: buildCallback, assets: assetDescriptions, requires
     } = this.config;
 
     const fn = chatFunction('reply', 'Replies to the user with structured data', {
@@ -43,24 +43,24 @@ export class Tool<
     });
 
     const numResponses = messagesBy.assistant(messages).length;
-    const requestFunctionCall = numResponses >= requestFunctionCallAfter;
+    const requestFunctionCall = numResponses >= generateAssetsAfter;
     const rawMessages = messages.map(toRawMessage(fn));
 
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetValues = getActiveAssets(data, requires);
+    const assetValues = getActiveAssets(globalData, requires);
 
     if ( !allPropsDefined(assetValues) )
       throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);
 
     assetValues
-    const { username } = data;
+    const { username } = globalData;
 
     const { 
       pre: preMessage, 
       post: postMessage 
-    } = buildSystemMessages({ 
+    } = buildCallback({ 
       functionCalled, numResponses, requestFunctionCall, assets: assetValues, 
       username,
       ...input
@@ -72,7 +72,7 @@ export class Tool<
           stackUp([
             mainSystemMessage,
             preMessage, 
-            requires && numResponses >= addAssetsAfter && dedent`
+            requires && numResponses >= reciteAssetsAfter && dedent`
               For reference:
 
               ===

@@ -21,15 +21,13 @@ export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
 
 export function toolIds<S extends Toolset>(tools: S): ToolIdFrom<S>[] {
   return tools.map(tool => tool.id);
-}
-;
+};
 
 export type ToolWithId<S extends Toolset, Id extends ToolIdFrom<S>> = ToolFrom<S> & AnyTool<Id>;
 
 export function toolWithId<S extends Toolset, Id extends ToolIdFrom<S>>(tools: S, id: Id): ToolWithId<S, Id> {
   return tools.find(tool => tool.id === id) as ToolWithId<S, Id>;
-}
-;
+};
 
 export type MissingTool<S extends Toolset> = Exclude<ToolFrom<SetFor<ToolFrom<S>>>, ToolFrom<S>>['id'];
 
@@ -45,9 +43,9 @@ export type Asset<ST extends Toolset | AnyTool> = AssetForTool<ToTool<ST>>;
 
 export type AssetValues<T extends Toolset | AnyTool> = Dict<Asset<T>>;
 
-export type BuildInput<S extends Toolset, T extends AnyTool> = {
+export type BuildInput<T extends AnyTool> = {
   messages: GenieMessage<T>[];
-  data: GenieData<S>;
+  globalData: GenieData<Requires<T>>;
 };
 
 export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
@@ -58,7 +56,7 @@ export type AssetValuesForSet<S extends Toolset> = {
   [Id in ToolIdFrom<S>]: AssetValuesForToolId<S, Id>;
 };
 
-export type BuildSystemMessages<Reqs extends Toolset> = (params: {
+export type BuildCallback<Reqs extends Toolset> = (params: {
   numResponses: number;
   requestFunctionCall: boolean;
   functionCalled: boolean;

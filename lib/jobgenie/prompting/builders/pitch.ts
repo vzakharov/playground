@@ -4,11 +4,11 @@ import { dna, mainSystemMessage, schema } from "../..";
 
 export const pitch = new Tool('pitch', {
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 0,
+  system: mainSystemMessage,
+  generateAssetsAfter: 0,
   requires: [dna],
 
-  buildSystemMessages({ numResponses, functionCalled }) { return {
+  build({ numResponses, functionCalled }) { return {
 
     pre: 'In this specific flow, you help the user come up with a way to “pitch” themselves to a potential employer, based on their “DNA” — a summary description that you prepared during initial interview, — and a specific company they’re interested in.',
 
