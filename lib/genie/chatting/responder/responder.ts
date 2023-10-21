@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { also } from 'vovas-utils';
-import { inferIfFunction } from "~/lib/utils";
+import { inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
 import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
 
@@ -25,10 +25,8 @@ export class Responder<
 
       const lastMessage = _.last(messages)
         ?? ( 
-          !!autoQuery && also(
-            says.user(autoQuery),
-            m => messages.push(m)
-          )
+          !!autoQuery 
+            && pushedTo(messages, says.user(autoQuery))
         );
 
       if (!lastMessage || isBy.user(lastMessage)) {

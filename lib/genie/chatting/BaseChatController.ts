@@ -65,7 +65,7 @@ export class BaseChatController<
 
   };
 
-  get countIrrelevantMessages() { return countIrrelevantMessages(this) };
+  get countIrrelevantMessages(): number { return countIrrelevantMessages(this) };
   isRelevant = isRelevant;
 
 };

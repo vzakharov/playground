@@ -1,6 +1,7 @@
 import _ from "lodash";
-import { $throw } from "vovas-utils";
+import { $throw, also } from "vovas-utils";
 import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, defaultGenieState, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
+import { pushedTo } from "lib/utils";
 
 export type GenieContext<S extends Toolset> = {
   globalData: GenieData<S>;
@@ -23,7 +24,7 @@ export class Genie<
 > {
 
   chatControllers: {
-    [Id in ToolIdFrom<S>]?: ChatController<Id, ToolWithId<S, Id>>[];
+    [Id in ToolIdFrom<S>]?: ChatController<ToolWithId<S, Id>>[];
   } = {};
 
   constructor(
@@ -31,11 +32,21 @@ export class Genie<
     public readonly config: GenieConfig<S>,
   ) { };
 
+
   createChatController<
     T extends ToolFrom<S>,
   >(config: Omit<ChatControllerConfig<T['id'], T>, keyof GenieConfig<S>>) {
-    return new ChatController({ ...this.config, ...config } as unknown as ChatControllerConfig<T['id'], T>);
-  }
+    const { tool, chatId } = config;
+    const controllers = this.chatControllers[tool.id as T['id']] ??= [];
+    const oldController = findBy({ config: { chatId } }, controllers);
+    if (oldController)
+      _.pull(controllers, oldController);
+
+    return pushedTo( controllers,
+      new ChatController({ ...this.config, ...config } as unknown as ChatControllerConfig<T['id'], T>),
+    );
+
+  };
 
   get defaultState() {
     return defaultGenieState(this.tools);

@@ -9,7 +9,7 @@ export const dna = new Tool('dna', {
   requires: [],
   autoQuery: ({ globalData: { username } }) => `Hi, I’m ${username ?? 'looking for some assistance'}.`,
 
-  build: ({ username, numResponses, shouldGenerateAssets }) => ({ 
+  build: ({ numResponses, shouldGenerateAssets }) => ({ 
       
     pre: 'This is the very first part of the interaction — the interview — where you want to help the user discover their “DNA” — a succinct summary of their skills and experience, written in a tone of voice that best represents them, which will then be used to generate any further content.',
 
