@@ -16,7 +16,7 @@ export class Responder<
 
   watchForResponseGeneration() {
 
-    const { config: { watch, autoMessage, globalData: data }, messages } = this;
+    const { config: { watch, globalData: data, tool: { config: { autoMessage }} }, messages } = this;
 
     watch(messages, messages => {
 

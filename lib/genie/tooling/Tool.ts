@@ -3,7 +3,7 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AnyTool, AssetValuesForSet, BuildInput, BuildCallback, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AnyTool, AssetValuesForSet, BuildInput, BuildCallback, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId, GenieData, GenieMessage } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -13,7 +13,7 @@ export type ToolConfig<
   generateAssetsAfter: number;
   reciteAssetsAfter?: number;
   build: BuildCallback<Reqs>;
-  // fnArgs: SimplifiedChatFunction<string, Asset, never>;
+  autoMessage?: (globalData: GenieData<Reqs>) => GenieMessage<undefined, 'assistant'>; //sic
   assets: Dict<Asset>;
   requires: Reqs;
 };

@@ -10,7 +10,6 @@ export type BaseChatControllerConfig<
   tool: T;
   state: ChatControllerState<T>;
   chatId: ChatId;
-  autoMessage?: (data: GenieData<SetFor<T>>) => GenieMessage<T, 'assistant'>;
 } & GenieConfig<SetFor<T>>;
 
 export class BaseChatController<
