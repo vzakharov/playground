@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { filter } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, ChatControllerState, ChatData, ChatId, GenieConfig, GenieData, GenieMessage, LeftoversDefined, SetFor, editMessage, findOrCreateChat, says } from '..';
+import { AnyTool, ChatControllerState, ChatData, ChatId, GenieConfig, GenieData, GenieMessage, LeftoversDefined, SetFor, countIrrelevantMessages, editMessage, findOrCreateChat, isRelevant, says } from '..';
 
 
 export type BaseChatControllerConfig<
@@ -66,5 +66,7 @@ export class BaseChatController<
 
   };
 
+  get countIrrelevantMessages() { return countIrrelevantMessages(this) };
+  isRelevant = isRelevant;
 
 };

@@ -41,10 +41,6 @@ watch(userMessageComponent, component => {
   });
 });
 
-const countIrrelevantMessages = computed(() => {
-  return c.countIrrelevantMessages();
-});
-
 const showIrrelevantMessages = ref(false);
 const irrelevanceNote = ref<[HTMLDivElement]>();
 // (Tuple because we technically create multiple notes due to v-for)
@@ -62,11 +58,11 @@ function toggleIrrelevantMessages() {
     <div v-for="( message, index ) in c.messages" :key="message.id"
       :class="{ 
         'flex flex-col': true,
-        'msg-irrelevant': index < countIrrelevantMessages,
-        hidden: !showIrrelevantMessages && index < countIrrelevantMessages
+        'msg-irrelevant': index < c.countIrrelevantMessages,
+        hidden: !showIrrelevantMessages && index < c.countIrrelevantMessages
       }"
     >
-      <div v-if="index === countIrrelevantMessages" class="irrelevance-note"
+      <div v-if="index === c.countIrrelevantMessages" class="irrelevance-note"
         ref="irrelevanceNote"
         v-text="
           showIrrelevantMessages

@@ -1,5 +1,5 @@
-export * from './Genie';
 export * from './ChatData';
+export * from './Genie';
 export * from './GenieData';
 export * from './GenieMessage';
 export * from './GenieSchema';
@@ -8,6 +8,7 @@ export * from './assets';
 export * from './chatting';
 export * from './customGenie';
 export * from './prompting';
+export * from './relevantMessages';
 export * from './says';
 export * from './temperatureDescriptors';
 export * from './tooling';
