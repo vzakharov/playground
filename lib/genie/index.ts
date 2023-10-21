@@ -1,5 +1,5 @@
 export * from './Genie';
-export * from './GenieChat';
+export * from './ChatData';
 export * from './GenieData';
 export * from './GenieMessage';
 export * from './GenieSchema';

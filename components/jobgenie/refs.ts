@@ -3,7 +3,7 @@ import { data } from "./data";
 import { globalState } from "./state";
 
 export const genie = new JobGenie({
-  data,
+  globalData: data,
   globalState,
   watch,
   alert

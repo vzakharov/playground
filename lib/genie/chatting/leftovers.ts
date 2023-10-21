@@ -1,63 +1,60 @@
-import { $throw } from "vovas-utils";
-import { AnyTool, BaseChatController, GenieMessage, MessageId, Tool, ToolLeftoversStore, Toolset } from "..";
+import { $throw, either, ensure, is } from "vovas-utils";
+import { AnyTool, BaseChatController, GenieMessage, ChatTool, MessageId, Tool, ToolLeftoversStore, Toolset } from "..";
+import { bound } from "~/lib/utils";
+import _ from "lodash";
+import { isBy } from "lib/vovas-openai";
 
-export function getDefaultLeftovers<T extends AnyTool>(tool: T) {
-  return {
-    results: [] as GenieMessage<T, 'assistant'>[],
-    baseId: null as MessageId | null,
-    activeMessageOriginalIndex: 1,
-  }
+export type Leftovers<T extends AnyTool> = {
+  results: GenieMessage<T, 'assistant'>[];
+  baseMessageId: MessageId;
+  activeMessageOriginalIndex: number;
 };
 
-export type Leftovers<T extends AnyTool> = ReturnType<typeof getDefaultLeftovers<T>>;
+export type LeftoversDefined<T extends AnyTool> = {
+  data: {
+    leftovers: Leftovers<T>;
+  };
+  messageWithLeftovers: GenieMessage<T, 'assistant'>;
+};
 
 export class LeftoversController<
   Id extends string,
   T extends AnyTool<Id>,
-> extends BaseChatController<Id, T> {
+> extends BaseChatController<Id, T> { 
 
-  get defaultLeftovers() { return getDefaultLeftovers(this.config.tool); };
+  areLeftoversDefined(): this is LeftoversDefined<T> {
+    return !!this.data.leftovers;
+  }
 
-  get store(): ToolLeftoversStore<T> {
-    const { config: { globalState: { leftoversStore }, tool } } = this;
-    return leftoversStore[tool.id] ??= {};
+  get messageWithLeftovers() {
+    const { messages, data: { leftovers } } = this;
+    const message = _.find(messages, { id: leftovers?.baseMessageId });
+    if (message && !isBy.assistant(message)) {
+      throw new Error('Message with leftovers is not by assistant (this should not happen)');
+    };
+    return message;
   };
 
-  get leftovers() {
-    const { store, chat, defaultLeftovers } = this;
-    return store[chat.id] ??= defaultLeftovers;
-  };
-
-  set leftovers( value: Leftovers<T> ) {
-    const { store, chat } = this;
-    store[chat.id] = value;
-  };
-
-  areLeftoversForMessage(
+  setMessageWithLeftovers(
     message: GenieMessage<T, 'assistant'>
   ) {
-
-    const { leftovers } = this;
-
-    return !!message.id && (leftovers.baseId === message.id);
-
+    if ( !this.areLeftoversDefined() ) {
+      throw "Cannot set messageWithLeftovers as no leftovers are defined";
+    };
+    this.data.leftovers.baseMessageId = message.id;
   };
+
 
   replaceActiveMessageWithLeftover(
-    message: GenieMessage<T, 'assistant'>
+    this: this & LeftoversDefined<T>
   ) {
 
-    const { leftovers, messages } = this;
-
-    if (!this.areLeftoversForMessage(message))
-      throw new Error('Leftovers are not for this message');
-
-    const { results } = leftovers;
+    const { messages, messageWithLeftovers: message, data: { leftovers, leftovers: { results } } } = this;
 
     const leftover = results.shift()
-      ?? $throw('No leftovers left');
+      ?? $throw('Leftovers are empty (this should not happen)');
 
-    leftovers.baseId = leftover.id;
+    this.setMessageWithLeftovers(leftover);
 
     messages.splice(messages.indexOf(message), 1, leftover);
 
@@ -66,14 +63,14 @@ export class LeftoversController<
   };
 
   cycleLeftovers(
-    message: GenieMessage<T, 'assistant'>
+    this: this & LeftoversDefined<T>
   ) {
 
     const {
       deletedMessage,
       leftovers,
       leftovers: { activeMessageOriginalIndex, results }
-    } = this.replaceActiveMessageWithLeftover(message);
+    } = this.replaceActiveMessageWithLeftover();
 
     results.push(deletedMessage);
 

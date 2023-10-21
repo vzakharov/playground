@@ -44,14 +44,15 @@ export const says = objectWithKeys(chatRoles, role =>
   [K in ChatRole]: (content: string) => ChatMessage<K>;
 };
 
-export const isBy = objectWithKeys(chatRoles, role => 
-  (message: WithRole) => message.role === role
+export const isBy = objectWithKeys(chatRoles, function isBy(role) {
+    return (message: WithRole) => message.role === role;
+  }
 ) as {
-  [R in ChatRole]: <M extends WithRole>(message: M) => message is M & WithRole<R>;
+  [R in ChatRole]: <M extends WithRole>(message: M) => message is WithRole<R> & M;
 };
 
 export const messagesBy = objectWithKeys(chatRoles, role => 
   (messages: WithRole[]) => messages.filter(isBy[role])
 ) as {
-  [R in ChatRole]: <M extends WithRole>(messages: M[]) => (M & WithRole<R>)[];
+  [R in ChatRole]: <M extends WithRole>(messages: M[]) => (WithRole<R> & M)[];
 };

@@ -4,7 +4,7 @@ import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, 
 
 export type GenieConfig<S extends Toolset> = {
 
-  data: GenieData<S>;
+  globalData: GenieData<S>;
   globalState: GenieState<S>;
 
   watch: <T>(
@@ -70,7 +70,7 @@ export class Genie<
   };
 
   get activeAssets() {
-    return getActiveAssets(this.config.data, this.tools);
+    return getActiveAssets(this.config.globalData, this.tools);
   };
 
 };

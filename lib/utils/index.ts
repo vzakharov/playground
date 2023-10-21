@@ -1,6 +1,7 @@
 export * from './ArrayItem';
 export * from './PickByArray';
 export * from './allPropsDefined';
+export * from './bound';
 export * from './concat';
 export * from './defaultable';
 export * from './filter';

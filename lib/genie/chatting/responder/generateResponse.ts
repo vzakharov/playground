@@ -13,9 +13,9 @@ export async function generateResponse<
 >(
   this: Responder<S, T>
 ): Promise<GenieMessage<S, T, 'assistant'>> {
-  const { config: { promptBuilder, data, globalState, state }, messages, previousGeneration } = this;
+  const { config: { promptBuilder, globalData, globalState, state }, messages, previousGeneration } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
-  const { promptMessages, fn } = promptBuilder.build({ messages, data });
+  const { promptMessages, fn } = promptBuilder.build({ messages, data: globalData });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });
@@ -64,12 +64,12 @@ export async function generateResponse<
     results: _.compact([
       ...leftovers.map(fromRawMessage),
       // If the the existing leftovers are for the previousGeneration, then we want to keep them (as well as the previous generation itself)
-      ...previousGeneration && this.areLeftoversForMessage(previousGeneration) ? [
+      ...previousGeneration && this.leftoversForMessage(previousGeneration) ? [
         ...existingLeftovers.results,
         previousGeneration
       ] : []
     ]),
-    baseId: responseMessage.id,
+    baseMessageId: responseMessage.id,
     activeMessageOriginalIndex: 1
   };
 
