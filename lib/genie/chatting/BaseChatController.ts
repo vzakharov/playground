@@ -5,8 +5,7 @@ import { AnyTool, ChatControllerState, ChatData, ChatId, GenieConfig, GenieData,
 
 
 export type BaseChatControllerConfig<
-  Id extends string,
-  T extends AnyTool<Id>
+  T extends AnyTool
 > = {
   tool: T;
   state: ChatControllerState<T>;
@@ -15,13 +14,12 @@ export type BaseChatControllerConfig<
 } & GenieConfig<SetFor<T>>;
 
 export class BaseChatController<
-  Id extends string,
-  T extends AnyTool<Id>,
+  T extends AnyTool,
   LD extends LeftoversDefined
 > {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Id, T>
+    public readonly config: BaseChatControllerConfig<T>
   ) {
     const { config: { globalData, tool, chatId } } = this;
     this.data = findOrCreateChat(globalData, tool, chatId);

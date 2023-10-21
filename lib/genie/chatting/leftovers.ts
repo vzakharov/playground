@@ -1,6 +1,6 @@
-import { isBy } from "lib/vovas-openai";
+import { isBy } from "~/lib/vovas-openai";
 import _ from "lodash";
-import { $throw, ensure } from "vovas-utils";
+import { $throw } from "vovas-utils";
 import { AnyTool, BaseChatController, GenieMessage, LeftoversDefined, MessageId } from "..";
 
 export type Leftovers<T extends AnyTool> = {
@@ -10,33 +10,29 @@ export type Leftovers<T extends AnyTool> = {
 };
 
 export class LeftoversController<
-  Id extends string,
-  T extends AnyTool<Id>,
+  T extends AnyTool,
   LD extends LeftoversDefined
-> extends BaseChatController<Id, T, LD> { 
+> extends BaseChatController<T, LD> { 
 
-  areLeftoversDefined(): this is this & DefiniteLeftoversController<Id, T> {
+  areLeftoversDefined(): this is this & DefiniteLeftoversController<T> {
     return !!this.data.leftovers;
-  }
-
-};
-
-export class DefiniteLeftoversController<
-  Id extends string,
-  T extends AnyTool<Id>
-> extends LeftoversController<Id, T, true> {
+  };
 
   get messageWithLeftovers() {
     const { messages, data: { leftovers } } = this;
-    const message = ensure(
-      _.find(messages, { id: leftovers?.baseMessageId }),
-      'Message with leftovers not found (this should not happen)'
-    );
-    if (!isBy.assistant(message)) {
+    const message = _.find(messages, { id: leftovers?.baseMessageId });
+    if (message && !isBy.assistant(message)) {
       throw new Error('Message with leftovers is not by assistant (this should not happen)');
     };
     return message;
   };
+
+};
+
+export class DefiniteLeftoversController<
+  T extends AnyTool
+> extends LeftoversController<T, true> {
+
 
   set messageWithLeftovers(
     message: GenieMessage<T, 'assistant'>

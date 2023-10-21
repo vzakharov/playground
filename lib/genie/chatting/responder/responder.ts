@@ -4,12 +4,11 @@ import { isBy } from '~/lib/vovas-openai';
 import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration } from '../..';
 
 export class Responder<
-  Id extends string,
-  T extends AnyTool<Id>,
-> extends LeftoversController<Id, T, boolean> {
+  T extends AnyTool,
+> extends LeftoversController<T, boolean> {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<Id, T>
+    public readonly config: BaseChatControllerConfig<T>
   ) {
     super(config);
     this.watchForResponseGeneration();
