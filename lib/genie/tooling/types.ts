@@ -62,4 +62,7 @@ export type BuildCallback<Reqs extends Toolset> = (params: {
   functionCalled: boolean;
   assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;
-}) => Record<'pre' | 'post', StackUpable>;
+}) => {
+  pre: StackUpable;
+  post: StackUpable;
+};

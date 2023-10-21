@@ -6833,6 +6833,14 @@ vovas-utils@^0.6.0:
     js-yaml "^4.1.0"
     lodash "^4.17.21"
 
+vovas-utils@^0.6.2:
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.6.2.tgz#788944b8989be2dbad279495b1be39cd3ece82ca"
+  integrity sha512-WntgS44YdaOFeFGSAplD2glRy5Q5aH0d7RP8q0Ub00IZ7L1PJ1UmJ3p+lrxKEOmwf5Q0RKS36o8ZDsRi+LpNpw==
+  dependencies:
+    js-yaml "^4.1.0"
+    lodash "^4.17.21"
+
 vscode-jsonrpc@6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/vscode-jsonrpc/-/vscode-jsonrpc-6.0.0.tgz"

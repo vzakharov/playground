@@ -5,6 +5,7 @@ export * from './bound';
 export * from './concat';
 export * from './defaultable';
 export * from './filter';
+export * from './isFunction';
 export * from './isKeyof';
 export * from './literalKeys';
 export * from './mixin';

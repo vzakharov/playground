@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { Tool } from "~/lib/genie";
+import { Tool, says } from "~/lib/genie";
 import { mainSystemMessage, schema } from "../..";
 
 export const dna = new Tool('dna', { 
@@ -7,8 +7,9 @@ export const dna = new Tool('dna', {
   system: mainSystemMessage,
   generateAssetsAfter: 3,
   requires: [],
+  autoQuery: username => `Hi, I’m ${username ?? 'looking for some assistance'}.`,
 
-  build: ({ numResponses, shouldGenerateAssets }) => ({ 
+  build: ({ username, numResponses, shouldGenerateAssets }) => ({ 
       
     pre: 'This is the very first part of the interaction — the interview — where you want to help the user discover their “DNA” — a succinct summary of their skills and experience, written in a tone of voice that best represents them, which will then be used to generate any further content.',
 

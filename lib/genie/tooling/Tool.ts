@@ -1,9 +1,9 @@
 import dedent from "dedent-js";
-import { allPropsDefined, undefinedProps } from "~/lib/utils";
+import { Falsible, allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AnyTool, AssetValuesForSet, BuildInput, BuildCallback, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId, GenieData, GenieMessage } from "..";
+import { AnyTool, AssetValuesForSet, BuildInput, BuildCallback, Dict, ToolFrom, Toolset, getActiveAssets, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId, GenieData, GenieMessage, GenieState } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -13,7 +13,7 @@ export type ToolConfig<
   generateAssetsAfter: number;
   reciteAssetsAfter?: number;
   build: BuildCallback<Reqs>;
-  autoMessage?: (globalData: GenieData<Reqs>) => GenieMessage<undefined, 'assistant'>; //sic
+  autoQuery?: string | ( ( context?: { globalData?: GenieData<Reqs>, globalState?: GenieState<Reqs> }) => string );
   assets: Dict<Asset>;
   requires: Reqs;
 };
