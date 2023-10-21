@@ -7,7 +7,7 @@ export const dna = new Tool('dna', {
   system: mainSystemMessage,
   generateAssetsAfter: 3,
   requires: [],
-  autoQuery: username => `Hi, I’m ${username ?? 'looking for some assistance'}.`,
+  autoQuery: ({ globalData: { username } }) => `Hi, I’m ${username ?? 'looking for some assistance'}.`,
 
   build: ({ username, numResponses, shouldGenerateAssets }) => ({ 
       

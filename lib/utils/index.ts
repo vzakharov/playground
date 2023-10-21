@@ -6,6 +6,7 @@ export * from './bound';
 export * from './concat';
 export * from './defaultable';
 export * from './filter';
+export * from './inferIfFunction';
 export * from './isFunction';
 export * from './isKeyof';
 export * from './literalKeys';

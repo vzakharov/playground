@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { also, callWith, give, is } from 'vovas-utils';
+import { also } from 'vovas-utils';
+import { inferIfFunction } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
 import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
-import { $if, check, isFunction } from '~/lib/utils';
 
 export class Responder<
   T extends AnyTool,
@@ -17,13 +17,11 @@ export class Responder<
 
   watchForResponseGeneration() {
 
-    const { config: { watch, globalData, globalState, tool: { config: { autoQuery: autoQueryOrCallback }} }, messages } = this;
+    const { config: { watch, globalData, globalState, tool }, messages } = this;
 
     watch(messages, messages => {
 
-      const autoQuery = 
-        $if(autoQueryOrCallback, isFunction, callWith({ globalData, globalState }))
-        .else(give.itself);
+      const autoQuery = inferIfFunction(tool.config.autoQuery, { globalData, globalState });
 
       const lastMessage = _.last(messages)
         ?? ( 

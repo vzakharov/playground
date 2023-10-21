@@ -1,9 +1,14 @@
-export type Switch<Arg, Guarded extends Arg, Result, CombinedResult> = {
+
+export type Switch<Arg, Guarded extends Arg, Result, CombinedResult, ElseReturnsCallback extends boolean = false> = {
   if: <SubGuarded extends Exclude<Arg, Guarded>>(
     typeguard: (arg: Exclude<Arg, Guarded>) => arg is SubGuarded,
     transform: (guarded: SubGuarded) => Result
-  ) => Switch<Exclude<Arg, Guarded>, SubGuarded, Result, CombinedResult & Result>,
-  else: <R>(transform: (arg: Exclude<Arg, Guarded>) => R) => CombinedResult & R,
+  ) => Switch<Exclude<Arg, Guarded>, SubGuarded, Result, CombinedResult & Result, ElseReturnsCallback>,
+  // else: <R>(transform: (arg: Exclude<Arg, Guarded>) => R) => CombinedResult & R,
+  else: <R>(transform: (arg: Exclude<Arg, Guarded>) => R) =>
+    ElseReturnsCallback extends true
+      ? (arg: Arg) => CombinedResult & R
+      : CombinedResult & R,
 };
 
 function dummySwitch<Result>(result: Result) {
@@ -51,3 +56,53 @@ export function $if<Arg, Guarded extends Arg, Result>(
   return check(arg).if(typeguard, transform);
 
 };
+
+export function checker<Arg>() {
+  
+  function _checker(
+    typeguard: (arg: any) => arg is any,
+    transform: (arg: any) => any,
+    typeguardsAndTransforms = [] as { typeguard: (arg: any) => arg is any, transform: (arg: any) => any }[]
+  ) {
+
+    typeguardsAndTransforms.push({ typeguard, transform });
+
+    return {
+      if: (
+        subTypeguard: (arg: any) => arg is any,
+        subTransform: (arg: any) => any
+      ) => _checker(subTypeguard, subTransform, typeguardsAndTransforms),
+      
+      else: (
+        elseTransform: (arg: any) => any
+      ) => {
+        
+        return (arg: any) => {
+
+          for (const { typeguard, transform } of typeguardsAndTransforms) {
+            if ( typeguard(arg) ) {
+              return transform(arg);
+            }
+          }
+
+          return elseTransform(arg);
+
+        }
+
+      }
+
+    }
+
+  }
+
+  return {
+
+    if: _checker as unknown as <Guarded extends Arg, Result>(
+      typeguard: (arg: Arg) => arg is Guarded,
+      transform: (guarded: Guarded) => Result,
+    ) => Switch<Arg, Guarded, Result, Result, true>,
+
+  }
+
+};
+
