@@ -1,3 +1,4 @@
+export * from './$if';
 export * from './ArrayItem';
 export * from './PickByArray';
 export * from './allPropsDefined';
