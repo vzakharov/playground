@@ -9,7 +9,7 @@ export const challenge = new Tool('challenge', {
   reciteAssetsAfter: 1,
   requires: [dna, resumé, job],
 
-  build({ numResponses, functionCalled, username }) { return {
+  build: ({ numResponses, functionCalled, username }) => ({
 
     pre: `In this specific flow, you help ${username || 'the user'} come up with ideas for how potential employers could challenge them during the interview process.`,
 
@@ -29,7 +29,7 @@ export const challenge = new Tool('challenge', {
 
       : 'From here on, respond to user’s feedback and adapt the Q&A generation to the user’s needs.'
 
-  } },
+  }),
 
   assets: {
     question: 'The question to add, rephrased in a way to be as concise and reusable as possible',

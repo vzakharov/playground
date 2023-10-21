@@ -8,7 +8,7 @@ export const resumé = new Tool('resumé', {
   generateAssetsAfter: 0,
   requires: [dna],
 
-  build({ numResponses }) { return {
+  build: ({ numResponses }) => ({
 
     pre: 'In this specific flow, you help the user build or improve their resumé based on their DNA (a summary description that you prepared during initial interview, see below)',
 
@@ -29,7 +29,7 @@ export const resumé = new Tool('resumé', {
 
     ]
 
-  }},
+  }),
 
   assets: {
     tagline: 'The tagline to use in the resumé',

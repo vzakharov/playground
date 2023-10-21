@@ -8,7 +8,7 @@ export const social = new Tool('social', {
   generateAssetsAfter: 2,
   reciteAssetsAfter: 1,
   requires: [dna],
-  build({ numResponses, functionCalled, username }) { return {
+  build: ({ numResponses, functionCalled, username }) => ({
     pre: `In this specific flow, you help ${username || 'the user'} come up with social posts on topics related to their professional profile, reflecting their personality, stance and tone.`,
 
     post:
@@ -36,7 +36,7 @@ export const social = new Tool('social', {
       `
 
 
-  } },
+  }),
   assets: {
     post: 'The body of the post, written to reflect both the user’s personality and their tone on social media'
   }

@@ -8,7 +8,7 @@ export const dna = new Tool('dna', {
   generateAssetsAfter: 3,
   requires: [],
 
-  build({ numResponses, requestFunctionCall }) { return { 
+  build: ({ numResponses, shouldGenerateAssets }) => ({ 
       
     pre: 'This is the very first part of the interaction — the interview — where you want to help the user discover their “DNA” — a succinct summary of their skills and experience, written in a tone of voice that best represents them, which will then be used to generate any further content.',
 
@@ -24,11 +24,11 @@ export const dna = new Tool('dna', {
         
         : 'Each question after the first one should ask for some more detail to help come up with the most accurate and representative summary.',
 
-      requestFunctionCall && dedent`
+      shouldGenerateAssets && dedent`
         Once you think you have enough information, call the attached function to generate the actual DNA. Refer to the user in first person (“I ...”) so that they can better relate to the text.
       `
     ]
-  } },
+  }),
 
   assets: {
     dna: 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves',

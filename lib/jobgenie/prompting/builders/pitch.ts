@@ -8,7 +8,7 @@ export const pitch = new Tool('pitch', {
   generateAssetsAfter: 0,
   requires: [dna],
 
-  build({ numResponses, functionCalled }) { return {
+  build: ({ numResponses, functionCalled }) => ({
 
     pre: 'In this specific flow, you help the user come up with a way to “pitch” themselves to a potential employer, based on their “DNA” — a summary description that you prepared during initial interview, — and a specific company they’re interested in.',
 
@@ -32,7 +32,7 @@ export const pitch = new Tool('pitch', {
 
         : 'Once you’ve already generated the pitch, use the user’s feedback to improve it as needed.'
 
-  } },
+  }),
 
   assets: {
     headline: 'Headline for the pitch (e.g. subject line of an email)',

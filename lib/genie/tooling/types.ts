@@ -58,7 +58,7 @@ export type AssetValuesForSet<S extends Toolset> = {
 
 export type BuildCallback<Reqs extends Toolset> = (params: {
   numResponses: number;
-  requestFunctionCall: boolean;
+  shouldGenerateAssets: boolean;
   functionCalled: boolean;
   assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;

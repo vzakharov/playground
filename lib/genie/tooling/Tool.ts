@@ -43,7 +43,7 @@ export class Tool<
     });
 
     const numResponses = messagesBy.assistant(messages).length;
-    const requestFunctionCall = numResponses >= generateAssetsAfter;
+    const shouldGenerateAssets = numResponses >= generateAssetsAfter;
     const rawMessages = messages.map(toRawMessage(fn));
 
     // Check if there are already function calls in the messages
@@ -61,7 +61,7 @@ export class Tool<
       pre: preMessage, 
       post: postMessage 
     } = buildCallback({ 
-      functionCalled, numResponses, requestFunctionCall, assets: assetValues, 
+      functionCalled, numResponses, shouldGenerateAssets, assets: assetValues, 
       username,
       ...input
     });
@@ -84,7 +84,7 @@ export class Tool<
         ...rawMessages,
         says.system(stackUp(postMessage))
       ],
-      fn: requestFunctionCall ? fn : undefined
+      fn: shouldGenerateAssets ? fn : undefined
     };
   };
 
