@@ -14,7 +14,6 @@ export type LeftoversDefined<T extends AnyTool> = {
   data: {
     leftovers: Leftovers<T>;
   };
-  messageWithLeftovers: GenieMessage<T, 'assistant'>;
 };
 
 export class LeftoversController<
@@ -26,21 +25,24 @@ export class LeftoversController<
     return !!this.data.leftovers;
   }
 
-  get messageWithLeftovers() {
+  getMessageWithLeftovers(
+    this: this & LeftoversDefined<T>
+  ) {
     const { messages, data: { leftovers } } = this;
-    const message = _.find(messages, { id: leftovers?.baseMessageId });
-    if (message && !isBy.assistant(message)) {
+    const message = ensure(
+      _.find(messages, { id: leftovers?.baseMessageId }),
+      'Message with leftovers not found (this should not happen)'
+    );
+    if (!isBy.assistant(message)) {
       throw new Error('Message with leftovers is not by assistant (this should not happen)');
     };
     return message;
   };
 
   setMessageWithLeftovers(
+    this: this & LeftoversDefined<T>,
     message: GenieMessage<T, 'assistant'>
   ) {
-    if ( !this.areLeftoversDefined() ) {
-      throw "Cannot set messageWithLeftovers as no leftovers are defined";
-    };
     this.data.leftovers.baseMessageId = message.id;
   };
 
@@ -49,7 +51,8 @@ export class LeftoversController<
     this: this & LeftoversDefined<T>
   ) {
 
-    const { messages, messageWithLeftovers: message, data: { leftovers, leftovers: { results } } } = this;
+    const { messages, data: { leftovers, leftovers: { results } } } = this;
+    const message = this.getMessageWithLeftovers();
 
     const leftover = results.shift()
       ?? $throw('Leftovers are empty (this should not happen)');
