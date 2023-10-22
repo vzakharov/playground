@@ -1,7 +1,7 @@
 import { isBy } from "~/lib/vovas-openai";
 import _ from "lodash";
 import { $throw } from "vovas-utils";
-import { AnyTool, BaseChatController, GenieMessage, LeftoversDefined, MessageId } from "..";
+import { AnyTool, BaseChat, GenieMessage, LeftoversDefined, MessageId } from "..";
 
 export type Leftovers<T extends AnyTool> = {
   results: GenieMessage<T, 'assistant'>[];
@@ -12,7 +12,7 @@ export type Leftovers<T extends AnyTool> = {
 export class LeftoversController<
   T extends AnyTool,
   LD extends LeftoversDefined
-> extends BaseChatController<T, LD> { 
+> extends BaseChat<T, LD> { 
 
   areLeftoversDefined(): this is this & DefiniteLeftoversController<T> {
     return !!this.data.leftovers;

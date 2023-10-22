@@ -22,7 +22,7 @@ const userMessageComponent = refForInstance(Textarea);
 
 const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
-const c = tool.chatController({
+const c = tool.chat({
   state, 
   chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });

@@ -1,6 +1,6 @@
 import { objectWithKeys, pushedTo } from "~/lib/utils";
 import _ from "lodash";
-import { BoundTool, ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
+import { BoundTool, Chat, ChatConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
 
 export type GenieContext<S extends Toolset> = {
   globalData: GenieData<S>;

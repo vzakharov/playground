@@ -3,7 +3,7 @@ import { $if, allPropsDefined, pushedTo, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AnyTool, AssetValuesForSet, BuildCallback, BuildInput, ChatControllerConfig, Dict, GenieContext, SetFor, ToolFrom, ToolIdFrom, ToolWithId, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AnyTool, AssetValuesForSet, BuildCallback, BuildInput, ChatConfig, Dict, GenieContext, SetFor, ToolFrom, ToolIdFrom, ToolWithId, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
 import _ from "lodash";
 import { is } from "vovas-utils";
 

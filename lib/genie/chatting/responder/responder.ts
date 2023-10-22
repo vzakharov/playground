@@ -2,14 +2,14 @@ import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatControllerConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
 
 export class Responder<
   T extends AnyTool,
 > extends LeftoversController<T, boolean> {
 
   constructor(
-    public readonly config: BaseChatControllerConfig<T>
+    public readonly config: BaseChatConfig<T>
   ) {
     super(config);
     this.watchForResponseGeneration();

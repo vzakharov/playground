@@ -8,13 +8,13 @@ import Card from '~/components/shared/Card.vue';
 import _ from 'lodash';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { AnyTool, ChatController, GenieMessage } from '~/lib/genie';
+import { AnyTool, Chat, GenieMessage } from '~/lib/genie';
 import { isBy } from '~/lib/vovas-openai';
 import { genie } from '../refs';
 
 const props = defineProps<{
   message: GenieMessage<T>,
-  c: ChatController<T['id'], T>
+  c: Chat<T['id'], T>
 }>();
 
 const { message, c } = props;

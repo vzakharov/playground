@@ -1,4 +1,4 @@
-import { AssetForTool, ChatController, Genie, GenieConfig, Requires, ToolFrom, Toolset } from "..";
+import { AssetForTool, Chat, Genie, GenieConfig, Requires, ToolFrom, Toolset } from "..";
 import { Tool } from "./Tool";
 
 /**
@@ -36,7 +36,7 @@ export class BoundTool<
   /**
    * An array of chat controllers that are bound to this tool.
    */
-  chatControllers: ChatController<this>[] = [];
+  chats: Chat<this>[] = [];
 
   /**
    * Creates a new chat controller that is bound to this tool.
@@ -44,8 +44,8 @@ export class BoundTool<
    * @param config The configuration for the chat controller.
    * @returns The new chat controller.
    */
-  chatController(config: Omit<ChatController<this>['config'], 'tool' | keyof GenieConfig<S>>) {
-    return new ChatController({
+  chat(config: Omit<Chat<this>['config'], 'tool' | keyof GenieConfig<S>>) {
+    return new Chat({
       ...config,
       ...this.genie.config,
       tool: this
