@@ -7,7 +7,7 @@ import { globalData } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded, genie } from '~/components/jobgenie/refs';
-import { getToolName, sections } from '~/components/jobgenie/sections';
+import { sections } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
@@ -73,7 +73,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <template v-else>
       <Chat
         :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :="{ genie, tool: getToolName(selectedSectionId) }"
+        :="{ genie, tool: genie.toolsById[selectedSectionId] }"
       />
     </template>
     <TextModal monospace

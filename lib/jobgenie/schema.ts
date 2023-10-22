@@ -6,7 +6,7 @@ export const schema = {
   dna: {
     dna: 'DNA'
   },
-  resumé: {
+  resume: {
     tagline: 'Tagline',
     bio: 'Bio',
     experience: 'Experience'

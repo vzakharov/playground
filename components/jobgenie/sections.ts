@@ -1,91 +1,59 @@
 import _ from 'lodash';
 import { $throw } from 'vovas-utils';
-import { Tool } from '~/lib/jobgenie';
 import { genie } from './refs';
+import { ToolId, toolIds } from '~/lib/jobgenie';
+import { SidebarMenu } from 'components/shared/SidebarStuff';
+import { Tool } from 'lib/genie';
 
-export const sectionIds = [ 'dna', 'resume', 'job', 'pitch', 'social' ] as const;
-
-export type SectionId = typeof sectionIds[number];
-
-export const sectionConfigs = [
-  {
-    id: 'dna',
+export const sectionConfigs: {
+  [Id in ToolId]: SectionConfig
+} = {
+  dna: {
     caption: 'DNA',
     emoji: '🧬',
   },
-  {
-    id: 'resume',
-    tool: 'resumé',
+  resume: {
     caption: 'Resumé',
     emoji: '👔',
   },
-  {
-    id: 'job',
+  job: {
     caption: 'Craft-a-job',
     emoji: '🧪',
   },
-  {
-    id: 'pitch',
+  pitch: {
     caption: 'Pitch-a-company',
     emoji: '📈',
   },
-  {
-    id: 'challenge',
+  challenge: {
     caption: 'Challenge me!',
     emoji: '🤨'
   },
-  {
-    id: 'social',
+  social: {
     caption: 'Social media',
     emoji: '📢'
   }
-] as SectionConfig[];
+};
 
-export type SectionConfig<IdIsChatType extends boolean = boolean> = {
-  id: SectionId,
+export type SectionConfig = {
   caption: string,
   emoji: string,
-} & (
-  IdIsChatType extends true
-    ? { 
-      id: Tool,
-      tool?: never,
-    }
-    : {
-      tool: Tool
-    }
-);
-
-export function getSection(id: SectionId) {
-  return _.find(sectionConfigs, { id })!;
-}
-
-export function getToolName(id: SectionId) {  
-  const section = getSection(id);
-  return section.tool ?? section.id;
 };
 
-export function getSectionConfigForChatType(chatType: Tool) {
-  return _.find(sectionConfigs, 
-    section => section.tool === chatType || section.id === chatType
-  ) ?? $throw(`No section config for chat type ${chatType}`);
-};
-
-export const sections = computed( () => _.map(sectionConfigs, config => {
+export const sections = computed( () => _.map(toolIds, toolId => {
   
-  const builder = genie.getPromptBuilder(config.tool ?? config.id);
-  const missingTools = builder.getMissingTools(genie.activeAssets);
+  const missingTools = genie.toolsById[toolId].getMissingTools(genie.activeAssets);
+  const config = sectionConfigs[toolId];
 
   return {
+    id: toolId,
     ...config,
-    builder,
     disabled: !!missingTools,
     disabledTooltip: missingTools 
       && `Please first go through the following sections: ${
         missingTools.map(
-          asset => getSectionConfigForChatType(asset).caption
+          tool => sectionConfigs[tool.id].caption
         ).join(', ')
       }`
-  }
+  };
 
 } ) );

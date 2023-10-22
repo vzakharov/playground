@@ -1,13 +1,13 @@
 import dedent from "dedent-js";
 import { Tool } from "~/lib/genie";
-import { dna, job, mainSystemMessage, resumé, schema } from "../..";
+import { dna, job, mainSystemMessage, resume, schema } from "../..";
 
 export const challenge = new Tool('challenge', {
 
   system: mainSystemMessage,
   generateAssetsAfter: 1,
   reciteAssetsAfter: 1,
-  requires: [dna, resumé, job],
+  requires: [dna, resume, job],
 
   build: ({ numResponses, functionCalled, username }) => ({
 
