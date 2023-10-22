@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Jsonable, JsonableObject, asTypeguard, is } from "vovas-utils";
+import { JsonableObject, asTypeguard, is } from "vovas-utils";
 
 export function typeOf(value: any) {
   return Array.isArray(value)

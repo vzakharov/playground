@@ -7,7 +7,7 @@ import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { $GenieChatId, AnyTool, Genie, GenieMessage, SetFor, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
-import { data } from '../data';
+import { globalData } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
 
@@ -29,7 +29,7 @@ const c = genie.createChatController({
   chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });
 
-addProperties(window, { _, genie, c, data, state, globalState });
+addProperties(window, { _, genie, c, data: globalData, state, globalState });
 
 watch(userMessageComponent, component => {
   if ( !component ) return;

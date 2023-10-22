@@ -12,5 +12,9 @@ export const tools = [
 
 export type Tools = typeof tools;
 
+export type Tool = Tools[number];
+
+export type ToolId = Tool['id'];
+
 const test = <T extends Toolset>(tools: ValidToolset<T>) => { };
 test(tools);

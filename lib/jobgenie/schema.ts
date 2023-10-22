@@ -30,8 +30,8 @@ export const schema = {
   }
 } as const;
 
-export type Schema = typeof schema;
+// export type Schema = typeof schema;
 
-export type Tool = GenieTool<Schema>
+// export type Tool = GenieTool<Schema>
 
 // export const tools = literalKeys(schema);

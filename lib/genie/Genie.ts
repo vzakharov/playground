@@ -1,4 +1,4 @@
-import { pushedTo } from "lib/utils";
+import { objectWithKeys, pushedTo } from "~/lib/utils";
 import _ from "lodash";
 import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets } from ".";
 
@@ -26,15 +26,26 @@ export class Genie<
     [Id in ToolIdFrom<S>]?: ChatController<ToolWithId<S, Id>>[];
   } = {};
 
+  toolsById: {
+    [Id in ToolIdFrom<S>]: ToolWithId<S, Id>;
+  };
+
   constructor(
     public tools: S & ValidToolset<S>,
     public readonly config: GenieConfig<S>,
-  ) { };
+  ) {
+
+    this.toolsById = _.fromPairs(
+      _.map(tools, tool => [tool.id, tool])
+    ) as this['toolsById'];
+    
+  };
 
 
   createChatController<
     T extends ToolFrom<S>,
   >(config: Omit<ChatControllerConfig<T['id'], T>, keyof GenieConfig<S>>) {
+
     const { tool, chatId } = config;
     const controllers = this.chatControllers[tool.id as T['id']] ??= [];
     const oldController = findBy({ config: { chatId } }, controllers);

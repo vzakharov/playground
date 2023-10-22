@@ -3,7 +3,7 @@
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
-import { data } from '~/components/jobgenie/data';
+import { globalData } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded, genie } from '~/components/jobgenie/refs';
@@ -23,7 +23,7 @@ const { selectedSectionId, openaiKey } = toRefs(globalState);
 useHashRoute(selectedSectionId, initSelectedSectionId);
 
 function login(c: Credentials) {
-  data.username = c.username;
+  globalData.username = c.username;
   openaiKey.value = c.apiKey;
 }
 
@@ -47,7 +47,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <template #sidebar-lower>
       <template v-if="profileSlugs.length > 1">
         <Dropdown label="Profiles" :options="profileSlugs"
-          :modelValue="data.profileSlug || 'Untitled profile'"
+          :modelValue="globalData.profileSlug || 'Untitled profile'"
           @update:modelValue="loadProfile($event)"
         />
       </template>
@@ -69,7 +69,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
       />
       <GenieSettings appId="jobgenie" :="{genie}"/>
     </template>
-    <Login v-if="!data.username || !openaiKey" @="{ login }" />
+    <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>
       <Chat
         :key="`${selectedSectionId}-${dataLastLoaded}`"
