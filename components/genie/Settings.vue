@@ -1,20 +1,17 @@
-<script setup lang="ts" generic="G extends Genie<Toolset>">
+<script setup lang="ts">
 
 import { $throw } from 'vovas-utils';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { Genie, Toolset, temperatureDescriptors } from '~/lib/genie';
+import { Genie, Toolset, temperatureDescriptors, genieStateInitializer } from '~/lib/genie';
 
-const { genie: { defaultState }, appId  } = defineProps<{
-  appId: string;
-  genie: G;
+const { genie  } = defineProps<{
+  genie: Genie<Toolset>;
 }>();
 
 const win = window;
 
-const state = useLocalReactive(appId+'-genie-state', defaultState);
-
-const { usdSpent, useGpt4, temperatureDescriptor, openaiKey } = toRefs(state);
+const { usdSpent, useGpt4, temperatureDescriptor, openaiKey } = toRefs(genie.config.globalState);
 
 function editApiKey() {
   openaiKey.value = prompt('Enter your OpenAI API key:') ?? $throw('No API key entered');

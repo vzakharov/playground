@@ -13,22 +13,18 @@ export function isSameTypeAs<S>(sample: S) {
   return asTypeguard<S>(arg => typeOf(arg) === typeOf(sample));
 };
 
-// export type Defaults = Record<string, Jsonable | ((value: Jsonable) => any)>;
-export type Defaults<T> = {
+export type Initializer<T> = {
   [K in keyof T]: T[K] | ((value: any) => T[K]);
 };
 
-// export type InferDefaultTypes<D extends Defaults<any>> = {
-//   [K in keyof D]: D[K] extends (value: any) => infer T ? T : D[K];
-// };
-export type InferDefaultTypes<D extends Defaults<any>> =
-  D extends Defaults<infer T> ? T : never;
+export type Initializee<I extends Initializer<any>> =
+  I extends Initializer<infer T> ? T : never;
 
-export function defaultable<T>(
+export function initialize<T>(
   object: JsonableObject | undefined, 
-  defaults: Defaults<T>
+  initializer: Initializer<T>
 ) {
-  return _.mapValues(defaults, ( defaultValueOrInitializer, key ) => {
+  return _.mapValues(initializer, ( defaultValueOrInitializer, key ) => {
     const value = object?.[key];
     const defaultValue = typeof defaultValueOrInitializer === 'function'
       ? defaultValueOrInitializer(value)

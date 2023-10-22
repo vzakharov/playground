@@ -1,5 +1,5 @@
-import { is, itselfIf } from "vovas-utils";
-import { Defaults, InferDefaultTypes } from "~/lib/utils";
+import { is, ensured } from "vovas-utils";
+import { Initializer, Initializee } from "~/lib/utils";
 import { AnyTool, ChatId, Leftovers, ToolIdFrom, ToolWithId, Toolset, temperatureDescriptors } from ".";
 
 export type ToolLeftoversStore<T extends AnyTool> = {
@@ -10,20 +10,15 @@ export type LeftoversStore<S extends Toolset> = {
   [TId in ToolIdFrom<S>]?: ToolLeftoversStore<ToolWithId<S, TId>>;
 };
 
+export const genieStateInitializer= {
+  openaiKey: '',
+  usdSpent: 0,
+  useGpt4: true,
+  savedMsPerPromptJsonChar: {
+    'gpt-3.5-turbo': 5,
+    'gpt-4': 15,
+  },
+  temperatureDescriptor: ensured(is.among(temperatureDescriptors)).else('normal'),
+} satisfies Initializer<any>;
 
-export function defaultGenieState<S extends Toolset>(tools: S) {
-  return ({
-    openaiKey: '',
-    usdSpent: 0,
-    useGpt4: true,
-    savedMsPerPromptJsonChar: {
-      'gpt-3.5-turbo': 5,
-      'gpt-4': 15,
-    },
-    temperatureDescriptor: itselfIf(is.among(temperatureDescriptors)).else('normal'),
-    leftoversStore: {} as LeftoversStore<S>,
-  } satisfies Defaults<any>);
-}
-
-// export type GenieState = InferDefaultTypes<typeof defaultGenieState>;
-export type GenieState<S extends Toolset> = InferDefaultTypes<ReturnType<typeof defaultGenieState<S>>>;
+export type GenieState = Initializee<typeof genieStateInitializer>;

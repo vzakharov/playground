@@ -1,11 +1,10 @@
-import _ from "lodash";
-import { $throw, also } from "vovas-utils";
-import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, defaultGenieState, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
 import { pushedTo } from "lib/utils";
+import _ from "lodash";
+import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets } from ".";
 
 export type GenieContext<S extends Toolset> = {
   globalData: GenieData<S>;
-  globalState: GenieState<S>;
+  globalState: GenieState;
 };
 
 export type GenieConfig<S extends Toolset> = GenieContext<S> & {
@@ -46,10 +45,6 @@ export class Genie<
       new ChatController({ ...this.config, ...config } as unknown as ChatControllerConfig<T['id'], T>),
     );
 
-  };
-
-  get defaultState() {
-    return defaultGenieState(this.tools);
   };
 
   get activeAssets() {

@@ -1,14 +1,13 @@
-import { is, itselfIf } from "vovas-utils";
+import { ensured, is } from "vovas-utils";
 import { useLocalReactive } from "~/composables/useLocalReactive";
+import { genieStateInitializer } from "~/lib/genie";
 import { sectionIds } from "./sections";
-import { defaultGenieState } from "~/lib/genie";
-import { schema } from "~/lib/jobgenie";
 
-export const initSelectedSectionId = itselfIf(is.among(sectionIds)).else(sectionIds[0]);
+export const initSelectedSectionId = ensured(is.among(sectionIds)).else(sectionIds[0]);
 
 export const globalState = useLocalReactive('jobgenie-state', {
-  ...defaultGenieState(schema),
+  ...genieStateInitializer,
   selectedSectionId: initSelectedSectionId,
   userMessage: '',
-  showIrrelevantMessages: false as boolean,
+  showIrrelevantMessages: false,
 });
