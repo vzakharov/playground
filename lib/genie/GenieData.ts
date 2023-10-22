@@ -1,6 +1,6 @@
 import { ChatData, GenieSchema, Toolset, ToolName, ToolFrom, SetFor, AnyTool, Tool } from ".";
 
-export function defaultGenieData<S extends Toolset>(tools?: Toolset) {
+export function defaultGenieData<S extends Toolset>(tools: S) {
   return ({
     chats: [] as ChatData<ToolFrom<S>, any>[],
     username: ''

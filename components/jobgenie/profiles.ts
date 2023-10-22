@@ -1,5 +1,5 @@
 import { defaultData, resetAppData, replaceAppDataWithUknown } from "~/lib/jobgenie";
-import { data } from "./data";
+import { globalData } from "./data";
 import { $throw } from "vovas-utils";
 import { replace } from "lodash";
 import { dataLastLoaded } from "./refs";
@@ -12,7 +12,7 @@ export function useProfiles() {
 
   const slugs = computed( () =>
     _.uniq([
-      data.profileSlug,
+      globalData.profileSlug,
       ...Object.keys(localStorage)
         .filter(key => key.startsWith(localProfilesPrefix))
         .map(key => key.slice(localProfilesPrefix.length))
@@ -27,14 +27,14 @@ export function useProfiles() {
     const localValue = localStorage.getItem(storageKey(slug))
       ?? $throw(`Profile ${slug} (key ${storageKey(slug)}) not found in localStorage`);
     const newData = JSON.parse(localValue);
-    replaceAppDataWithUknown(data, newData, dataLastLoaded);
-    data.profileSlug = slug;
+    replaceAppDataWithUknown(globalData, newData, dataLastLoaded);
+    globalData.profileSlug = slug;
   };
 
   function saveCurrentProfile() {
     localStorage.setItem(
-      storageKey(data.profileSlug), 
-      JSON.stringify(data)
+      storageKey(globalData.profileSlug), 
+      JSON.stringify(globalData)
     );
   };
 
@@ -42,13 +42,13 @@ export function useProfiles() {
     // If strictly null, return (it means the user cancelled the dialog)
     if ( slug === null ) return;
     saveCurrentProfile();
-    resetAppData(data, {
+    resetAppData(globalData, {
       profileSlug: uniqueId(slug || 'profile', slugs.value)
     }, dataLastLoaded);
   }
 
   function deleteCurrentProfile() {
-    localStorage.removeItem(storageKey(data.profileSlug));
+    localStorage.removeItem(storageKey(globalData.profileSlug));
     loadProfile('default', true);
   };
 

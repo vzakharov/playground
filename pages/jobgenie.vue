@@ -1,14 +1,13 @@
 <script setup lang="ts">
 
-import { JobGenie, defaultData } from '~/lib/jobgenie';
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
 import { data } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
-import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { sections, getToolName } from '~/components/jobgenie/sections';
+import { dataLastLoaded, genie } from '~/components/jobgenie/refs';
+import { getToolName, sections } from '~/components/jobgenie/sections';
 import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
@@ -16,11 +15,10 @@ import Sidebarred from '~/components/shared/Sidebarred.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { Genie } from '~/lib/genie';
+import { defaultData } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
-import { genie } from '~/components/jobgenie/refs';
 
-const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
+const { selectedSectionId, openaiKey } = toRefs(globalState);
 
 useHashRoute(selectedSectionId, initSelectedSectionId);
 

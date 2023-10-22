@@ -1,7 +1,7 @@
 import { Genie, GenieConfig, Toolset, ValidToolset } from ".";
 
 export function customGenie<S extends Toolset>(
-  tools: ValidToolset<S>,
+  tools: S & ValidToolset<S>,
 ) {
 
   return class CustomGenie extends Genie<S> {

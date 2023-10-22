@@ -1,10 +1,10 @@
 import { forEach } from "vovas-utils";
-import { RefLike } from "../utils/utils";
-import { schema } from "./schema";
 import { defaultGenieData } from "~/lib/genie";
+import { tools } from ".";
+import { RefLike } from "lib/utils";
 
 export const defaultData = {
-  ...defaultGenieData(schema),
+  ...defaultGenieData(tools),
   profileSlug: 'default',
 };
 

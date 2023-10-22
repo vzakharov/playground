@@ -1,4 +1,4 @@
-import { data } from "../../components/jobgenie/data";
+import { globalData } from "../../components/jobgenie/data";
 import { reduceChatMessages } from "~/lib/vovas-openai";
 import { $throw } from "vovas-utils";
 import { AnyTool, BaseChatController, ChatController, GenieMessage } from "~/lib/genie";
