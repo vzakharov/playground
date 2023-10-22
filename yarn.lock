@@ -6833,10 +6833,10 @@ vovas-utils@^0.6.0:
     js-yaml "^4.1.0"
     lodash "^4.17.21"
 
-vovas-utils@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.6.2.tgz#788944b8989be2dbad279495b1be39cd3ece82ca"
-  integrity sha512-WntgS44YdaOFeFGSAplD2glRy5Q5aH0d7RP8q0Ub00IZ7L1PJ1UmJ3p+lrxKEOmwf5Q0RKS36o8ZDsRi+LpNpw==
+vovas-utils@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/vovas-utils/-/vovas-utils-0.6.3.tgz#f4a49dfd62a617335945674084b04c9a6ceab15f"
+  integrity sha512-Y+xYXC/Fte7eZeLS/urqDCC3+1BO5/FD1nT6a8QyqqERoqPVVINHDvw7/7sn0cmS+QOFe7FUvj4UjaQXDQnvjw==
   dependencies:
     js-yaml "^4.1.0"
     lodash "^4.17.21"

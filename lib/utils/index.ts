@@ -13,7 +13,7 @@ export * from './literalKeys';
 export * from './mixin';
 export * from './objectWithKeys';
 export * from './placeholders';
-export * from './pushAndReturn';
+export * from './pushedTo';
 export * from './resolvable';
 export * from './uniqueId';
 export * from './utils';
