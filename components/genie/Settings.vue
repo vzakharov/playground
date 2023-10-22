@@ -1,13 +1,13 @@
-<script setup lang="ts" generic="S extends Schema">
+<script setup lang="ts" generic="G extends Genie<Toolset>">
 
 import { $throw } from 'vovas-utils';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { Genie, Schema, temperatureDescriptors } from '~/lib/genie';
+import { Genie, Toolset, temperatureDescriptors } from '~/lib/genie';
 
 const { genie: { defaultState }, appId  } = defineProps<{
   appId: string;
-  genie: Genie<S>;
+  genie: G;
 }>();
 
 const win = window;
