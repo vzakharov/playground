@@ -1,9 +1,11 @@
 import dedent from "dedent-js";
-import { allPropsDefined, undefinedProps } from "~/lib/utils";
+import { $if, allPropsDefined, pushedTo, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValuesForSet, BuildCallback, BuildInput, Dict, GenieContext, ToolFrom, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AssetValuesForSet, BuildCallback, BuildInput, ChatController, Dict, GenieContext, ToolFrom, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import _ from "lodash";
+import { is } from "vovas-utils";
 
 export type ToolConfig<
   Asset extends string,
@@ -52,7 +54,7 @@ export class Tool<
     const assetValues = getActiveAssets(globalData, requires);
 
     if ( !allPropsDefined(assetValues) )
-      throw new Error(`The following assets are missing: ${this.getMissingTools(assetValues).join(', ')}`);
+      throw new Error(`The following assets are missing: ${this.getMissingRequires(assetValues).join(', ')}`);
 
     assetValues
     const { username } = globalData;
@@ -88,8 +90,18 @@ export class Tool<
     };
   };
 
-  getMissingTools(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
+  getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
     return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
+  };
+
+  chatControllers: ChatController<this>[] = [];
+
+  chatController(config: Omit<ChatController<this>['config'], 'tool'>) {
+    const { chatId } = config;
+    const { chatControllers } = this;
+    const oldController = _.find(chatControllers, { config: { chatId } });
+    if (oldController) _.pull(chatControllers, oldController);
+    return pushedTo(chatControllers, new ChatController({ ...config, tool: this }));
   };
 
 };

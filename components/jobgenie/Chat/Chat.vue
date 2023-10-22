@@ -23,9 +23,9 @@ const userMessageComponent = refForInstance(Textarea);
 
 const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
-const c = genie.createChatController({
-  // ...genie.config,
-  tool, state, 
+const c = tool.chatController({
+  ...genie.config,
+  state, 
   chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });
 

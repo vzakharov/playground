@@ -21,7 +21,7 @@ export class BaseChatController<
     public readonly config: BaseChatControllerConfig<T>
   ) {
     const { config: { globalData, tool, chatId } } = this;
-    this.data = findOrCreateChat(globalData, tool, chatId);
+    this.data = findOrCreateChat(globalData, tool, chatId) as this['data'];
     this.messages = this.data.messages;
   };
 

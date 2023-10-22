@@ -3,13 +3,13 @@ import { ChatId, ChatData, GenieData, GenieSchema, ToolFrom, ToolName, Toolset, 
 
 export function findOrCreateChat<S extends Toolset, T extends ToolFrom<S>>(
   { chats }: GenieData<S>,
-  tool: T,
+  { id: toolId }: T,
   id: ChatId
-) {
-  const chat = _.find(chats, { tool, id }) as ChatData<T> | undefined;
+): ChatData<T, any> {
+  const chat = findBy({ toolId, id }, chats);
   if (!chat) {
-    const newChat: ChatData<T> = {
-      tool,
+    const newChat = {
+      toolId,
       id,
       messages: []
     };

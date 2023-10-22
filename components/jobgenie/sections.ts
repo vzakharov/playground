@@ -41,7 +41,7 @@ export type SectionConfig = {
 
 export const sections = computed( () => _.map(toolIds, toolId => {
   
-  const missingTools = genie.toolsById[toolId].getMissingTools(genie.activeAssets);
+  const missingTools = genie.tools[toolId].getMissingRequires(genie.activeAssets);
   const config = sectionConfigs[toolId];
 
   return {

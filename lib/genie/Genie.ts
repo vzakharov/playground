@@ -22,40 +22,13 @@ export class Genie<
   S extends Toolset
 > {
 
-  chatControllers: {
-    [Id in ToolIdFrom<S>]?: ChatController<ToolWithId<S, Id>>[];
-  } = {};
-
-  toolsById: {
-    [Id in ToolIdFrom<S>]: ToolWithId<S, Id>;
-  };
+  tools: S;
 
   constructor(
-    public tools: S & ValidToolset<S>,
+    tools: S & ValidToolset<S>,
     public readonly config: GenieConfig<S>,
   ) {
-
-    this.toolsById = _.fromPairs(
-      _.map(tools, tool => [tool.id, tool])
-    ) as this['toolsById'];
-    
-  };
-
-
-  createChatController<
-    T extends ToolFrom<S>,
-  >(config: Omit<ChatControllerConfig<T['id'], T>, keyof GenieConfig<S>>) {
-
-    const { tool, chatId } = config;
-    const controllers = this.chatControllers[tool.id as T['id']] ??= [];
-    const oldController = findBy({ config: { chatId } }, controllers);
-    if (oldController)
-      _.pull(controllers, oldController);
-
-    return pushedTo( controllers,
-      new ChatController({ ...this.config, ...config } as unknown as ChatControllerConfig<T['id'], T>),
-    );
-
+    this.tools = tools;
   };
 
   get activeAssets() {

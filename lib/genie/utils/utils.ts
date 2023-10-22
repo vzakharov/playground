@@ -21,7 +21,7 @@ export type Dict<K extends string> = {
 };
 
 export function findBy<T extends object, Filter extends DeepPartial<T>>(filter: Filter, arr: T[] | readonly T[]) {
-  return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
+  return arr.find(item => _.isMatch(item, filter)) as Extract<T, Filter> | undefined;
 };
 
 export type DeepPartial<T> = {
