@@ -10,10 +10,7 @@ export type ChatState<T extends AnyTool> = {
   msExpected: number | undefined;
 };
 
-export class Chat<  
-  T extends AnyTool,
->
-  extends Responder<T> { };
+export class Chat<T extends AnyTool> extends Responder<T> { };
 
 export type ChatConfig<Id extends string, T extends AnyTool<Id>> =
   ConstructorParameters<typeof Chat<T>>[0];

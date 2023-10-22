@@ -22,12 +22,12 @@ const userMessageComponent = refForInstance(Textarea);
 
 const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
-const c = tool.chat({
+const chat = tool.chat({
   state, 
   chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });
 
-addProperties(window, { _, c, data: globalData, state, globalState });
+addProperties(window, { _, c: chat, data: globalData, state, globalState });
 
 watch(userMessageComponent, component => {
   if ( !component ) return;
@@ -53,14 +53,14 @@ function toggleIrrelevantMessages() {
 
 <template>
   <div>
-    <div v-for="( message, index ) in c.messages" :key="message.id"
+    <div v-for="( message, index ) in chat.messages" :key="message.id"
       :class="{ 
         'flex flex-col': true,
-        'msg-irrelevant': index < c.countIrrelevantMessages,
-        hidden: !showIrrelevantMessages && index < c.countIrrelevantMessages
+        'msg-irrelevant': index < chat.countIrrelevantMessages,
+        hidden: !showIrrelevantMessages && index < chat.countIrrelevantMessages
       }"
     >
-      <div v-if="index === c.countIrrelevantMessages" class="irrelevance-note"
+      <div v-if="index === chat.countIrrelevantMessages" class="irrelevance-note"
         ref="irrelevanceNote"
         v-text="
           showIrrelevantMessages
@@ -69,19 +69,19 @@ function toggleIrrelevantMessages() {
         "
         @click="toggleIrrelevantMessages"
       />
-      <Message :="{ c, message }"/>
+      <Message :="{ chat, message }"/>
     </div>
     <div v-if="generating?.inProgress" class="msg msg-assistant animate-pulse"
       v-text="msExpected ? `Generating (~${Math.round(msExpected / 1000)}s)...` : 'Generating...'"
     />
-    <form v-if="!c.lastMessageIsFromUser" @submit.prevent="c.sendMessage" class="input-container">
+    <form v-if="!chat.lastMessageIsFromUser" @submit.prevent="chat.sendMessage" class="input-container">
       <Textarea class="input-box"
         id="userMessage"
         submit-on-enter
         v-model="userMessage"
         placeholder="Shift+Enter for a new line"
         ref="userMessageComponent"
-        @submit="c.sendMessage()"
+        @submit="chat.sendMessage()"
       />
       <Button primary rounded small
         v-if="!!userMessage"

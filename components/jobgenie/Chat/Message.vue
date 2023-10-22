@@ -11,39 +11,38 @@ import { refForInstance } from '~/components/shared/utils';
 import { AnyTool, Chat, GenieMessage } from '~/lib/genie';
 import { isBy } from '~/lib/vovas-openai';
 import { genie } from '../refs';
+import { $with } from 'vovas-utils';
 
 const props = defineProps<{
   message: GenieMessage<T>,
-  c: Chat<T['id'], T>
+  chat: Chat<T>
 }>();
 
-const { message, c } = props;
+const { message, chat } = props;
 
 const buttons = computed(() => {
   
-  const { leftovers } = c;
-
   return [
     ...isBy.assistant(message) ? [
-      ...leftovers.results.length && c.areLeftoversForMessage(message) ? [
+      ...chat.areLeftoversDefined() && chat.messageWithLeftovers === message ? 
+      $with(chat.data.leftovers, leftovers => [
         {
           caption: `${leftovers.activeMessageOriginalIndex}/${leftovers.results.length + 1}`,
           tooltip: 'Loop through alternatives',
-          onClick: () => c.cycleLeftovers(message)
+          onClick: () => chat.cycleLeftovers()
         },
         {
           caption: '🗑',
           tooltip: 'Delete this alternative',
-          onClick: () => c.replaceActiveMessageWithLeftover(message)
+          onClick: () => chat.replaceActiveMessageWithLeftover()
         }
-
-      ] : [],
+      ]) : [],
       {
         caption: '↺',
         tooltip: 'More alternatives',
-        onClick: () => c.regenerate(message)
+        onClick: () => chat.regenerate(message)
       },
-      message === c.messageWithActiveAssets && {
+      message === chat.messageWithActiveAssets && {
         caption: 'Use this',
         tooltip: 'Set this asset globally for any relevant generations',
         onClick: () => message.assetsPickedAt = Date.now()
@@ -54,9 +53,9 @@ const buttons = computed(() => {
         tooltip: 'Edit',
         onClick: () =>
           (
-            message === _.last(c.messages)
+            message === _.last(chat.messages)
             || window.confirm('This will delete all messages after this one. Are you sure?') 
-          ) && c.editMessage(message)
+          ) && chat.editMessage(message)
       },
     ] : []
   ]
@@ -79,9 +78,9 @@ function copyToClipboard(content: string) {
     <div 
       :class="{
         [`msg msg-${message.role}`]: true,
-        'msg-picked-assets': message === c.messageWithActiveAssets
+        'msg-picked-assets': message === chat.messageWithActiveAssets
       }"
-      :title="message === c.messageWithActiveAssets ? 'This asset will be used globally for any relevant generations' : ''"
+      :title="message === chat.messageWithActiveAssets ? 'This asset will be used globally for any relevant generations' : ''"
     >
       <span 
         v-html="Marked.parse(message.content)" 
@@ -91,7 +90,7 @@ function copyToClipboard(content: string) {
         <Card 
           v-for="(content, title) in message.assets" :key="title"
           :="{ 
-            title: getAssetCaptions(c.type)[title],
+            title: getAssetCaptions(chat.type)[title],
             modelValue: content,
             editOnDoubleClick: true
           }"
