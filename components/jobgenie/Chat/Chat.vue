@@ -1,18 +1,17 @@
-<script setup lang="ts" generic="T extends AnyTool">
+<script setup lang="ts" generic="T extends AnyBoundTool">
 
 import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, AnyTool, Genie, GenieMessage, SetFor, branded } from '~/lib/genie';
+import { $GenieChatId, AnyBoundTool, GenieMessage, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
 import { globalData } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
 
-const { genie, tool } = defineProps<{
-  genie: Genie<SetFor<T>>;
+const { tool } = defineProps<{
   tool: T;
 }>();
 
@@ -24,12 +23,11 @@ const userMessageComponent = refForInstance(Textarea);
 const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
 
 const c = tool.chatController({
-  ...genie.config,
   state, 
   chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
 });
 
-addProperties(window, { _, genie, c, data: globalData, state, globalState });
+addProperties(window, { _, c, data: globalData, state, globalState });
 
 watch(userMessageComponent, component => {
   if ( !component ) return;

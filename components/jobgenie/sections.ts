@@ -41,16 +41,16 @@ export type SectionConfig = {
 
 export const sections = computed( () => _.map(toolIds, toolId => {
   
-  const missingTools = genie.tools[toolId].getMissingRequires(genie.activeAssets);
+  const { missingRequires } = genie.bound[toolId];
   const config = sectionConfigs[toolId];
 
   return {
     id: toolId,
     ...config,
-    disabled: !!missingTools,
-    disabledTooltip: missingTools 
+    disabled: !!missingRequires,
+    disabledTooltip: missingRequires 
       && `Please first go through the following sections: ${
-        missingTools.map(
+        missingRequires.map(
           tool => sectionConfigs[tool.id].caption
         ).join(', ')
       }`

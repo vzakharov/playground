@@ -1,6 +1,6 @@
 import { objectWithKeys, pushedTo } from "~/lib/utils";
 import _ from "lodash";
-import { ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets } from ".";
+import { BoundTool, ChatController, ChatControllerConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
 
 export type GenieContext<S extends Toolset> = {
   globalData: GenieData<S>;
@@ -22,17 +22,21 @@ export class Genie<
   S extends Toolset
 > {
 
-  tools: S;
+  bound: {
+    [Id in ToolIdFrom<S>]: BoundTool<S, ToolWithId<S, Id>>;
+  }
 
   constructor(
-    tools: S & ValidToolset<S>,
+    public tools: S & ValidToolset<S>,
     public readonly config: GenieConfig<S>,
   ) {
-    this.tools = tools;
+    this.bound = _.fromPairs(
+      tools.map( tool => [tool.id, new BoundTool(tool, this)] )
+    ) as this['bound'];
   };
 
   get activeAssets() {
-    return getActiveAssets(this.config.globalData, this.tools);
+    return getActiveAssetsForSet(this.config.globalData, this.tools);
   };
 
 };

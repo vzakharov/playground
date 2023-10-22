@@ -4,10 +4,8 @@ import { Dict, GenieData, GenieMessage, Tool } from "..";
 
 
 export type AnyTool<
-  Id extends string = string,
-  Asset extends string = string,
-  Set extends Toolset = Toolset
-> = Tool<Id, Asset, Set>;
+  Id extends string = string
+> = Tool<Id, any, any>;
 
 export type Toolset = AnyTool[];
 
@@ -33,7 +31,8 @@ export type MissingTool<S extends Toolset> = Exclude<ToolFrom<SetFor<ToolFrom<S>
 
 export type ValidToolset<S extends Toolset> = MissingTool<S> extends never 
   ? S 
-  : `Required tool missing, id = ${MissingTool<S>}`;
+  : never
+  // : `Required tool missing, id = ${MissingTool<S>}`;
 
 export type AssetForTool<T extends AnyTool> = StringKey<T['config']['assets']>;
 

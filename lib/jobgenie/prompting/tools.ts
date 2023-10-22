@@ -3,13 +3,13 @@ import { challenge, dna, job, pitch, resume, social } from "..";
 import _ from "lodash";
 
 export const tools = [
-  dna,  // Commenting this out should cause a compile-time error below in `test` because other tools require it
+  dna,
   resume,
   job, 
   pitch,
   challenge,
   social
-];
+] satisfies Toolset;
 
 export const toolIds = _.map(tools, 'id');
 
@@ -20,5 +20,5 @@ export type Tools = typeof tools;
 export type Tool = Tools[number];
 
 
-const test = <T extends Toolset>(tools: ValidToolset<T>) => { };
+const test = <T extends Toolset>(tools: T & ValidToolset<T>) => { };
 test(tools);

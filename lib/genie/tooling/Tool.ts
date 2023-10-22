@@ -3,7 +3,7 @@ import { $if, allPropsDefined, pushedTo, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetValuesForSet, BuildCallback, BuildInput, ChatController, Dict, GenieContext, ToolFrom, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AnyTool, AssetValuesForSet, BuildCallback, BuildInput, ChatControllerConfig, Dict, GenieContext, SetFor, ToolFrom, ToolIdFrom, ToolWithId, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
 import _ from "lodash";
 import { is } from "vovas-utils";
 
@@ -92,16 +92,6 @@ export class Tool<
 
   getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
     return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
-  };
-
-  chatControllers: ChatController<this>[] = [];
-
-  chatController(config: Omit<ChatController<this>['config'], 'tool'>) {
-    const { chatId } = config;
-    const { chatControllers } = this;
-    const oldController = _.find(chatControllers, { config: { chatId } });
-    if (oldController) _.pull(chatControllers, oldController);
-    return pushedTo(chatControllers, new ChatController({ ...config, tool: this }));
   };
 
 };

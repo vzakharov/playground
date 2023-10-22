@@ -73,7 +73,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <template v-else>
       <Chat
         :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :="{ genie, tool: genie.toolsById[selectedSectionId] }"
+        :="{ tool: genie.bound[selectedSectionId] }"
       />
     </template>
     <TextModal monospace
