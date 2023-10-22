@@ -25,7 +25,7 @@ const buttons = computed(() => {
   return [
     ...isBy.assistant(message) ? [
       ...chat.areLeftoversDefined() && chat.messageWithLeftovers === message ? 
-      $with(chat.data.leftovers, leftovers => [
+      $with(chat.data, ({ leftovers }) => [
         {
           caption: `${leftovers.activeMessageOriginalIndex}/${leftovers.results.length + 1}`,
           tooltip: 'Loop through alternatives',
