@@ -11,7 +11,7 @@ export function startOver() {
     forEach(globalData, (value, key) => {
       globalData[key] = defaultData[key];
     });
-    globalState.selectedSectionId = sectionConfigs[0].id;
+    globalState.selectedToolId = sectionConfigs[0].id;
     dataLastLoaded.value = Date.now();
   }
 };

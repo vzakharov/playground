@@ -8,7 +8,7 @@ import { exportData, stringifiedData, stringifyData } from '~/components/jobgeni
 import { useProfiles } from '~/components/jobgenie/profiles';
 import { dataLastLoaded, genie } from '~/components/jobgenie/refs';
 import { sections } from '~/components/jobgenie/sections';
-import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
+import { globalState, initSelectedToolId } from '~/components/jobgenie/state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
@@ -18,9 +18,9 @@ import { useHashRoute } from '~/composables/useHashRoute';
 import { defaultData } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
 
-const { selectedSectionId, openaiKey } = toRefs(globalState);
+const { selectedToolId, openaiKey } = toRefs(globalState);
 
-useHashRoute(selectedSectionId, initSelectedSectionId);
+useHashRoute(selectedToolId, initSelectedToolId);
 
 function login(c: Credentials) {
   globalData.username = c.username;
@@ -42,7 +42,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     :sidebar-menu="{
       items: sections,
     }"
-    v-model:sidebarMenuItemId="selectedSectionId"
+    v-model:sidebarMenuItemId="selectedToolId"
   >
     <template #sidebar-lower>
       <template v-if="profileSlugs.length > 1">
@@ -72,8 +72,8 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>
       <Chat
-        :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :="{ tool: genie.bound[selectedSectionId] }"
+        :key="`${selectedToolId}-${dataLastLoaded}`"
+        :="{ tool: genie.bound[selectedToolId] }"
       />
     </template>
     <TextModal monospace
