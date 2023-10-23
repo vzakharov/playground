@@ -1,17 +1,16 @@
 <script setup lang="ts" generic="T extends AnyTool" >
 
 import { Marked } from '@ts-stack/markdown';
+import { ensure } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Card from '~/components/shared/Card.vue';
-// import { AppChatMessage, ChatType, allTrue, getAssetCaptions, areLeftoversForMessage, getLeftovers } from '~/lib/jobgenie';
-import _ from 'lodash';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { AnyTool, Chat, GenieMessage } from '~/lib/genie';
+import { AnyTool, AssetValues, Chat, GenieMessage, assetCaptions } from '~/lib/genie';
+import { allTrue } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { genie } from '../refs';
-import { $with } from 'vovas-utils';
+import { useMessageButtons } from '~/lib/vue-genie';
 
 const props = defineProps<{
   message: GenieMessage<T>,
@@ -20,47 +19,9 @@ const props = defineProps<{
 
 const { message, chat } = props;
 
-const buttons = computed(() => {
-  
-  return [
-    ...isBy.assistant(message) ? [
-      ...chat.areLeftoversDefined() && chat.messageWithLeftovers === message ? 
-      $with(chat.data, ({ leftovers }) => [
-        {
-          caption: `${leftovers.activeMessageOriginalIndex}/${leftovers.results.length + 1}`,
-          tooltip: 'Loop through alternatives',
-          onClick: () => chat.cycleLeftovers()
-        },
-        {
-          caption: '🗑',
-          tooltip: 'Delete this alternative',
-          onClick: () => chat.replaceActiveMessageWithLeftover()
-        }
-      ]) : [],
-      {
-        caption: '↺',
-        tooltip: 'More alternatives',
-        onClick: () => chat.regenerate(message)
-      },
-      message === chat.messageWithActiveAssets && {
-        caption: 'Use this',
-        tooltip: 'Set this asset globally for any relevant generations',
-        onClick: () => message.assetsPickedAt = Date.now()
-      }
-    ] : isBy.user(message) ? [
-      {
-        caption: '✎',
-        tooltip: 'Edit',
-        onClick: () =>
-          (
-            message === _.last(chat.messages)
-            || window.confirm('This will delete all messages after this one. Are you sure?') 
-          ) && chat.editMessage(message)
-      },
-    ] : []
-  ]
-
-});
+const buttons = useMessageButtons(props);
+const toolConfig = computed<T['config']>(() => chat.config.tool.config);
+const messageAssets = computed<AssetValues<T> | undefined>(() => message.assets);
 
 const editMessageModal = refForInstance(TextModal);
 
@@ -86,15 +47,17 @@ function copyToClipboard(content: string) {
         v-html="Marked.parse(message.content)" 
         @dblclick="editMessageModal!.show()"
       />
-      <div v-if="message.assets">
+      <div v-if="messageAssets">
         <Card 
-          v-for="(content, title) in message.assets" :key="title"
+          v-for="(content, assetId) in messageAssets" :key="assetId"
           :="{ 
-            title: getAssetCaptions(chat.type)[title],
+            title: assetCaptions(toolConfig.assets)[assetId],
             modelValue: content,
             editOnDoubleClick: true
           }"
-          @update:model-value="content => message.assets![title] = content"
+          @update:model-value="content => ensure(
+            messageAssets, 'Message assets not defined'
+          )[assetId] = content"
         >
         <!-- TODO: Make it possible to use v-model -->
         <!-- Copy to clipboard -->

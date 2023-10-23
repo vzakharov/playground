@@ -15,3 +15,21 @@ export function objectWithKeys<
     [key in Key]: ReturnType;
   };
 };
+
+export function objectWithKeysOf<
+  Ts extends Record<string, any>[],
+  K extends keyof Ts[number],
+  ReturnType
+>(
+  objects: Ts,
+  keyBy: K,
+  initializer: (object: Ts[number], id: Ts[number][K]) => ReturnType
+) {
+  return _.fromPairs(
+    objects.map(
+      (object: Ts[number]) => [object[keyBy], initializer(object, object[keyBy])]
+    )
+  ) as {
+    [key in Ts[number][K]]: ReturnType;
+  };
+};

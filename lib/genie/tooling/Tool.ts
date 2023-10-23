@@ -1,11 +1,9 @@
 import dedent from "dedent-js";
-import { $if, allPropsDefined, pushedTo, undefinedProps } from "~/lib/utils";
+import { $if, allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AnyTool, AssetValuesForSet, BuildCallback, BuildInput, ChatConfig, Dict, GenieContext, SetFor, ToolFrom, ToolIdFrom, ToolWithId, Toolset, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
-import _ from "lodash";
-import { is } from "vovas-utils";
+import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toFullSpecs, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -16,7 +14,7 @@ export type ToolConfig<
   reciteAssetsAfter?: number;
   build: BuildCallback<Reqs>;
   autoQuery?: string | ( ( context: GenieContext<Reqs>) => string );
-  assets: Dict<Asset>;
+  assets: AssetSpecs<Asset>;
   requires: Reqs;
 };
 
@@ -36,12 +34,12 @@ export class Tool<
     const { messages, globalData } = input;
     const { 
       system: mainSystemMessage, generateAssetsAfter, reciteAssetsAfter = 0,
-      build: buildCallback, assets: assetDescriptions, requires
+      build: buildCallback, assets: assetSpecs, requires
     } = this.config;
 
     const fn = chatFunction('reply', 'Replies to the user with structured data', {
       replyMessage: 'Accompanying text to go before the structured data, narratively continuing the conversation',
-      ...assetDescriptions
+      ...assetDescriptions(assetSpecs)
     });
 
     const numResponses = messagesBy.assistant(messages).length;

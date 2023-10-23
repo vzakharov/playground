@@ -32,7 +32,7 @@ export const dna = new Tool('dna', {
   }),
 
   assets: {
-    dna: 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves',
+    dna: [ 'DNA', 'The DNA summary to add. Use the tone of voice you’ve noticed the user uses in their messages — so it should sound as if it’s written by the user themselves' ],
   }
 
 });

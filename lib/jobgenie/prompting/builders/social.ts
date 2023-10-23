@@ -38,6 +38,6 @@ export const social = new Tool('social', {
 
   }),
   assets: {
-    post: 'The body of the post, written to reflect both the user’s personality and their tone on social media'
+    post: [ 'Post body', 'The body of the post, written to reflect both the user’s personality and their tone on social media' ]
   }
 });

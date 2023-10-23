@@ -1,7 +1,6 @@
 import yaml from "js-yaml";
-import { objectWithKeys } from "~/lib/utils";
-import _ from "lodash";
-import { AssetValuesForSet, Toolset, toolIds } from "..";
+import { objectWithKeysOf } from "~/lib/utils";
+import { AssetValuesForSet, Toolset, replaceKeysWithCaptions } from "..";
 
 
 export function reciteAssets<
@@ -9,13 +8,9 @@ export function reciteAssets<
 >(assetValues: AssetValuesForSet<S>, tools: S) {
 
   return yaml.dump(
-    objectWithKeys(
-      toolIds(tools),
-      toolId => _.mapKeys(
-        assetValues[toolId],
-        (value, asset) => _.startCase(asset),
-        // TODO: Add asset captions instead of start casing
-      ),
+    objectWithKeysOf(
+      tools, 'id',
+      (tool, id) => replaceKeysWithCaptions(tool.config.assets, assetValues[id]),
     ),
   );
 
