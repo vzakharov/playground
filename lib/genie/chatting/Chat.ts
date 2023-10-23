@@ -1,5 +1,6 @@
 import { Resolvable } from '~/lib/utils';
-import { AnyTool, GenieMessage, Responder } from '..';
+import { AnyTool, GenieMessage } from '..';
+import { Responder } from './responder';
 
 export type ChatState<T extends AnyTool> = {
   generating: Resolvable<GenieMessage<T, 'assistant'>> | undefined;

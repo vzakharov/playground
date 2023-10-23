@@ -1,5 +1,5 @@
 import { SetFor, Toolset, ValidToolset } from "~/lib/genie";
-import { challenge, dna, job, pitch, resume, social } from "..";
+import { challenge, dna, job, pitch, resume, social } from "./builders";
 import _ from "lodash";
 
 export const tools = [

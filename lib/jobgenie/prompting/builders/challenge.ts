@@ -1,6 +1,9 @@
 import dedent from "dedent-js";
 import { Tool } from "~/lib/genie";
-import { dna, job, mainSystemMessage, resume, schema } from "../..";
+import { mainSystemMessage } from "../mainSystemMessage";
+import { dna } from "./dna";
+import { job } from "./job";
+import { resume } from "./resume";
 
 export const challenge = new Tool('challenge', {
 

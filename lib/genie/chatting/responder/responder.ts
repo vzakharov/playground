@@ -2,7 +2,8 @@ import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, LeftoversController, generateResponse, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, generateResponse, handleResponseGeneration, says } from '../..';
+import { LeftoversController } from '../leftovers';
 
 export class Responder<
   T extends AnyTool,
