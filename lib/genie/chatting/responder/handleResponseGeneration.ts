@@ -13,7 +13,7 @@ export async function handleResponseGeneration<
   this: Responder<T>
 ) {
 
-  const { config: { alert, state }, messages } = this;
+  const { config: { state }, messages } = this;
 
   if (state.generating?.inProgress) {
     throw new Error('Cannot generate while already generating');
@@ -47,7 +47,7 @@ export async function handleResponseGeneration<
       }
     };
 
-    alert(e.message);
+    state.error = e;
 
   } finally {
 

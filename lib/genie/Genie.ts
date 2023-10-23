@@ -14,7 +14,6 @@ export type GenieConfig<S extends Toolset> = GenieContext<S> & {
     callback: (value: T) => void,
     options?: { immediate: boolean }
   ) => void;
-  alert: (message: string) => void;
 
 };
 

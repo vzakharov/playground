@@ -6,7 +6,6 @@ export const genie = new JobGenie({
   globalData,
   globalState,
   watch,
-  alert
 });
 
 export const dataLastLoaded = ref(Date.now());

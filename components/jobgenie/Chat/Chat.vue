@@ -19,8 +19,16 @@ const generating = ref<Resolvable<GenieMessage<T, 'assistant'>>>();
 const msExpected = ref<number>();
 const userMessage = toRefs(globalState).userMessage;
 const userMessageComponent = refForInstance(Textarea);
+const error = ref<Error>();
 
-const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent });
+watch( error, e => {
+  if ( !e ) return;
+  console.error(e);
+  alert(e.message);
+  error.value = undefined;
+} );
+
+const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent, error });
 
 const chat = tool.chat({
   state, 

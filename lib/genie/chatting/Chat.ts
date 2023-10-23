@@ -8,6 +8,7 @@ export type ChatState<T extends AnyTool> = {
     textarea?: HTMLTextAreaElement;
   } | undefined;
   msExpected: number | undefined;
+  error: Error | undefined;
 };
 
 export class Chat<T extends AnyTool> extends Responder<T> { };
