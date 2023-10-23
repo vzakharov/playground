@@ -67,7 +67,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
           },
         ]"
       />
-      <GenieSettings appId="jobgenie" :="{genie}"/>
+      <GenieSettings appId="jobgenie" :="{ genie }"/>
     </template>
     <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>

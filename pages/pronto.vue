@@ -9,9 +9,9 @@ import Textarea from '~/components/shared/Textarea.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import { defaultProntoData, parseInputs, Input } from '~/lib/pronto';
 import { switchRole, chatRoles, says, chatCompletion } from '~/lib/vovas-openai';
-import { defaultable, uniqueId } from '~/lib/utils';
+import { initialize, uniqueId } from '~/lib/utils';
 import { $throw } from 'vovas-utils';
-import { GenieState, defaultGenieState, temperatureForDescriptor } from '~/lib/genie';
+import { GenieState, genieStateInitializer, temperatureForDescriptor } from '~/lib/genie';
 
 const tab = ref('compose');
 
@@ -59,7 +59,7 @@ async function run() {
     openaiKey,
     temperatureDescriptor,
     useGpt4
-  } = defaultable(genie.value, defaultGenieState);
+  } = initialize(genie.value, genieStateInitializer);
   ([output.value] = await chatCompletion(promptMessages, {
     apiKey: openaiKey,
     temperature: temperatureForDescriptor[temperatureDescriptor],
@@ -96,7 +96,7 @@ function insertInputs(content: string, inputs: Input[]) {
       />
     </template>
     <template #sidebar-lower>
-      <GenieSettings appId="pronto" @update="genie = $event" />
+      <GenieSettings appId="pronto" :="{ genie }"/>
     </template>
     <div class="tab-container">
       <button class="tab-button" :class="{ active: tab === 'compose' }" @click="tab = 'compose'">Compose</button>
