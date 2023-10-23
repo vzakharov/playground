@@ -1,5 +1,5 @@
-import { is, ensured } from "vovas-utils";
-import { Initializer, Initializee } from "~/lib/utils";
+import { is } from "vovas-utils";
+import { Initializer, Initializee, ensured } from "~/lib/utils";
 import { AnyTool, ChatId, Leftovers, ToolIdFrom, ToolWithId, Toolset, temperatureDescriptors } from ".";
 
 export type ToolLeftoversStore<T extends AnyTool> = {
@@ -18,7 +18,7 @@ export const genieStateInitializer= {
     'gpt-3.5-turbo': 5,
     'gpt-4': 15,
   },
-  temperatureDescriptor: ensured(is.among(temperatureDescriptors)).else('normal'),
+  temperatureDescriptor: (value: any) => ensured(value, is.among(temperatureDescriptors)).else('normal'),
 } satisfies Initializer<any>;
 
 export type GenieState = Initializee<typeof genieStateInitializer>;

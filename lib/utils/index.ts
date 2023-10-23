@@ -4,6 +4,7 @@ export * from './PickByArray';
 export * from './allPropsDefined';
 export * from './bound';
 export * from './concat';
+export * from './ensured';
 export * from './filter';
 export * from './inferIfFunction';
 export * from './initialize';
