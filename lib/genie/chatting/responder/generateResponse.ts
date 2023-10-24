@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { is } from 'vovas-utils';
 import {
+  ChatFunction,
+  ChatFunctionReturns,
   UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst
 } from '~/lib/vovas-openai';
 import {
@@ -8,6 +10,7 @@ import {
   GenieMessage, Responder,
   temperatureForDescriptor, withUniqueId
 } from '../..';
+import { IsAny } from '~/lib/utils';
 
 export async function generateResponse<
   T extends AnyTool,
@@ -37,8 +40,8 @@ export async function generateResponse<
       temperature: temperatureForDescriptor[temperatureDescriptor],
       ...shortestFirst,
       evaluate: result => 
-        itselfOrIts('content')(result).length,
-        // is.string(result) ? result.length : result.content.length,
+        is.string(result) ? result.length : result.replyMessage.length,
+      // itselfOrIts('content')(result).length,
       throwIfNone: true,
       fn,
       usageContainer

@@ -1,5 +1,6 @@
 export * from './$if';
 export * from './ArrayItem';
+export * from './IsAny';
 export * from './PickByArray';
 export * from './allPropsDefined';
 export * from './bound';

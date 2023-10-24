@@ -4,8 +4,10 @@ import { Dict, GenieData, GenieMessage, Tool } from "..";
 
 
 export type AnyTool<
-  Id extends string = string
-> = Tool<Id, any, any>;
+  Id extends string = any,
+  A extends string = any,
+  Reqs extends Toolset = any
+> = Tool<Id, A, Reqs>;
 
 export type Toolset = AnyTool[];
 

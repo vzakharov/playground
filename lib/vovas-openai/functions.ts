@@ -1,3 +1,4 @@
+import { IsAny } from "~/lib/utils";
 import _ from "lodash";
 
 export type ChatFunction<Name extends string, Props extends string, Optional extends Props> = {
@@ -12,15 +13,19 @@ export type ChatFunction<Name extends string, Props extends string, Optional ext
   }
 };
 
-export type AnyChatFunction = ChatFunction<string, string, never>;
+export type AnyChatFunction = ChatFunction<any, any, never>;
 
 export type SimplifiedChatFunction<Name extends string, Props extends string, Optional extends Props> = [
+  ...SimplifiedChatFunctionWithAllProps<Name, Props, Optional>,
+  optional: Optional[]
+];
+
+export type SimplifiedChatFunctionWithAllProps<Name extends string, Props extends string, Optional extends Props> = [
   name: Name,
   description: string,
   parameters: {
     [K in Props]: string
   },
-  optional?: Optional[]
 ];
 
 export type SimplifiedChatFunctionFor<F extends AnyChatFunction> =
@@ -35,6 +40,14 @@ export type UnsimplifiedChatFunctionFor<F extends SimplifiedChatFunction<any, an
 
 export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
   ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional>
+): ChatFunction<Name, Props, Optional>;
+
+export function chatFunction<Name extends string, Props extends string>(
+  ...[ name, description, parameters ]: SimplifiedChatFunctionWithAllProps<Name, Props, never>
+): ChatFunction<Name, Props, never>;
+
+export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
+  ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional> | SimplifiedChatFunctionWithAllProps<Name, Props, Optional>
 ) {
 
   return {
@@ -57,11 +70,14 @@ export type ChatFunctionProp = {
 export type ChatFunctionReturns<F extends AnyChatFunction> =
   F extends ChatFunction<any, infer Props, infer Optional> ? {
     [K in Props]:
-      [Optional] extends [never]
+      IsAny<Props> extends true
+        ? string | undefined 
+        // i.e., if Props are not specified, we don't want to just index by string
+      : [Optional] extends [never]
         ? string
-        : K extends Optional
-          ? string | undefined
-          : string
+      : K extends Optional
+        ? string | undefined
+      : string
 
   } : never;
 

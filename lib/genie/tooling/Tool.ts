@@ -1,10 +1,9 @@
 import dedent from "dedent-js";
-import { $if, allPropsDefined, undefinedProps } from "~/lib/utils";
+import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, ToolIdFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toFullSpecs, toRawMessage, toolWithId } from "..";
-import _ from "lodash";
+import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
