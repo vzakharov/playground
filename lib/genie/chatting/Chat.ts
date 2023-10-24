@@ -10,6 +10,7 @@ export type ChatState<T extends AnyTool> = {
   } | undefined;
   msExpected: number | undefined;
   error: Error | undefined;
+  dataLastLoaded: number;
 };
 
 export class Chat<T extends AnyTool> extends Responder<T> { };

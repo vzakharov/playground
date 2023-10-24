@@ -1,21 +1,12 @@
-import { objectWithKeys, pushedTo } from "~/lib/utils";
 import _ from "lodash";
-import { BoundTool, Chat, ChatConfig, GenieData, GenieState, ToolFrom, ToolIdFrom, ToolWithId, Toolset, ValidToolset, findBy, getActiveAssets, getActiveAssetsForSet } from ".";
+import { BoundTool, GenieData, GenieState, ToolIdFrom, ToolWithId, Toolset, ValidToolset, getActiveAssetsForSet } from ".";
 
 export type GenieContext<S extends Toolset> = {
   globalData: GenieData<S>;
   globalState: GenieState;
 };
 
-export type GenieConfig<S extends Toolset> = GenieContext<S> & {
-
-  watch: <T>(
-    watched: T,
-    callback: (value: T) => void,
-    options?: { immediate: boolean }
-  ) => void;
-
-};
+export type GenieConfig<S extends Toolset> = GenieContext<S>;
 
 export class Genie<
   S extends Toolset

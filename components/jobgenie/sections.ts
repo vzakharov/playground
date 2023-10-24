@@ -51,7 +51,7 @@ export const sections = computed( () => _.map(toolIds, toolId => {
     disabledTooltip: missingRequires 
       && `Please first go through the following sections: ${
         missingRequires.map(
-          tool => sectionConfigs[tool.id].caption
+          toolId => sectionConfigs[toolId].caption
         ).join(', ')
       }`
   };

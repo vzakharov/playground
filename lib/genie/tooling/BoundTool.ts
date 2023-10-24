@@ -1,4 +1,5 @@
-import { AssetForTool, Chat, Genie, GenieConfig, Requires, ToolFrom, Toolset } from "..";
+import { undefinedProps } from "~/lib/utils";
+import { AssetForTool, Chat, Genie, GenieConfig, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
 import { Tool } from "./Tool";
 
 /**
@@ -52,13 +53,14 @@ export class BoundTool<
     });
   };
 
-  /**
-   * Returns an array of the required assets that are currently missing from the Genie's active assets.
-   *
-   * @returns An array of missing required assets.
-   */
   get missingRequires() {
-    return this.getMissingRequires(this.genie.activeAssets);
+    const missingRequires = undefinedProps(this.activeAssets);
+    return missingRequires.length ? missingRequires : undefined;
+  };
+
+  get activeAssets() {
+    const { config: { requires }, genie: { config: { globalData } } } = this;
+    return getActiveAssetsForSet(globalData, requires);
   };
 
 };

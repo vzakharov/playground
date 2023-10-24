@@ -5,11 +5,13 @@ import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, AnyBoundTool, GenieMessage, branded } from '~/lib/genie';
+import { $GenieChatId, AnyBoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
 import { globalData } from '../data';
 import { globalState } from '../state';
 import Message from './Message.vue';
+import { dataLastLoaded } from '../refs';
+import { useReactiveInstance } from '~/composables/useReactiveInstance';
 
 const { tool } = defineProps<{
   tool: T;
@@ -28,12 +30,18 @@ watch( error, e => {
   error.value = undefined;
 } );
 
-const state = refsToReactive({ generating, msExpected, userMessage, userMessageComponent, error });
-
-const chat = tool.chat({
-  state, 
-  chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool
+const state = refsToReactive({ 
+  generating, msExpected, userMessage, userMessageComponent, error, dataLastLoaded
 });
+
+const chat = reactive(
+  tool.chat({
+    state, 
+    chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool,
+  })
+) as Chat<T>;
+
+watchEffect(chat.watcher);
 
 addProperties(window, { _, c: chat, data: globalData, state, globalState });
 

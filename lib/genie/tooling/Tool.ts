@@ -3,7 +3,7 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -49,10 +49,10 @@ export class Tool<
     // Check if there are already function calls in the messages
     const functionCalled = rawMessages.some(message => message.function_call);
 
-    const assetValues = getActiveAssets(globalData, requires);
+    const assetValues = getActiveAssetsForSet(globalData, requires);
 
     if ( !allPropsDefined(assetValues) )
-      throw new Error(`The following assets are missing: ${this.getMissingRequires(assetValues)!.join(', ')}`);
+      throw new Error(`The following assets are missing: ${undefinedProps(assetValues).join(', ')}`);
 
     assetValues
     const { username } = globalData;
@@ -86,14 +86,6 @@ export class Tool<
       ],
       fn: shouldGenerateAssets ? fn : undefined
     };
-  };
-
-  getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] | undefined {
-    const { requires } = this.config;
-    const missingRequires = undefinedProps(assetValues)
-      .filter(toolId => requires.includes(toolId as any))
-      .map(toolId => toolWithId(this.config.requires, toolId));
-    return missingRequires.length ? missingRequires : undefined;
   };
 
 };

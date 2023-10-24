@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import { also } from 'vovas-utils';
-import { inferIfFunction, pushedTo } from "~/lib/utils";
+import { bound, inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, generateResponse, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GenieMessage, generateResponse, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
@@ -13,29 +13,26 @@ export class Responder<
     public readonly config: BaseChatConfig<T>
   ) {
     super(config);
-    this.watchForResponseGeneration();
-  };
-
-  watchForResponseGeneration() {
-
-    const { config: { watch, globalData, globalState, tool }, messages } = this;
-
-    watch(messages, messages => {
-
-      const autoQuery = inferIfFunction(tool.config.autoQuery, { globalData, globalState });
-
-      const lastMessage = _.last(messages)
-        ?? ( 
-          !!autoQuery 
-            && pushedTo(messages, says.user(autoQuery))
-        );
-
-      if (!lastMessage || isBy.user(lastMessage)) {
-        this.handleResponseGeneration();
-      }
-    }, { immediate: true });
 
   };
+
+  get watcher() { return () => {
+
+    const { messages, config: { globalData, globalState, tool } } = this;
+
+    const autoQuery = inferIfFunction(tool.config.autoQuery, { globalData, globalState });
+
+    const lastMessage = _.last(messages)
+      ?? ( 
+        !!autoQuery 
+          && pushedTo(messages, says.user(autoQuery))
+      );
+
+    if (!lastMessage || isBy.user(lastMessage)) {
+      this.handleResponseGeneration();
+    }
+
+  } };
 
   generateResponse = generateResponse;
   handleResponseGeneration = handleResponseGeneration;

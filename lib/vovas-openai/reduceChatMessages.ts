@@ -16,7 +16,6 @@ export function reduceChatMessages(params: ReduceChatMessagesParams) {
   } = params;
   const jsonChars = JSON.stringify(promptMessages).length;
   const numResponses = messagesBy.assistant(promptMessages).length;
-  console.log({ numResponses, jsonChars });
   if ( jsonChars > charLimit && numResponses > 2 ) {
     promptMessages.splice(removeFrom, 1);
     if ( insertPlugMessage )
