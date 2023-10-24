@@ -7,7 +7,7 @@ import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { $GenieChatId, AnyBoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
-import { globalData, globalState } from '~/lib/vue-genie';
+import { globalData, globalState } from '~/lib/genie-vue';
 import Message from './Message.vue';
 
 const { tool } = defineProps<{

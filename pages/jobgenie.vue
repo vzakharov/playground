@@ -14,7 +14,7 @@ import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { defaultData } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
-import { globalData, globalState, initSelectedToolId, genie } from '~/lib/vue-genie';
+import { globalData, globalState, initSelectedToolId, genie } from '~/lib/genie-vue';
 
 const { selectedToolId, openaiKey } = toRefs(globalState);
 

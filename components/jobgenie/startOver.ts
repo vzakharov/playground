@@ -1,7 +1,8 @@
 import { forEach } from "vovas-utils";
-import { defaultData } from "lib/jobgenie";
+import { globalData } from "~/lib/genie-vue";
+import { defaultData } from "~/lib/jobgenie";
+import { globalState } from "~/lib/jobgenie-vue";
 import { sectionConfigs } from "./sections";
-import { globalData, globalState } from "~/lib/vue-genie";
 
 export function startOver() {
   if (window.confirm("Are you sure you want to start over? All current data will be lost.")) {

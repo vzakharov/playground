@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { $throw } from 'vovas-utils';
-import { genie } from "~/lib/vue-genie";
+import { genie } from "lib/genie-vue";
 import { ToolId, toolIds } from '~/lib/jobgenie';
 import { SidebarMenu } from 'components/shared/SidebarStuff';
 import { Tool } from 'lib/genie';

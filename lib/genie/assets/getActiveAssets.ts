@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { AnyTool, AssetValues, AssetValuesForSet, AssetValuesForToolId, GenieData, SetFor, ToolIdFrom, ToolWithId, Toolset, findBy, toolIds } from "..";
+import { AnyTool, AssetValues, AssetValuesForSet, AssetValuesForToolId, GenieData, SetFor, ToolIdFrom, ToolWithId, Toolset, findBy, getToolIds } from "..";
 import { objectWithKeys } from "~/lib/utils";
 
 export function getActiveAssetsForSet<
@@ -7,7 +7,7 @@ export function getActiveAssetsForSet<
 >(data: GenieData<S>, tools: S): Partial<AssetValuesForSet<S>> {
 
   return objectWithKeys(
-    toolIds(tools), 
+    getToolIds(tools), 
     toolId => getActiveAssetsForToolId(data, toolId)
   );
 

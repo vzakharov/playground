@@ -19,7 +19,7 @@ export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
 export type ToolIdFrom<S extends Toolset> = ToolFrom<S>['id'];
 
-export function toolIds<S extends Toolset>(tools: S): ToolIdFrom<S>[] {
+export function getToolIds<S extends Toolset>(tools: S): ToolIdFrom<S>[] {
   return tools.map(tool => tool.id);
 };
 

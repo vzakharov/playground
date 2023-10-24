@@ -3,7 +3,8 @@ import { $throw } from "vovas-utils";
 import { replace } from "lodash";
 import { concat, uniqueId } from "~/lib/utils";
 import _ from "lodash";
-import { globalData, globalState } from "~/lib/vue-genie";
+import { globalData } from "~/lib/genie-vue";
+import { globalState } from "~/lib/jobgenie-vue";
 
 export const localProfilesPrefix = 'jobgenie-data-';
 
@@ -42,6 +43,7 @@ export function useProfiles() {
     // If strictly null, return (it means the user cancelled the dialog)
     if ( slug === null ) return;
     saveCurrentProfile();
+    const { dataLastLoaded } = toRefs(globalState);
     resetAppData(globalData, {
       profileSlug: uniqueId(slug || 'profile', slugs.value)
     }, dataLastLoaded);

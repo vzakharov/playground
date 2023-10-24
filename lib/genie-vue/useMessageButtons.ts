@@ -6,7 +6,7 @@ import { computed } from "vue";
 
 export type UseMessageButtonsParams<T extends AnyTool> = {
   message: GenieMessage<T>;
-  chat: Chat<T>;
+  chat: Chat<T, any, any>;
 };
 
 export function useMessageButtons<T extends AnyTool>({ message, chat }: UseMessageButtonsParams<T>) {
