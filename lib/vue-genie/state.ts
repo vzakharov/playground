@@ -10,4 +10,5 @@ export const globalState = useLocalReactive('jobgenie-state', {
   selectedToolId: initSelectedToolId,
   userMessage: '',
   showIrrelevantMessages: false,
+  dataLastLoaded: Date.now()
 });

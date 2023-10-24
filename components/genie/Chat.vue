@@ -7,11 +7,8 @@ import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { $GenieChatId, AnyBoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
-import { globalData } from '../data';
-import { globalState } from '../state';
+import { globalData, globalState } from '~/lib/vue-genie';
 import Message from './Message.vue';
-import { dataLastLoaded } from '../refs';
-import { useReactiveInstance } from '~/composables/useReactiveInstance';
 
 const { tool } = defineProps<{
   tool: T;
@@ -19,7 +16,7 @@ const { tool } = defineProps<{
 
 const generating = ref<Resolvable<GenieMessage<T, 'assistant'>>>();
 const msExpected = ref<number>();
-const userMessage = toRefs(globalState).userMessage;
+const { userMessage, dataLastLoaded } = toRefs(globalState);
 const userMessageComponent = refForInstance(Textarea);
 const error = ref<Error>();
 

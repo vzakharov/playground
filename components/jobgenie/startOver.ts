@@ -1,9 +1,7 @@
 import { forEach } from "vovas-utils";
-import { globalData } from "./data";
 import { defaultData } from "lib/jobgenie";
 import { sectionConfigs } from "./sections";
-import { globalState } from "./state";
-import { dataLastLoaded } from "./refs";
+import { globalData, globalState } from "~/lib/vue-genie";
 
 export function startOver() {
   if (window.confirm("Are you sure you want to start over? All current data will be lost.")) {
@@ -11,7 +9,7 @@ export function startOver() {
     forEach(globalData, (value, key) => {
       globalData[key] = defaultData[key];
     });
-    globalState.selectedToolId = sectionConfigs[0].id;
-    dataLastLoaded.value = Date.now();
+    globalState.selectedToolId = Object.keys(sectionConfigs)[0] as any;
+    globalState.dataLastLoaded = Date.now();
   }
 };

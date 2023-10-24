@@ -1,9 +1,9 @@
-import { globalData } from "../../components/jobgenie/data";
+import { globalData } from "../vue-genie/data";
 import { reduceChatMessages } from "~/lib/vovas-openai";
 import { $throw } from "vovas-utils";
 import { AnyTool, BaseChat, Chat, GenieMessage, Responder } from "~/lib/genie";
 
-export function countIrrelevantMessages<T extends AnyTool>(chat: Responder<T>) {
+export function countIrrelevantMessages<T extends AnyTool>(chat: Responder<T, any, any>) {
 
   // This function checks how many messages will be used to generate the response (due to the constraint of max. `charLimit` JSON characters in the prompt).
   // This is done by adding messages one by one (from the end), until `reduceChatMessages` no longer removes any messages from the prompt.
@@ -30,6 +30,6 @@ export function countIrrelevantMessages<T extends AnyTool>(chat: Responder<T>) {
 
 };
 
-export function isRelevant<T extends AnyTool>(this: BaseChat<T, any>, message: GenieMessage<T>) {
+export function isRelevant<T extends AnyTool>(this: BaseChat<T, any, any, any>, message: GenieMessage<T>) {
   return this.messages.indexOf(message) >= this.countIrrelevantMessages;
 };

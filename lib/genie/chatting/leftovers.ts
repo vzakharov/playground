@@ -1,7 +1,7 @@
 import { isBy } from "~/lib/vovas-openai";
 import _ from "lodash";
 import { $throw } from "vovas-utils";
-import { AnyTool, BaseChat, GenieMessage, LeftoversDefined, MessageId } from "..";
+import { AnyTool, BaseChat, GenieData, GenieMessage, GenieState, LeftoversDefined, MessageId, SetFor } from "..";
 
 export type Leftovers<T extends AnyTool> = {
   results: GenieMessage<T, 'assistant'>[];
@@ -11,10 +11,12 @@ export type Leftovers<T extends AnyTool> = {
 
 export class LeftoversController<
   T extends AnyTool,
-  LD extends LeftoversDefined
-> extends BaseChat<T, LD> { 
+  LD extends LeftoversDefined,
+  GD extends GenieData<SetFor<T>>,
+  GS extends GenieState
+> extends BaseChat<T, LD, GD, GS> {
 
-  areLeftoversDefined(): this is this & DefiniteLeftoversController<T> {
+  areLeftoversDefined(): this is this & DefiniteLeftoversController<T, GD, GS> {
     return !!this.data.leftovers;
   };
 
@@ -27,15 +29,17 @@ export class LeftoversController<
     return message;
   };
 
-  setLeftovers(leftovers: Leftovers<T>): asserts this is this & DefiniteLeftoversController<T> {
+  setLeftovers(leftovers: Leftovers<T>): asserts this is this & DefiniteLeftoversController<T, GD, GS> {
     Object.assign(this.data, { leftovers });
   };
 
 };
 
 export class DefiniteLeftoversController<
-  T extends AnyTool
-> extends LeftoversController<T, true> {
+  T extends AnyTool,
+  GD extends GenieData<SetFor<T>>,
+  GS extends GenieState
+> extends LeftoversController<T, true, GD, GS> {
 
 
   set messageWithLeftovers(

@@ -1,24 +1,28 @@
 import _ from 'lodash';
 import { filter } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, ChatState, ChatData, ChatId, GenieConfig, GenieData, GenieMessage, LeftoversDefined, SetFor, countIrrelevantMessages, editMessage, findOrCreateChat, isRelevant, says } from '..';
+import { AnyTool, ChatState, ChatData, ChatId, GenieConfig, GenieData, GenieMessage, LeftoversDefined, SetFor, countIrrelevantMessages, editMessage, findOrCreateChat, isRelevant, says, GenieState } from '..';
 
 
 export type BaseChatConfig<
-  T extends AnyTool
+  T extends AnyTool,
+  GD extends GenieData<SetFor<T>>,
+  GS extends GenieState
 > = {
   tool: T;
   state: ChatState<T>;
   chatId: ChatId;
-} & GenieConfig<SetFor<T>>;
+} & GenieConfig<SetFor<T>, GD, GS>;
 
 export class BaseChat<
   T extends AnyTool,
-  LD extends LeftoversDefined
+  LD extends LeftoversDefined,
+  GD extends GenieData<SetFor<T>>,
+  GS extends GenieState
 > {
 
   constructor(
-    public readonly config: BaseChatConfig<T>
+    public readonly config: BaseChatConfig<T, GD, GS>,
   ) {
     const { config: { globalData, tool, chatId } } = this;
     this.data = findOrCreateChat(globalData, tool, chatId) as this['data'];

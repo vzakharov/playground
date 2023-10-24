@@ -1,28 +1,30 @@
 import { undefinedProps } from "~/lib/utils";
-import { AssetForTool, Chat, Genie, GenieConfig, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
+import { AssetForTool, Chat, Genie, GenieConfig, GenieData, GenieState, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
 import { Tool } from './Tool';
 
 /**
  * A type alias for any BoundTool instance.
  */
-export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>>;
+export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>, GenieData<Toolset>, GenieState>;
 
 /**
  * The BoundTool class represents a tool that is bound to a specific Genie instance.
  * A bound tool has access to the Genie's configuration and active assets, and can
  * create chat controllers that are also bound to the same Genie.
  *
- * @template S The type of the toolset that the Genie is configured with.
- * @template T The type of the tool that is being bound.
+ * @template Set The type of the toolset that the Genie is configured with.
+ * @template Tool The type of the tool that is being bound.
  */
 export class BoundTool<
-  S extends Toolset,
-  T extends ToolFrom<S>
-> extends Tool<T['id'], AssetForTool<T>, Requires<T>> {
+  Set extends Toolset,
+  Tool extends ToolFrom<Set>,
+  Data extends GenieData<Set>,
+  State extends GenieState
+> extends Tool<Tool['id'], AssetForTool<Tool>, Requires<Tool>> {
 
   constructor(
-    tool: T,
-    public genie: Genie<S>
+    tool: Tool,
+    public genie: Genie<Set, Data, State>,
   ) {
     const { id, config } = tool;
     super(id, config);
@@ -30,7 +32,7 @@ export class BoundTool<
 
   chats: Chat<this>[] = [];
 
-  chat(config: Omit<Chat<this>['config'], 'tool' | keyof GenieConfig<S>>) {
+  chat(config: Omit<Chat<this>['config'], 'tool' | keyof GenieConfig<Set, Data, State>>) {
     return new Chat({
       ...config,
       ...this.genie.config,

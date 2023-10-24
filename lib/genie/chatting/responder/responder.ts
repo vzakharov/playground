@@ -2,15 +2,17 @@ import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { bound, inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, GenieMessage, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GenieData, GenieMessage, GenieState, SetFor, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
   T extends AnyTool,
-> extends LeftoversController<T, boolean> {
+  GD extends GenieData<SetFor<T>>,
+  GS extends GenieState
+> extends LeftoversController<T, boolean, GD, GS> {
 
   constructor(
-    public readonly config: BaseChatConfig<T>
+    public readonly config: BaseChatConfig<T, GD, GS>,
   ) {
     super(config);
 

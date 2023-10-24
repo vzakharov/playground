@@ -1,10 +1,9 @@
 import { defaultData, resetAppData, replaceAppDataWithUknown } from "~/lib/jobgenie";
-import { globalData } from "./data";
 import { $throw } from "vovas-utils";
 import { replace } from "lodash";
-import { dataLastLoaded } from "./refs";
 import { concat, uniqueId } from "~/lib/utils";
 import _ from "lodash";
+import { globalData, globalState } from "~/lib/vue-genie";
 
 export const localProfilesPrefix = 'jobgenie-data-';
 
@@ -27,6 +26,7 @@ export function useProfiles() {
     const localValue = localStorage.getItem(storageKey(slug))
       ?? $throw(`Profile ${slug} (key ${storageKey(slug)}) not found in localStorage`);
     const newData = JSON.parse(localValue);
+    const { dataLastLoaded } = toRefs(globalState);
     replaceAppDataWithUknown(globalData, newData, dataLastLoaded);
     globalData.profileSlug = slug;
   };

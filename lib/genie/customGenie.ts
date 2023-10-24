@@ -1,13 +1,13 @@
-import { Genie, GenieConfig, Toolset, ValidToolset } from ".";
+import { Genie, GenieConfig, GenieData, GenieState, Toolset, ValidToolset } from ".";
 
-export function customGenie<S extends Toolset>(
-  tools: S & ValidToolset<S>,
+export function customGenie<Set extends Toolset>(
+  tools: Set & ValidToolset<Set>,
 ) {
 
-  return class CustomGenie extends Genie<S> {
+  return class CustomGenie<Data extends GenieData<Set>, State extends GenieState> extends Genie<Set, Data, State> {
 
     constructor(
-      config: Omit<GenieConfig<S>, 'tools'>,
+      config: Omit<GenieConfig<Set, Data, State>, 'tools'>,
     ) {
       super(tools, config);
     };

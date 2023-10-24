@@ -1,7 +1,6 @@
 import yaml from 'js-yaml';
+import { globalData, globalState } from '~/lib/vue-genie';
 import { AppData, replaceAppDataWithUknown } from '~/lib/jobgenie';
-import { globalData } from './data';
-import { dataLastLoaded } from './refs';
 
 export function stringifyData(d: AppData = globalData) {
   return yaml.dump(d);
@@ -30,6 +29,7 @@ export function exportData() {
 export function importData(stringified: string) {
   try {
     const newData = parseData(stringified);
+    const { dataLastLoaded } = toRefs(globalState);
     replaceAppDataWithUknown(globalData, newData, dataLastLoaded);
   } catch (e: any) {
     alert(e.message);
