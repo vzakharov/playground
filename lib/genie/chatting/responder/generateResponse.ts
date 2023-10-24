@@ -8,12 +8,14 @@ import {
 import {
   AnyTool,
   GenieMessage, Responder,
+  Tool,
   temperatureForDescriptor, withUniqueId
 } from '../..';
 import { IsAny } from '~/lib/utils';
 
 export async function generateResponse<
-  T extends AnyTool,
+  T extends Tool<any, A, any>,
+  A extends string
 >(
   this: Responder<T>
 ): Promise<GenieMessage<T, 'assistant'>> {
@@ -39,9 +41,6 @@ export async function generateResponse<
       apiKey: openaiKey,
       temperature: temperatureForDescriptor[temperatureDescriptor],
       ...shortestFirst,
-      evaluate: result => 
-        is.string(result) ? result.length : result.replyMessage.length,
-      // itselfOrIts('content')(result).length,
       throwIfNone: true,
       fn,
       usageContainer

@@ -68,18 +68,15 @@ export type ChatFunctionProp = {
 };
 
 export type ChatFunctionReturns<F extends AnyChatFunction> =
-  F extends ChatFunction<any, infer Props, infer Optional> ? {
-    [K in Props]:
-      IsAny<Props> extends true
-        ? string | undefined 
-        // i.e., if Props are not specified, we don't want to just index by string
-      : [Optional] extends [never]
-        ? string
-      : K extends Optional
-        ? string | undefined
-      : string
-
-  } : never;
+  F extends ChatFunction<any, infer Props, infer Optional> 
+    ? {
+      [K in Props]:
+        [Optional] extends [never]
+          ? string
+        : K extends Optional
+          ? string | undefined
+        : string
+    } : never;
 
 
 const exampleChatFunction = chatFunction(
