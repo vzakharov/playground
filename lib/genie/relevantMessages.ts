@@ -1,7 +1,6 @@
-import { globalData } from "../vue-genie/data";
-import { reduceChatMessages } from "~/lib/vovas-openai";
 import { $throw } from "vovas-utils";
-import { AnyTool, BaseChat, Chat, GenieMessage, Responder } from "~/lib/genie";
+import { AnyTool, GenieMessage, Responder } from "~/lib/genie";
+import { reduceChatMessages } from "~/lib/vovas-openai";
 
 export function countIrrelevantMessages<T extends AnyTool>(chat: Responder<T, any, any>) {
 

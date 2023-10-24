@@ -1,5 +1,4 @@
-import _ from "lodash";
-import { ChatId, ChatData, GenieData, GenieSchema, ToolFrom, ToolName, Toolset, findBy } from "..";
+import { ChatData, ChatId, GenieData, ToolFrom, Toolset, findBy } from "..";
 
 export function findOrCreateChat<S extends Toolset, T extends ToolFrom<S>>(
   { chats }: GenieData<S>,
