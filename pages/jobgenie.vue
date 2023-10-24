@@ -3,12 +3,9 @@
 import Chat from '~/components/jobgenie/Chat/Chat.vue';
 import { Credentials } from '~/components/jobgenie/Credentials';
 import Login from '~/components/jobgenie/Login.vue';
-import { globalData } from '~/components/jobgenie/data';
 import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
 import { useProfiles } from '~/components/jobgenie/profiles';
-import { dataLastLoaded, genie } from '~/components/jobgenie/refs';
 import { sections } from '~/components/jobgenie/sections';
-import { globalState, initSelectedToolId } from '~/components/jobgenie/state';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
@@ -17,6 +14,7 @@ import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { defaultData } from '~/lib/jobgenie';
 import { allTrue } from '~/lib/utils';
+import { globalData, globalState, initSelectedToolId, genie } from '~/lib/vue-genie';
 
 const { selectedToolId, openaiKey } = toRefs(globalState);
 
@@ -72,7 +70,7 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>
       <Chat
-        :key="`${selectedToolId}-${dataLastLoaded}`"
+        :key="`${selectedToolId}-${globalState.dataLastLoaded}`"
         :="{ tool: genie.bound[selectedToolId] }"
       />
     </template>
