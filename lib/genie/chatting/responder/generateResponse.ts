@@ -11,7 +11,7 @@ import {
   Tool,
   temperatureForDescriptor, withUniqueId
 } from '../..';
-import { IsAny } from '~/lib/utils';
+import { IsAny, flatpact } from '~/lib/utils';
 
 export async function generateResponse<
   T extends Tool<any, A, any>,
@@ -56,25 +56,25 @@ export async function generateResponse<
     ...is.string(raw)
       ? { content: raw }
       : (
-        ({ content, ...assets }) => ({ content, assets })
+        ({ replyMessage: content, ...assets }) => ({ content, assets })
       )(raw)
-  }) as GenieMessage<S, T, 'assistant'>;
+  }) as GenieMessage<T, 'assistant'>;
 
   const responseMessage = fromRawMessage(result);
-  const existingLeftovers = this.leftovers;
 
-  this.leftovers = {
-    results: _.compact([
-      ...leftovers.map(fromRawMessage),
-      // If the the existing leftovers are for the previousGeneration, then we want to keep them (as well as the previous generation itself)
-      ...previousGeneration && this.leftoversForMessage(previousGeneration) ? [
-        ...existingLeftovers.results,
-        previousGeneration
-      ] : []
+  const existingLeftoverResults = 
+    this.areLeftoversDefined() 
+    && this.messageWithLeftovers === previousGeneration
+    && this.data.leftovers.results;
+
+  this.setLeftovers({
+    results: flatpact([
+      existingLeftoverResults,
+      leftovers.map(fromRawMessage),
     ]),
     baseMessageId: responseMessage.id,
     activeMessageOriginalIndex: 1
-  };
+  });
 
   return responseMessage
 

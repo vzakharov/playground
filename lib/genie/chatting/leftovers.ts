@@ -27,6 +27,10 @@ export class LeftoversController<
     return message;
   };
 
+  setLeftovers(leftovers: Leftovers<T>): asserts this is this & DefiniteLeftoversController<T> {
+    Object.assign(this.data, { leftovers });
+  };
+
 };
 
 export class DefiniteLeftoversController<
