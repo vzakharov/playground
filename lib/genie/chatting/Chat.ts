@@ -1,5 +1,5 @@
 import { Resolvable } from '~/lib/utils';
-import { AnyTool, GenieMessage } from '..';
+import { AnyTool, GenieData, GenieMessage, GenieState, SetFor } from '..';
 import { Responder } from './responder';
 
 export type ChatState<T extends AnyTool> = {
@@ -13,7 +13,11 @@ export type ChatState<T extends AnyTool> = {
   dataLastLoaded: number;
 };
 
-export class Chat<T extends AnyTool> extends Responder<T> { };
+export class Chat<
+  T extends AnyTool, GD extends GenieData<SetFor<T>>, GS extends GenieState
+> extends Responder<T, GD, GS> { };
 
-export type ChatConfig<Id extends string, T extends AnyTool<Id>> =
-  ConstructorParameters<typeof Chat<T>>[0];
+export type ChatConfig<
+  Id extends string, T extends AnyTool<Id>, GD extends GenieData<SetFor<T>>, GS extends GenieState
+> =
+  ConstructorParameters<typeof Chat<T, GD, GS>>[0];

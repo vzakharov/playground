@@ -13,26 +13,26 @@ export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>, GenieData<Tools
  * create chat controllers that are also bound to the same Genie.
  *
  * @template Set The type of the toolset that the Genie is configured with.
- * @template Tool The type of the tool that is being bound.
+ * @template T The type of the tool that is being bound.
  */
 export class BoundTool<
   Set extends Toolset,
-  Tool extends ToolFrom<Set>,
-  Data extends GenieData<Set>,
-  State extends GenieState
-> extends Tool<Tool['id'], AssetForTool<Tool>, Requires<Tool>> {
+  T extends ToolFrom<Set>,
+  GD extends GenieData<Set>,
+  GS extends GenieState
+> extends Tool<T['id'], AssetForTool<T>, Requires<T>> {
 
   constructor(
-    tool: Tool,
-    public genie: Genie<Set, Data, State>,
+    tool: T,
+    public genie: Genie<Set, GD, GS>,
   ) {
     const { id, config } = tool;
     super(id, config);
   };
 
-  chats: Chat<this>[] = [];
+  chats: Chat<this, GD, GS>[] = [];
 
-  chat(config: Omit<Chat<this>['config'], 'tool' | keyof GenieConfig<Set, Data, State>>) {
+  chat(config: Omit<Chat<this, GD, GS>['config'], 'tool' | keyof GenieConfig<Set, GD, GS>>) {
     return new Chat({
       ...config,
       ...this.genie.config,

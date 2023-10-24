@@ -69,7 +69,6 @@ export class BaseChat<
 
   };
 
-  get countIrrelevantMessages(): number { return countIrrelevantMessages(this) };
   isRelevant = isRelevant;
 
 };

@@ -1,8 +1,7 @@
 import _ from 'lodash';
-import { also } from 'vovas-utils';
-import { bound, inferIfFunction, pushedTo } from "~/lib/utils";
+import { inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, GenieData, GenieMessage, GenieState, SetFor, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GenieData, GenieState, SetFor, countIrrelevantMessages, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
@@ -42,5 +41,7 @@ export class Responder<
 
   generateResponse = generateResponse;
   handleResponseGeneration = handleResponseGeneration;
+
+  get countIrrelevantMessages(): number { return countIrrelevantMessages(this) };
 
 };

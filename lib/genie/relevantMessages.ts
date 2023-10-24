@@ -30,6 +30,6 @@ export function countIrrelevantMessages<T extends AnyTool>(chat: Responder<T, an
 
 };
 
-export function isRelevant<T extends AnyTool>(this: BaseChat<T, any, any, any>, message: GenieMessage<T>) {
+export function isRelevant<T extends AnyTool>(this: Responder<T, any, any>, message: GenieMessage<T>) {
   return this.messages.indexOf(message) >= this.countIrrelevantMessages;
 };
