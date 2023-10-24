@@ -53,7 +53,7 @@ export class Tool<
     const assetValues = getActiveAssets(globalData, requires);
 
     if ( !allPropsDefined(assetValues) )
-      throw new Error(`The following assets are missing: ${this.getMissingRequires(assetValues).join(', ')}`);
+      throw new Error(`The following assets are missing: ${this.getMissingRequires(assetValues)!.join(', ')}`);
 
     assetValues
     const { username } = globalData;
@@ -89,11 +89,12 @@ export class Tool<
     };
   };
 
-  getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
+  getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] | undefined {
     const { requires } = this.config;
-    return undefinedProps(assetValues)
+    const missingRequires = undefinedProps(assetValues)
       .filter(toolId => requires.includes(toolId as any))
       .map(toolId => toolWithId(this.config.requires, toolId));
+    return missingRequires.length ? missingRequires : undefined;
   };
 
 };

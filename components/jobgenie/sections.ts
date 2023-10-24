@@ -40,7 +40,7 @@ export type SectionConfig = {
 };
 
 export const sections = computed( () => _.map(toolIds, toolId => {
-  
+
   const { missingRequires } = genie.bound[toolId];
   const config = sectionConfigs[toolId];
 
