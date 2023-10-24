@@ -5,7 +5,7 @@ import { $if, $try, JsonableObject, either, give, give$, is } from "vovas-utils"
 export function useLocalReactive<T extends object>(
   key: string, 
   initializer: Initializer<T>,
-  migrators: readonly Migrator[] = []
+  migrators?: readonly Migrator[]
 ) {
 
   const localValue = 
@@ -16,10 +16,12 @@ export function useLocalReactive<T extends object>(
     )
     .else( give$({} as JsonableObject) );
   
-  const { version } = localValue;
-  assert( version, either( is.undefined, is.string ) );
-  if ( version != migrators.at(-1)?.version ) {
-    migrate( localValue, migrators, version );
+  if ( migrators ) {
+    const { version } = localValue;
+    assert( version, either( is.undefined, is.string ) );
+    if ( version != migrators.at(-1)?.version ) {
+      migrate( localValue, migrators, version );
+    };
   };
 
   const value = reactive(
