@@ -1,17 +1,7 @@
-import _ from 'lodash';
 import { is } from 'vovas-utils';
-import {
-  ChatFunction,
-  ChatFunctionReturns,
-  UsageContainer, generate, globalUsageContainer, itselfOrIts, reduceChatMessages, shortestFirst
-} from '~/lib/vovas-openai';
-import {
-  AnyTool,
-  GenieMessage, Responder,
-  Tool,
-  temperatureForDescriptor, withUniqueId
-} from '../..';
-import { IsAny, flatpact } from '~/lib/utils';
+import { flatpact } from '~/lib/utils';
+import { UsageContainer, generate, globalUsageContainer, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
+import { GenieMessage, Responder, Tool, temperatureForDescriptor, withUniqueId } from '../..';
 
 export async function generateResponse<
   T extends Tool<any, A, any>,
