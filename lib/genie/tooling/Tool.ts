@@ -3,7 +3,8 @@ import { $if, allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toFullSpecs, toRawMessage, toolWithId } from "..";
+import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, ToolIdFrom, Toolset, assetDescriptions, getActiveAssets, reciteAssets, toFullSpecs, toRawMessage, toolWithId } from "..";
+import _ from "lodash";
 
 export type ToolConfig<
   Asset extends string,
@@ -89,7 +90,10 @@ export class Tool<
   };
 
   getMissingRequires(assetValues: Partial<AssetValuesForSet<Reqs>>): ToolFrom<Reqs>[] {
-    return undefinedProps(assetValues).map(toolId => toolWithId(this.config.requires, toolId));
+    const { requires } = this.config;
+    return undefinedProps(assetValues)
+      .filter(toolId => requires.includes(toolId as any))
+      .map(toolId => toolWithId(this.config.requires, toolId));
   };
 
 };
