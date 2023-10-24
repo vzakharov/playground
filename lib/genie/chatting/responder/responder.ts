@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { also } from 'vovas-utils';
 import { bound, inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, GenieMessage, generateResponse, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GenieMessage, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
@@ -33,6 +33,10 @@ export class Responder<
     }
 
   } };
+
+  getPrompt = getPrompt;
+
+  get prompt() { return this.getPrompt() };
 
   generateResponse = generateResponse;
   handleResponseGeneration = handleResponseGeneration;

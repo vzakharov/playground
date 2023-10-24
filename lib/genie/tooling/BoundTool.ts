@@ -1,6 +1,6 @@
 import { undefinedProps } from "~/lib/utils";
 import { AssetForTool, Chat, Genie, GenieConfig, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
-import { Tool } from "./Tool";
+import { Tool } from './Tool';
 
 /**
  * A type alias for any BoundTool instance.
@@ -20,12 +20,6 @@ export class BoundTool<
   T extends ToolFrom<S>
 > extends Tool<T['id'], AssetForTool<T>, Requires<T>> {
 
-  /**
-   * Creates a new BoundTool instance.
-   *
-   * @param tool The tool to bind.
-   * @param genie The Genie to bind the tool to.
-   */
   constructor(
     tool: T,
     public genie: Genie<S>
@@ -34,17 +28,8 @@ export class BoundTool<
     super(id, config);
   };
 
-  /**
-   * An array of chat controllers that are bound to this tool.
-   */
   chats: Chat<this>[] = [];
 
-  /**
-   * Creates a new chat controller that is bound to this tool.
-   *
-   * @param config The configuration for the chat controller.
-   * @returns The new chat controller.
-   */
   chat(config: Omit<Chat<this>['config'], 'tool' | keyof GenieConfig<S>>) {
     return new Chat({
       ...config,

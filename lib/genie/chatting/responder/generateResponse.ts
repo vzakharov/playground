@@ -9,9 +9,12 @@ export async function generateResponse<
 >(
   this: Responder<T>
 ): Promise<GenieMessage<T, 'assistant'>> {
-  const { config: { tool, globalData, globalState, state }, messages, previousGeneration } = this;
+  const { 
+    config: { tool, globalData, globalState, state }, 
+    messages, previousGeneration,
+    prompt: { promptMessages, fn}
+  } = this;
   const { useGpt4, savedMsPerPromptJsonChar, temperatureDescriptor, openaiKey } = globalState;
-  const { promptMessages, fn } = tool.build({ messages, globalData });
   const model = useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo';
 
   const jsonChars = reduceChatMessages({ promptMessages });
