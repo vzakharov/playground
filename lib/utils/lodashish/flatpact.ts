@@ -1,16 +1,28 @@
 import _ from "lodash";
 
 /**
- * Identical to _.compact(_.flatten(array))
+ * Flattens an array (of arbitrary depth) and removes all {@link Falsey} values.
+ * @param array - The array to be flattened and compacted.
+ * @returns A new array that is a flattened and compacted version of the input array.
+ * 
+ * @example
+ * flatpact([0, 1, [2, 3, undefined ]]); // [1, 2, 3]
+ * flatpact(['hello', [false, ['world', null, undefined], 0, 0n, '']]); // ['hello', 'world']
  */
-export function flatpact<T>(array: readonly Flatpactable<T>[]) {
-  return _.compact(_.flatten(array)) as T[];
+export function flatpact<T>(array: readonly Flatpactable<T>[]): T[] {
+  return _.compact(_.flattenDeep(array)) as T[];
 };
 
+/**
+ * A type representing an arbitrarily deep array of values, each of which can be either of type T or {@link Falsey}.
+ */
 export type Flatpactable<T> = T | Flatpactable<T>[] | Falsey;
 
+/**
+ * A type that represents "falsy" values in JavaScript: `false`, `null`, `undefined`, `0`, `0n`, and `''`.
+ */
 export type Falsey = false | null | undefined | 0 | 0n | '';
 
 // Example:
 flatpact([0, 1, [2, 3, undefined ]]); // [1, 2, 3], type inferred as ( 1 | 2 | 3 )[]
-flatpact(['hello', ['world', false, null, undefined, 0, 0n, '']]); // ['hello', 'world'], type inferred as ( 'hello' | 'world' )[]
+flatpact(['hello', [false, ['world', null, undefined], 0, 0n, '']]); // ['hello', 'world']
