@@ -1,9 +1,6 @@
 import _ from 'lodash';
-import { $throw } from 'vovas-utils';
-import { genie } from "lib/genie-vue";
 import { ToolId, toolIds } from '~/lib/jobgenie';
-import { SidebarMenu } from 'components/shared/SidebarStuff';
-import { Tool } from 'lib/genie';
+import { jobGenie } from './genie';
 
 export const sectionConfigs: {
   [Id in ToolId]: SectionConfig
@@ -41,7 +38,7 @@ export type SectionConfig = {
 
 export const sections = computed( () => _.map(toolIds, toolId => {
 
-  const { missingRequires } = genie.bound[toolId];
+  const { missingRequires } = jobGenie.bound[toolId];
   const config = sectionConfigs[toolId];
 
   return {

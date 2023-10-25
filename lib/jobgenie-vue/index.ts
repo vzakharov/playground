@@ -1,3 +1,2 @@
-export * from './context';
-export * from '../genie-vue/io';
+export * from './genie';
 export * from './sections';

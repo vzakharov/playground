@@ -11,18 +11,21 @@ export class VueGenie<
     tools: Set & ValidToolset<Set>
   ) {
 
-    const globalData = useLocalReactive(
-      `${appId}-data`,
-      getGlobalDataInitializer(tools),
-      migrators
-    );
-  
-    const globalState = useLocalReactive(
-      `${appId}-state`,
-      getGlobalStateInitializer(tools)
-    );
+    super(tools, {
 
-    super(tools, { globalData, globalState });
+      globalData: useLocalReactive(
+        `${appId}-data`,
+        getGlobalDataInitializer(tools),
+        migrators
+      ),
+
+      globalState: useLocalReactive(
+        `${appId}-state`,
+        getGlobalStateInitializer(tools)
+      )
+
+    })
+    
   };
 
   io = reactive( new DataInputOutput(
