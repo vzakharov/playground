@@ -25,7 +25,10 @@ export class BoundTool<
   chats: Chat<this, G['config']['globalData'], G['config']['globalState']>[] = [];
 
   chat(config: Omit<Chat<this, any, any>['config'], 'tool' | keyof GenieConfig<any, any, any>>) {
-    return new Chat({
+    type GenieConfig = G['config'];
+    type GD = GenieConfig['globalData'];
+    type GS = GenieConfig['globalState'];
+    return new Chat<this, GD, GS>({
       ...config,
       ...this.genie.config,
       tool: this
