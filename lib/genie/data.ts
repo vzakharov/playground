@@ -1,6 +1,6 @@
 import { ChatData, ToolFrom, Toolset } from ".";
 
-export function getGlobalDataInitializer<S extends Toolset>(tools: S) {
+export function getGlobalDataInitializer<S extends Toolset>(tools?: S) {
   return {
     chats: [] as ChatData<ToolFrom<S>, boolean>[],
     username: '',

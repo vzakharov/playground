@@ -19,9 +19,6 @@ export type Initializer<T> = {
 
 export type Initializee<I extends Initializer<any>> =
   I extends Initializer<infer T> ? T : never;
-// {
-//   [K in keyof I]: I[K] extends (value: any) => infer T ? T : I[K]
-// };
 
 export function initialize<T>(
   object: JsonableObject | undefined, 
@@ -37,5 +34,13 @@ export function initialize<T>(
       : isSameTypeAs(defaultValue)(value)
         ? value
         : defaultValue;
+  }) as T;
+};
+
+export function getDefaultValue<T>(initializer: Initializer<T>) {
+  return _.mapValues(initializer, ( defaultValueOrInitializer ) => {
+    return typeof defaultValueOrInitializer === 'function'
+      ? defaultValueOrInitializer(undefined)
+      : defaultValueOrInitializer;
   }) as T;
 };

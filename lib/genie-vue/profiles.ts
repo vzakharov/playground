@@ -1,68 +1,62 @@
 import _ from "lodash";
 import { $throw } from "vovas-utils";
-import { replaceAppDataWithUnknown, resetAppData } from "~/lib/jobgenie";
-import { concat, uniqueId } from "~/lib/utils";
-import { GlobalState } from ".";
-import { Genie, GlobalData, Toolset } from "~/lib/genie";
+import { concat, getDefaultValue, initialize, morph, uniqueId } from "~/lib/utils";
+import { GlobalData, GlobalState, VueGenie, getGlobalDataInitializer } from ".";
+import { Genie, Toolset } from "~/lib/genie";
 
-export const localProfilesPrefix = 'jobgenie-data-';
+export class ProfileManager {
 
-export function useProfiles(
-  this: Genie<any, GlobalData<Toolset>, GlobalState<Toolset>>
-) {
+  constructor(
+    private appId: string,
+    private data: GlobalData<Toolset>,
+    private state: GlobalState<Toolset>,
+  ) { };
 
-  const { globalData, globalState } = this.config;
+  prefix = `${this.appId}-data-` as const;
 
-  const slugs = computed( () =>
-    _.uniq([
-      globalData.profileSlug,
+  get slugs() {
+    return _.uniq([
+      this.data.profileSlug,
       ...Object.keys(localStorage)
-        .filter(key => key.startsWith(localProfilesPrefix))
-        .map(key => key.slice(localProfilesPrefix.length))
+        .filter(key => key.startsWith(this.prefix))
+        .map(key => key.slice(this.prefix.length))
     ])
-  );
-
-  const storageKey = (slug: string) => concat(localProfilesPrefix, slug);
-
-  function loadProfile(slug: string, dontSaveCurrentProfile = false) {
-    if ( !dontSaveCurrentProfile )
-      saveCurrentProfile();
-    const localValue = localStorage.getItem(storageKey(slug))
-      ?? $throw(`Profile ${slug} (key ${storageKey(slug)}) not found in localStorage`);
-    const newData = JSON.parse(localValue);
-    const { dataLastLoaded } = toRefs(globalState);
-    replaceAppDataWithUnknown(globalData, newData, dataLastLoaded);
-    globalData.profileSlug = slug;
   };
 
-  function saveCurrentProfile() {
+  storageKey(slug: string) {
+    return concat(this.prefix, slug);
+  };
+
+  load(slug: string, dontSaveCurrentProfile = false) {
+    const { data, state } = this;
+    if ( !dontSaveCurrentProfile )
+      this.save();
+    const localValue = localStorage.getItem(this.storageKey(slug))
+      ?? $throw(`Profile ${slug} (key ${this.storageKey(slug)}) not found in localStorage`);
+    const newData = JSON.parse(localValue);
+    morph(data, newData);
+    state.dataLastLoaded = Date.now();
+    data.profileSlug = slug;
+  };
+
+  save() {
     localStorage.setItem(
-      storageKey(globalData.profileSlug), 
-      JSON.stringify(globalData)
+      this.storageKey(this.data.profileSlug), 
+      JSON.stringify(this.data)
     );
   };
 
-  function newProfile(slug?: string | null) {
+  new(slug?: string | null) {
     // If strictly null, return (it means the user cancelled the dialog)
     if ( slug === null ) return;
-    saveCurrentProfile();
-    const { dataLastLoaded } = toRefs(globalState);
-    resetAppData(globalData, {
-      profileSlug: uniqueId(slug || 'profile', slugs.value)
-    }, dataLastLoaded);
-  }
-
-  function deleteCurrentProfile() {
-    localStorage.removeItem(storageKey(globalData.profileSlug));
-    loadProfile('default', true);
+    this.save();
+    morph(this.data, getDefaultValue(getGlobalDataInitializer()));
+    this.state.dataLastLoaded = Date.now();
   };
 
-  return {
-    slugs,
-    loadProfile,
-    saveCurrentProfile,
-    newProfile,
-    deleteCurrentProfile,
+  delete() {
+    localStorage.removeItem(this.storageKey(this.data.profileSlug));
+    this.load('default', true);
   };
 
 };

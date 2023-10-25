@@ -1,7 +1,7 @@
 import { keys, morph } from "~/lib/utils";
 import _ from "lodash";
 import { Genie, GenieConfig, Toolset, ValidToolset } from "~/lib/genie";
-import { DataInputOutput, GlobalData, GlobalState } from ".";
+import { DataInputOutput, GlobalData, GlobalState, ProfileManager } from ".";
 
 export class VueGenie<
   Set extends Toolset,
@@ -17,6 +17,11 @@ export class VueGenie<
     super(tools, config);
   };
 
-  io = new DataInputOutput(this);
+  io = reactive( new DataInputOutput(
+    `${this.appId}-${this.config.globalData.username}`,
+    this.config.globalData, this.config.globalState
+  ) );
+
+  profile = reactive( new ProfileManager(this.appId, this.config.globalData, this.config.globalState ) );
 
 };
