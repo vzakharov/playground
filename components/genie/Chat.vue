@@ -1,16 +1,16 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="S extends Toolset, T extends BoundTool<VueGenie<S>, ToolIdFrom<S>>">
 
 import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, BoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
+import { $GenieChatId, BoundTool, Chat, GenieMessage, ToolIdFrom, Toolset, branded } from '~/lib/genie';
 import { VueGenie } from '~/lib/genie-vue';
 import { Resolvable, refsToReactive } from '~/lib/utils';
 import Message from './Chat/Message.vue';
 
-type T = BoundTool<VueGenie<never>, never>;
+// type T = BoundTool<VueGenie<never>, never>;
 
 const { tool } = defineProps<{
   tool: T;

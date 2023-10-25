@@ -6,6 +6,7 @@ import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import TextModal from '~/components/shared/TextModal.vue';
+import Settings from '~/components/genie/Settings.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
 import { Credentials, DataInputOutput } from '~/lib/genie-vue';
@@ -66,7 +67,7 @@ const win = window;
           },
         ]"
       />
-      <GenieSettings appId="jobgenie" :="{ genie }"/>
+      <Settings appId="jobgenie" :="{ genie }"/>
     </template>
     <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>

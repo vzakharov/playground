@@ -7,7 +7,7 @@ import Toggle from '~/components/shared/Toggle.vue';
 import { Genie, Toolset, temperatureDescriptors } from '~/lib/genie';
 
 const { genie  } = defineProps<{
-  genie: VueGenie<never>;
+  genie: VueGenie<Toolset>;
 }>();
 
 const win = window;
