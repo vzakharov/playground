@@ -10,7 +10,7 @@ export type LeftoversStore<S extends Toolset> = {
   [TId in ToolIdFrom<S>]?: ToolLeftoversStore<ToolWithId<S, TId>>;
 };
 
-export const genieStateInitializer= {
+export const globalStateInitializer = {
   openaiKey: '',
   usdSpent: 0,
   useGpt4: true,
@@ -21,4 +21,4 @@ export const genieStateInitializer= {
   temperatureDescriptor: (value: any) => ensured(value, is.among(temperatureDescriptors)).else('normal'),
 } satisfies Initializer<any>;
 
-export type GenieState = Initializee<typeof genieStateInitializer>;
+export type GlobalState = Initializee<typeof globalStateInitializer>;

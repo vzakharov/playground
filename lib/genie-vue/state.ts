@@ -1,26 +1,17 @@
 import { ensured, is } from "vovas-utils";
-import { useLocalReactive } from "~/composables/useLocalReactive";
-import { Toolset, genieStateInitializer, getToolIds } from "~/lib/genie";
+import { Toolset, globalStateInitializer as baseInitializer, getToolIds } from "~/lib/genie";
 
-export function getGlobalState<S extends Toolset>(tools: S) {
-
+export function getInitSelectedToolId<S extends Toolset>(tools: S) {
   const toolIds = getToolIds(tools);
-  
-  function initSelectedToolId() {
-    return ensured(is.among(toolIds)).else(toolIds[0]);
-  };
+  return ensured(is.among(toolIds)).else(toolIds[0]);
+};
 
+export function getGlobalStateInitializer<S extends Toolset>(tools: S) {
   return {
-
-    initSelectedToolId,
-
-    globalState: useLocalReactive('jobgenie-state', {
-      ...genieStateInitializer,
-      selectedToolId: initSelectedToolId(),
-      userMessage: '',
-      showIrrelevantMessages: false,
-      dataLastLoaded: Date.now()
-    }),
+    ...baseInitializer,
+    selectedToolId: getInitSelectedToolId(tools),
+    userMessage: '',
+    showIrrelevantMessages: false,
+    dataLastLoaded: Date.now()
   };
-
 };

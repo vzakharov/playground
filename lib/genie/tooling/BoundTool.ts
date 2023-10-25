@@ -1,11 +1,11 @@
 import { undefinedProps } from "~/lib/utils";
-import { AssetForTool, Chat, Genie, GenieConfig, GenieData, GenieState, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
+import { AssetForTool, Chat, Genie, GenieConfig, GlobalData, GlobalState, Requires, ToolFrom, Toolset, getActiveAssetsForSet } from "..";
 import { Tool } from './Tool';
 
 /**
  * A type alias for any BoundTool instance.
  */
-export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>, GenieData<Toolset>, GenieState>;
+export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>, GlobalData<Toolset>, GlobalState>;
 
 /**
  * The BoundTool class represents a tool that is bound to a specific Genie instance.
@@ -18,8 +18,8 @@ export type AnyBoundTool = BoundTool<Toolset, ToolFrom<Toolset>, GenieData<Tools
 export class BoundTool<
   Set extends Toolset,
   T extends ToolFrom<Set>,
-  GD extends GenieData<Set>,
-  GS extends GenieState
+  GD extends GlobalData<Set>,
+  GS extends GlobalState
 > extends Tool<T['id'], AssetForTool<T>, Requires<T>> {
 
   constructor(

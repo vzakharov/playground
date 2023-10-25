@@ -1,14 +1,17 @@
-import { defaultData, resetAppData, replaceAppDataWithUknown } from "~/lib/jobgenie";
-import { $throw } from "vovas-utils";
-import { replace } from "lodash";
-import { concat, uniqueId } from "~/lib/utils";
 import _ from "lodash";
-import { globalData } from "~/lib/genie-vue";
-import { globalState } from "~/lib/jobgenie-vue";
+import { $throw } from "vovas-utils";
+import { replaceAppDataWithUknown, resetAppData } from "~/lib/jobgenie";
+import { concat, uniqueId } from "~/lib/utils";
+import { GlobalState } from ".";
+import { Genie, GlobalData, Toolset } from "~/lib/genie";
 
 export const localProfilesPrefix = 'jobgenie-data-';
 
-export function useProfiles() {
+export function useProfiles(
+  this: Genie<any, GlobalData<Toolset>, GlobalState<Toolset>>
+) {
+
+  const { globalData, globalState } = this.config;
 
   const slugs = computed( () =>
     _.uniq([
@@ -62,4 +65,4 @@ export function useProfiles() {
     deleteCurrentProfile,
   };
 
-}
+};

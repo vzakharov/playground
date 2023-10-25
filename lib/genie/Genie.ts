@@ -1,28 +1,33 @@
 import _ from "lodash";
-import { BoundTool, GenieData, GenieState, ToolIdFrom, ToolWithId, Toolset, ValidToolset, getActiveAssetsForSet } from ".";
+import { BoundTool, GlobalData, GlobalState, ToolIdFrom, ToolWithId, Toolset, ValidToolset, getActiveAssetsForSet } from ".";
 
-export type GenieContext<Set extends Toolset, Data extends GenieData<Set>, State extends GenieState> = {
+export type GenieContext<Set extends Toolset, Data extends GlobalData<Set>, State extends GlobalState> = {
   globalData: Data;
   globalState: State;
 };
 
-export type GenieConfig<Set extends Toolset, Data extends GenieData<Set>, State extends GenieState> =
+export type GenieConfig<Set extends Toolset, Data extends GlobalData<Set>, State extends GlobalState> =
   GenieContext<Set, Data, State>;
+
+export type SomeGenie = Genie<Toolset, GlobalData<Toolset>, GlobalState>;
 
 export class Genie<
   Set extends Toolset,
-  Data extends GenieData<Set>,
-  State extends GenieState
+  Data extends GlobalData<Set>,
+  State extends GlobalState
 > {
+
+  tools: Set;
 
   bound: {
     [Id in ToolIdFrom<Set>]: BoundTool<Set, ToolWithId<Set, Id>, Data, State>
   }
 
   constructor(
-    public tools: Set & ValidToolset<Set>,
+    tools: Set & ValidToolset<Set>,
     public readonly config: GenieConfig<Set, Data, State>,
   ) {
+    this.tools = tools;
     this.bound = _.fromPairs(
       tools.map( tool => [tool.id, new BoundTool(tool, this)] )
     ) as this['bound'];

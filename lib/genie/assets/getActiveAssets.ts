@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { AnyTool, AssetValues, AssetValuesForSet, AssetValuesForToolId, GenieData, SetFor, ToolIdFrom, ToolWithId, Toolset, findBy, getToolIds } from "..";
+import { AnyTool, AssetValues, AssetValuesForSet, AssetValuesForToolId, GlobalData, SetFor, Tool, ToolIdFrom, ToolWithId, Toolset, findBy, getToolIds } from "..";
 import { objectWithKeys } from "~/lib/utils";
 
 export function getActiveAssetsForSet<
   S extends Toolset
->(data: GenieData<S>, tools: S): Partial<AssetValuesForSet<S>> {
+>(data: GlobalData<S>, tools: S): Partial<AssetValuesForSet<S>> {
 
   return objectWithKeys(
     getToolIds(tools), 
@@ -16,7 +16,7 @@ export function getActiveAssetsForSet<
 export function getActiveAssetsForToolId<
   S extends Toolset,
   Id extends ToolIdFrom<S>
->(data: GenieData<S>, toolId: Id) {
+>(data: GlobalData<S>, toolId: Id) {
 
   const chat = findBy({ toolId }, data.chats);
 
@@ -37,9 +37,9 @@ export function getActiveAssetsForToolId<
 
 export function getActiveAssetsForTool<
   Id extends string,
-  T extends AnyTool<Id>,
+  T extends Tool<Id, any, any>,
   S extends SetFor<T>
->(data: GenieData<S>, tool: T) {
+>(data: GlobalData<S>, tool: T) {
 
   return getActiveAssetsForToolId(data, tool.id);
 

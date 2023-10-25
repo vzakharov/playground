@@ -1,9 +1,9 @@
-import { GlobalData as BaseGlobalData, Toolset, getGlobalDataInitializer as getBaseInitializer } from "~/lib/genie";
+import { ChatData, ToolFrom, Toolset } from ".";
 
 export function getGlobalDataInitializer<S extends Toolset>(tools: S) {
   return {
-    ...getBaseInitializer(tools),
-    profileSlug: 'default',
+    chats: [] as ChatData<ToolFrom<S>, boolean>[],
+    username: '',
   };
 };
 

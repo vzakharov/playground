@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import { inferIfFunction, pushedTo } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, GenieData, GenieState, SetFor, countIrrelevantMessages, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GlobalData, GlobalState, SetFor, countIrrelevantMessages, generateResponse, getPrompt, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
   T extends AnyTool,
-  GD extends GenieData<SetFor<T>>,
-  GS extends GenieState
+  GD extends GlobalData<SetFor<T>>,
+  GS extends GlobalState
 > extends LeftoversController<T, boolean, GD, GS> {
 
   constructor(
@@ -37,7 +37,7 @@ export class Responder<
 
   getPrompt = getPrompt;
 
-  get prompt() { return this.getPrompt() };
+  get prompt() { return getPrompt.call(this) }
 
   generateResponse = generateResponse;
   handleResponseGeneration = handleResponseGeneration;

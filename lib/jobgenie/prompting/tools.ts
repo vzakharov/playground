@@ -9,7 +9,7 @@ export const tools = [
   pitch,
   challenge,
   social
-] satisfies Toolset;
+] as const satisfies Toolset;
 
 export const toolIds = _.map(tools, 'id');
 

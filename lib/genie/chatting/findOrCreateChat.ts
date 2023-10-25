@@ -1,7 +1,7 @@
-import { ChatData, ChatId, GenieData, ToolFrom, Toolset, findBy } from "..";
+import { ChatData, ChatId, GlobalData, ToolFrom, Toolset, findBy } from "..";
 
 export function findOrCreateChat<S extends Toolset, T extends ToolFrom<S>>(
-  { chats }: GenieData<S>,
+  { chats }: GlobalData<S>,
   { id: toolId }: T,
   id: ChatId
 ): ChatData<T, any> {

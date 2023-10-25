@@ -1,11 +1,14 @@
 import dedent from "dedent-js";
 import { allPropsDefined, undefinedProps } from "~/lib/utils";
-import { AnyTool, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage } from "../..";
+import { AnyTool, GlobalData, GlobalState, SetFor, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage } from "../..";
 import { Responder } from "./responder";
 import { chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
 
-export function getPrompt<T extends AnyTool>(
-  this: Responder<T>,
+export function getPrompt<
+  T extends AnyTool,
+  GD extends GlobalData<SetFor<T>>
+>(
+  this: Responder<T, GD, any>,
   messages = this.data.messages
 ) {
 

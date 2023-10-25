@@ -1,6 +1,5 @@
 import yaml from 'js-yaml';
-import { globalState } from '~/lib/jobgenie-vue';
-import { globalData } from '~/lib/genie-vue';
+import { globalState, globalData } from '~/lib/jobgenie-vue';
 import { AppData, replaceAppDataWithUknown } from '~/lib/jobgenie';
 
 export function stringifyData(d: AppData = globalData) {

@@ -13,7 +13,7 @@ export type ToolConfig<
   generateAssetsAfter: number;
   reciteAssetsAfter?: number;
   build: BuildCallback<Reqs>;
-  autoQuery?: string | ( ( context: GenieContext<Reqs>) => string );
+  autoQuery?: string | ( ( context: GenieContext<Reqs, any, any>) => string );
   assets: AssetSpecs<Asset>;
   requires: Reqs;
 };

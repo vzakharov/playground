@@ -20,5 +20,6 @@ export * from './placeholders';
 export * from './pushedTo';
 export * from './resolvable';
 export * from './sentenceCase';
+export * from './typings';
 export * from './uniqueId';
 export * from './utils';

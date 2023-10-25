@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { Tool } from "~/lib/genie";
+import { AnyTool, Tool, Toolset } from "~/lib/genie";
 import { dna, mainSystemMessage, schema } from "../..";
 
 export const resume = new Tool('resume', {
@@ -37,4 +37,4 @@ export const resume = new Tool('resume', {
     experience: 'The experience to use in the resume, in Markdown format',
   }
 
-});
+}) satisfies AnyTool;

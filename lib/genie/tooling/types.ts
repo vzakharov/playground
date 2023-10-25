@@ -1,15 +1,11 @@
-import { ArrayItem, Falsible, StringKey } from "~/lib/utils";
+import { ArrayItem, Falsible, IfExactly, IsExactly, StringKey } from "~/lib/utils";
 import { StackUpable } from "~/lib/vovas-openai";
-import { Dict, GenieData, GenieMessage, Tool } from "..";
+import { Dict, GlobalData, GenieMessage, Tool } from "..";
 
 
-export type AnyTool<
-  Id extends string = any,
-  A extends string = any,
-  Reqs extends Toolset = any
-> = Tool<Id, A, Reqs>;
+export type AnyTool = Tool<any, any, any>
 
-export type Toolset = AnyTool[];
+export type Toolset = readonly AnyTool[];
 
 export type Requires<T extends AnyTool> = T['config']['requires'];
 
@@ -46,12 +42,18 @@ export type AssetValues<T extends Toolset | AnyTool> = Dict<Asset<T>>;
 
 export type BuildInput<T extends AnyTool> = {
   messages: GenieMessage<T>[];
-  globalData: GenieData<Requires<T>>;
+  globalData: GlobalData<Requires<T>>;
 };
 
-export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
+export type DefiniteAssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
   [A in AssetForTool<ToolWithId<S, Id>>]: string;
 };
+
+export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> =
+  IfExactly<string, Id,
+    DefiniteAssetValuesForToolId<S, Id>,
+    Partial<DefiniteAssetValuesForToolId<S, Id>>
+  >;
 
 export type AssetValuesForSet<S extends Toolset> = {
   [Id in ToolIdFrom<S>]: AssetValuesForToolId<S, Id>;

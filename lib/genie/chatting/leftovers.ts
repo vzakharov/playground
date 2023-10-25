@@ -1,7 +1,7 @@
 import { isBy } from "~/lib/vovas-openai";
 import _ from "lodash";
 import { $throw } from "vovas-utils";
-import { AnyTool, BaseChat, GenieData, GenieMessage, GenieState, LeftoversDefined, MessageId, SetFor } from "..";
+import { AnyTool, BaseChat, GlobalData, GenieMessage, GlobalState, LeftoversDefined, MessageId, SetFor } from "..";
 
 export type Leftovers<T extends AnyTool> = {
   results: GenieMessage<T, 'assistant'>[];
@@ -12,8 +12,8 @@ export type Leftovers<T extends AnyTool> = {
 export class LeftoversController<
   T extends AnyTool,
   LD extends LeftoversDefined,
-  GD extends GenieData<SetFor<T>>,
-  GS extends GenieState
+  GD extends GlobalData<SetFor<T>>,
+  GS extends GlobalState
 > extends BaseChat<T, LD, GD, GS> {
 
   areLeftoversDefined(): this is this & DefiniteLeftoversController<T, GD, GS> {
@@ -37,8 +37,8 @@ export class LeftoversController<
 
 export class DefiniteLeftoversController<
   T extends AnyTool,
-  GD extends GenieData<SetFor<T>>,
-  GS extends GenieState
+  GD extends GlobalData<SetFor<T>>,
+  GS extends GlobalState
 > extends LeftoversController<T, true, GD, GS> {
 
 
