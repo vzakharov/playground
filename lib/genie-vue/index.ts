@@ -1,5 +1,4 @@
 export * from './VueGenie';
-export * from './context';
 export * from './data';
 export * from './io';
 export * from './migrators';

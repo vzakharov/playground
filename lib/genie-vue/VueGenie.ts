@@ -1,20 +1,28 @@
-import { keys, morph } from "~/lib/utils";
-import _ from "lodash";
 import { Genie, GenieConfig, Toolset, ValidToolset } from "~/lib/genie";
-import { DataInputOutput, GlobalData, GlobalState, ProfileManager } from ".";
+import { useLocalReactive } from "~/lib/utils-vue";
+import { DataInputOutput, GlobalData, GlobalState, ProfileManager, getGlobalDataInitializer, getGlobalStateInitializer, migrators } from ".";
 
 export class VueGenie<
-  Set extends Toolset,
-  Data extends GlobalData<Set>,
-  State extends GlobalState<Set>
-> extends Genie<Set, Data, State> {
+  Set extends Toolset
+> extends Genie<Set, GlobalData<Set>, GlobalState<Set>> {
 
   constructor(
     public appId: string,
-    tools: Set & ValidToolset<Set>,
-    config: Omit<GenieConfig<Set, Data, State>, 'tools'>,
+    tools: Set & ValidToolset<Set>
   ) {
-    super(tools, config);
+
+    const globalData = useLocalReactive(
+      `${appId}-data`,
+      getGlobalDataInitializer(tools),
+      migrators
+    );
+  
+    const globalState = useLocalReactive(
+      `${appId}-state`,
+      getGlobalStateInitializer(tools)
+    );
+
+    super(tools, { globalData, globalState });
   };
 
   io = reactive( new DataInputOutput(
