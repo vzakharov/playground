@@ -14,7 +14,7 @@ import { useMessageButtons } from '~/lib/genie-vue';
 
 const props = defineProps<{
   message: GenieMessage<T>,
-  chat: Chat<T>
+  chat: Chat<T, any, any>
 }>();
 
 const { message, chat } = props;

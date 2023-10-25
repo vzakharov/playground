@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import Chat from '~/components/jobgenie/Chat/Chat.vue';
-import Login from '~/components/jobgenie/Login.vue';
+import Chat from '~/components/genie/Chat.vue';
+import Login from '~/components/genie/Login.vue';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';

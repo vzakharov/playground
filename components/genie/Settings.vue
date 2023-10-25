@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
+import { VueGenie } from '~/lib/genie-vue';
 import { $throw } from 'vovas-utils';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { Genie, Toolset, temperatureDescriptors, genieStateInitializer } from '~/lib/genie';
+import { Genie, Toolset, temperatureDescriptors } from '~/lib/genie';
 
 const { genie  } = defineProps<{
-  genie: Genie<Toolset>;
+  genie: VueGenie<never>;
 }>();
 
 const win = window;

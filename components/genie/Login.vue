@@ -1,3 +1,23 @@
+<script setup lang="ts">
+  
+import { Credentials } from '~/lib/genie-vue';
+import Button from '~/components/shared/Button.vue'
+
+  const username = ref('')
+  const apiKey = ref('')
+
+  const emit = defineEmits<{
+    login: [Credentials]
+  }>();
+
+  const startChat = () => {
+    if (username.value && apiKey.value) {
+      emit('login', { username: username.value, apiKey: apiKey.value })
+    }
+  }
+  
+</script>
+
 <template>
   <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
     <form @submit.prevent="startChat">
@@ -21,26 +41,6 @@
     </form>
   </div>
 </template>
-
-<script setup lang="ts">
-  
-import Button from '~/components/shared/Button.vue'
-import { Credentials } from './Credentials';
-
-  const username = ref('')
-  const apiKey = ref('')
-
-  const emit = defineEmits<{
-    login: [Credentials]
-  }>();
-
-  const startChat = () => {
-    if (username.value && apiKey.value) {
-      emit('login', { username: username.value, apiKey: apiKey.value })
-    }
-  }
-  
-</script>
 
 <style scoped lang="postcss">
   .form-label {

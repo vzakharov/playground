@@ -1,14 +1,16 @@
-<script setup lang="ts" generic="T extends BoundTool<VueGenie<never>, never>">
+<script setup lang="ts">
 
 import _ from 'lodash';
 import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, BoundTool, Chat, GenieMessage, SetFor, Toolset, branded } from '~/lib/genie';
+import { $GenieChatId, BoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
+import { VueGenie } from '~/lib/genie-vue';
 import { Resolvable, refsToReactive } from '~/lib/utils';
-import Message from './Message.vue';
-import { VueGenie } from 'lib/genie-vue';
+import Message from './Chat/Message.vue';
+
+type T = BoundTool<VueGenie<never>, never>;
 
 const { tool } = defineProps<{
   tool: T;
@@ -38,11 +40,11 @@ const chat = reactive(
     state, 
     chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool,
   })
-);
+) as Chat<T, any, any>;
 
 watchEffect(chat.watcher);
 
-addProperties(window, { _, c: chat, data: globalData, state, globalState });
+addProperties(window, { _, chat, data: globalData, state, globalState });
 
 watch(userMessageComponent, component => {
   if ( !component ) return;
