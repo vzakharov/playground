@@ -2,6 +2,7 @@ import { Genie, Toolset, ValidToolset } from "~/lib/genie";
 import { getDefaultValue } from "~/lib/utils";
 import { useLocalReactive } from "~/lib/utils-vue";
 import { DataInputOutput, GlobalData, GlobalState, ProfileManager, getGlobalDataInitializer, getGlobalStateInitializer, getInitSelectedToolId, migrators } from ".";
+import { reactive } from 'vue';
 
 export class VueGenie<
   Set extends Toolset
@@ -23,7 +24,11 @@ export class VueGenie<
       globalState: useLocalReactive(
         `${appId}-state`,
         getGlobalStateInitializer(tools)
-      )
+      ),
+
+      reactivity: {
+        reactive: reactive as <T extends object>(obj: T) => T
+      }
 
     })
 

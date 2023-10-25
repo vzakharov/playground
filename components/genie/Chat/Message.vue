@@ -8,9 +8,9 @@ import Card from '~/components/shared/Card.vue';
 import TextModal from '~/components/shared/TextModal.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { AnyTool, AssetValues, Chat, GenieMessage, assetCaptions } from '~/lib/genie';
+import { useMessageButtons } from '~/lib/genie-vue';
 import { allTrue } from '~/lib/utils';
 import { isBy } from '~/lib/vovas-openai';
-import { useMessageButtons } from '~/lib/genie-vue';
 
 const props = defineProps<{
   message: GenieMessage<T>,

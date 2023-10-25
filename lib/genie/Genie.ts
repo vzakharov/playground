@@ -8,7 +8,11 @@ export type GenieContext<Set extends Toolset, Data extends GlobalData<Set>, Stat
 };
 
 export type GenieConfig<Set extends Toolset, Data extends GlobalData<Set>, State extends GlobalState> =
-  GenieContext<Set, Data, State>;
+  GenieContext<Set, Data, State> & {
+    reactivity?: {
+      reactive<T extends object>(obj: T): T;
+    };
+  };
 
 export type SomeGenie = Genie<Toolset, GlobalData<Toolset>, GlobalState>;
 

@@ -28,11 +28,13 @@ export class BoundTool<
     type GenieConfig = G['config'];
     type GD = GenieConfig['globalData'];
     type GS = GenieConfig['globalState'];
-    return new Chat<this, GD, GS>({
+    const { genie, genie: { config: { reactivity } } } = this;
+    const chat = new Chat<this, GD, GS>({
       ...config,
-      ...this.genie.config,
+      ...genie.config,
       tool: this
     });
+    return reactivity?.reactive(chat) ?? chat;
   };
 
   get missingRequires() {

@@ -5,12 +5,10 @@ import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, BoundTool, Chat, GenieMessage, ToolIdFrom, Toolset, branded } from '~/lib/genie';
+import { $GenieChatId, BoundTool, GenieMessage, ToolIdFrom, Toolset, branded } from '~/lib/genie';
 import { VueGenie } from '~/lib/genie-vue';
 import { Resolvable, refsToReactive } from '~/lib/utils';
 import Message from './Chat/Message.vue';
-
-// type T = BoundTool<VueGenie<never>, never>;
 
 const { tool } = defineProps<{
   tool: T;
@@ -35,12 +33,10 @@ const state = refsToReactive({
   generating, msExpected, userMessage, userMessageComponent, error, dataLastLoaded
 });
 
-const chat = reactive(
-  tool.chat({
-    state, 
-    chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool,
-  })
-) as Chat<T, any, any>;
+const chat = tool.chat({
+  state, 
+  chatId: branded<$GenieChatId>(tool.id), // TODO: Implement multiple chat ids per tool,
+})
 
 watchEffect(chat.watcher);
 
