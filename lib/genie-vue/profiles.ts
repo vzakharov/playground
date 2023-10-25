@@ -10,6 +10,7 @@ export class ProfileManager {
     private appId: string,
     private data: GlobalData<Toolset>,
     private state: GlobalState<Toolset>,
+    private defaultData: GlobalData<Toolset>
   ) { };
 
   prefix = `${this.appId}-data-` as const;
@@ -50,7 +51,7 @@ export class ProfileManager {
     // If strictly null, return (it means the user cancelled the dialog)
     if ( slug === null ) return;
     this.save();
-    morph(this.data, getDefaultValue(getGlobalDataInitializer()));
+    morph(this.data, this.defaultData);
     this.state.dataLastLoaded = Date.now();
   };
 

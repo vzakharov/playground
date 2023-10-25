@@ -17,7 +17,7 @@ export function objectWithKeys<
 };
 
 export function objectWithKeysOf<
-  Ts extends Record<string, any>[],
+  Ts extends readonly Record<string, any>[],
   K extends keyof Ts[number],
   ReturnType
 >(

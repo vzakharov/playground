@@ -1,6 +1,7 @@
-import { Genie, GenieConfig, Toolset, ValidToolset } from "~/lib/genie";
+import { Genie, Toolset, ValidToolset } from "~/lib/genie";
+import { getDefaultValue } from "~/lib/utils";
 import { useLocalReactive } from "~/lib/utils-vue";
-import { DataInputOutput, GlobalData, GlobalState, ProfileManager, getGlobalDataInitializer, getGlobalStateInitializer, migrators } from ".";
+import { DataInputOutput, GlobalData, GlobalState, ProfileManager, getGlobalDataInitializer, getGlobalStateInitializer, getInitSelectedToolId, migrators } from ".";
 
 export class VueGenie<
   Set extends Toolset
@@ -25,14 +26,21 @@ export class VueGenie<
       )
 
     })
-    
+
   };
+
+  get defaultData() { return getDefaultValue(getGlobalDataInitializer(this.tools)); }
+
+  get initSelectedToolId() { return getInitSelectedToolId(this.tools); }
 
   io = reactive( new DataInputOutput(
     `${this.appId}-${this.config.globalData.username}`,
     this.config.globalData, this.config.globalState
   ) );
 
-  profile = reactive( new ProfileManager(this.appId, this.config.globalData, this.config.globalState ) );
+  profile = reactive( new ProfileManager(
+    this.appId, this.config.globalData, this.config.globalState, this.defaultData
+  ) );
+  
 
 };

@@ -5,14 +5,17 @@ import { addProperties } from 'vovas-utils';
 import Button from '~/components/shared/Button.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import { refForInstance } from '~/components/shared/utils';
-import { $GenieChatId, AnyBoundTool, Chat, GenieMessage, branded } from '~/lib/genie';
+import { $GenieChatId, AnyBoundTool, Chat, GenieMessage, SetFor, branded } from '~/lib/genie';
 import { Resolvable, refsToReactive } from '~/lib/utils';
-import { globalData, globalState } from '~/lib/genie-vue';
 import Message from './Message.vue';
+import { VueGenie } from 'lib/genie-vue';
 
 const { tool } = defineProps<{
   tool: T;
+  genie: VueGenie<SetFor<T>>;
 }>();
+
+const { globalData, globalState } = tool.genie.config;
 
 const generating = ref<Resolvable<GenieMessage<T, 'assistant'>>>();
 const msExpected = ref<number>();

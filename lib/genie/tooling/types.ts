@@ -9,7 +9,7 @@ export type Toolset = readonly AnyTool[];
 
 export type Requires<T extends AnyTool> = T['config']['requires'];
 
-export type SetFor<T extends AnyTool> = (T | ArrayItem<Requires<T>>)[];
+export type SetFor<T extends AnyTool> = readonly (T | ArrayItem<Requires<T>>)[];
 
 export type ToolFrom<S extends Toolset> = ArrayItem<S>;
 
@@ -45,15 +45,19 @@ export type BuildInput<T extends AnyTool> = {
   globalData: GlobalData<Requires<T>>;
 };
 
-export type DefiniteAssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
+// export type DefiniteAssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
+//   [A in AssetForTool<ToolWithId<S, Id>>]: string;
+// };
+
+// export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> =
+//   IfExactly<string, Id,
+//     DefiniteAssetValuesForToolId<S, Id>,
+//     Partial<DefiniteAssetValuesForToolId<S, Id>>
+//   >;
+
+export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> = {
   [A in AssetForTool<ToolWithId<S, Id>>]: string;
 };
-
-export type AssetValuesForToolId<S extends Toolset, Id extends ToolIdFrom<S>> =
-  IfExactly<string, Id,
-    DefiniteAssetValuesForToolId<S, Id>,
-    Partial<DefiniteAssetValuesForToolId<S, Id>>
-  >;
 
 export type AssetValuesForSet<S extends Toolset> = {
   [Id in ToolIdFrom<S>]: AssetValuesForToolId<S, Id>;

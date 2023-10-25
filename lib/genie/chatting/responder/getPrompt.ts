@@ -19,8 +19,12 @@ export function getPrompt<
         system: mainSystemMessage, generateAssetsAfter, reciteAssetsAfter = 0,
         build: buildCallback, assets: assetSpecs, requires  
       } } 
-    }
+    },
+    activeAssets
   } = this;
+
+  if ( !allPropsDefined(activeAssets) )
+    throw new Error(`The following assets are missing: ${undefinedProps(activeAssets).join(', ')}`);
 
   const fn = chatFunction('reply', 'Replies to the user with structured data', {
     replyMessage: 'Accompanying text to go before the structured data, narratively continuing the conversation',
@@ -34,19 +38,13 @@ export function getPrompt<
   // Check if there are already function calls in the messages
   const functionCalled = rawMessages.some(message => message.function_call);
 
-  const assetValues = getActiveAssetsForSet(globalData, requires);
-
-  if ( !allPropsDefined(assetValues) )
-    throw new Error(`The following assets are missing: ${undefinedProps(assetValues).join(', ')}`);
-
-  assetValues
   const { username } = globalData;
 
   const { 
     pre: preMessage, 
     post: postMessage 
   } = buildCallback({ 
-    functionCalled, numResponses, shouldGenerateAssets, assets: assetValues, username
+    functionCalled, numResponses, shouldGenerateAssets, assets: activeAssets, username
   });
 
   return {
@@ -59,7 +57,7 @@ export function getPrompt<
             For reference:
 
             ===
-            ${reciteAssets(assetValues, requires)}
+            ${reciteAssets(activeAssets, requires)}
             ===
           `
         ])

@@ -3,7 +3,7 @@ import { allPropsDefined, undefinedProps } from "~/lib/utils";
 import {
   chatFunction, messagesBy, says, stackUp
 } from "~/lib/vovas-openai";
-import { AssetSpecs, AssetValuesForSet, BuildCallback, BuildInput, GenieContext, ToolFrom, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AssetSpecs, AssetValuesForSet, BoundTool, BuildCallback, BuildInput, Genie, GenieContext, SetFor, ToolFrom, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
   Asset extends string,
@@ -27,6 +27,6 @@ export class Tool<
   constructor(
     public id: Id,
     public config: ToolConfig<A, Reqs>,
-  ) { }
+  ) { };
 
 };
