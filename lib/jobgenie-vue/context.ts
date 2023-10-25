@@ -1,4 +1,4 @@
 import { tools } from "~/lib/jobgenie/";
 import { GlobalContext } from "~/lib/genie-vue";
 
-export const { globalData, globalState } = new GlobalContext('jobgenie', tools)
+export const { data: globalData, state: globalState } = new GlobalContext('jobgenie', tools)

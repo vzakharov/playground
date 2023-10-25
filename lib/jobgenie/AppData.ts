@@ -18,7 +18,7 @@ export function assertPartialAppData(data: any): asserts data is Partial<AppData
   });
 };
 
-export function replaceAppDataWithUknown(data: AppData, newData: unknown, dataLastLoaded: RefLike<number>) {
+export function replaceAppDataWithUnknown(data: AppData, newData: unknown, dataLastLoaded: RefLike<number>) {
   assertPartialAppData(newData);
   resetAppData(data, newData, dataLastLoaded);
 };

@@ -1,3 +1,4 @@
+import { Initializee } from "lib/utils";
 import { ensured, is } from "vovas-utils";
 import { Toolset, globalStateInitializer as baseInitializer, getToolIds } from "~/lib/genie";
 
@@ -15,3 +16,5 @@ export function getGlobalStateInitializer<S extends Toolset>(tools: S) {
     dataLastLoaded: Date.now()
   };
 };
+
+export type GlobalState<S extends Toolset> = Initializee<ReturnType<typeof getGlobalStateInitializer<S>>>;

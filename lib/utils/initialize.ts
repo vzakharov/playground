@@ -19,6 +19,9 @@ export type Initializer<T> = {
 
 export type Initializee<I extends Initializer<any>> =
   I extends Initializer<infer T> ? T : never;
+// {
+//   [K in keyof I]: I[K] extends (value: any) => infer T ? T : I[K]
+// };
 
 export function initialize<T>(
   object: JsonableObject | undefined, 

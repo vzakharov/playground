@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { $throw } from "vovas-utils";
-import { replaceAppDataWithUknown, resetAppData } from "~/lib/jobgenie";
+import { replaceAppDataWithUnknown, resetAppData } from "~/lib/jobgenie";
 import { concat, uniqueId } from "~/lib/utils";
 import { GlobalState } from ".";
 import { Genie, GlobalData, Toolset } from "~/lib/genie";
@@ -31,7 +31,7 @@ export function useProfiles(
       ?? $throw(`Profile ${slug} (key ${storageKey(slug)}) not found in localStorage`);
     const newData = JSON.parse(localValue);
     const { dataLastLoaded } = toRefs(globalState);
-    replaceAppDataWithUknown(globalData, newData, dataLastLoaded);
+    replaceAppDataWithUnknown(globalData, newData, dataLastLoaded);
     globalData.profileSlug = slug;
   };
 
