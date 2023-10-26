@@ -11,9 +11,12 @@ import { defaultProntoData, parseInputs, Input } from '~/lib/pronto';
 import { switchRole, chatRoles, says, chatCompletion } from '~/lib/vovas-openai';
 import { initialize, uniqueId } from '~/lib/utils';
 import { $throw } from 'vovas-utils';
-import { GenieState, genieStateInitializer, temperatureForDescriptor } from '~/lib/genie';
+import { useLocalReactive } from '~/lib/utils-vue';
+import { VueGenie } from '~/lib/genie-vue';
 
 const tab = ref('compose');
+
+const genie = new VueGenie('pronto-genie', []);
 
 const { templates } = useLocalReactive('pronto-data', defaultProntoData);
 
@@ -21,7 +24,6 @@ const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
 }));
 
-const genie = ref<GenieState>();
 
 useHashRoute(selectedTemplateId, id => {
   if (templates.some(t => t.id === id)) {

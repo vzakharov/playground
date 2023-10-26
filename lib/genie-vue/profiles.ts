@@ -10,10 +10,9 @@ export class ProfileManager {
     private appId: string,
     private data: GlobalData<Toolset>,
     private state: GlobalState<Toolset>,
-    private defaultData: GlobalData<Toolset>
+    private defaultData: GlobalData<Toolset>,
+    private prefix = `${appId}-data-` as const,
   ) { };
-
-  prefix = `${this.appId}-data-` as const;
 
   get slugs() {
     return _.uniq([

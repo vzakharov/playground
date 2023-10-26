@@ -1,4 +1,4 @@
-import { ArrayItem, Falsible, IfExactly, IsExactly, StringKey } from "~/lib/utils";
+import { ArrayItem, Falsible, Flatpactable, IfExactly, IsExactly, StringKey } from "~/lib/utils";
 import { StackUpable } from "~/lib/vovas-openai";
 import { Dict, GlobalData, GenieMessage, Tool } from "..";
 
@@ -63,13 +63,17 @@ export type AssetValuesForSet<S extends Toolset> = {
   [Id in ToolIdFrom<S>]: AssetValuesForToolId<S, Id>;
 };
 
-export type BuildCallback<Reqs extends Toolset> = (params: {
+export type BuildCallback<
+  Id extends string,
+  Asset extends string,
+  Reqs extends Toolset
+> = (params: {
   numResponses: number;
   shouldGenerateAssets: boolean;
   functionCalled: boolean;
   assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;
 }) => {
-  pre: StackUpable;
-  post: StackUpable;
+  pre: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
+  post: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
 };

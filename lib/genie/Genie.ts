@@ -27,9 +27,11 @@ export class Genie<
   constructor(
     tools: Set & ValidToolset<Set>,
     public readonly config: GenieConfig<Set, Data, State>,
+    protected reactive = config.reactivity?.reactive ?? _.identity,
   ) {
     this.tools = tools;
   };
+
 
   get bound() {
     return objectWithKeysOf(

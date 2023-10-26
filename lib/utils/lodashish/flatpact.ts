@@ -9,14 +9,19 @@ import _ from "lodash";
  * flatpact([0, 1, [2, 3, undefined ]]); // [1, 2, 3]
  * flatpact(['hello', [false, ['world', null, undefined], 0, 0n, '']]); // ['hello', 'world']
  */
-export function flatpact<T>(array: readonly Flatpactable<T>[]): T[] {
-  return _.compact(_.flattenDeep(array)) as T[];
+export function flatpact<T>(array: Flatpactable<T>) {
+  return _(array)
+    .castArray()
+    .flattenDeep()
+    .compact()
+    .value() as T[];
 };
 
 /**
  * A type representing an arbitrarily deep array of values, each of which can be either of type T or {@link Falsey}.
  */
-export type Flatpactable<T> = T | Flatpactable<T>[] | Falsey;
+export type Flatpactable<T> = T | Falsey | readonly Flatpactable<T>[];
+
 
 /**
  * A type that represents "falsy" values in JavaScript: `false`, `null`, `undefined`, `0`, `0n`, and `''`.

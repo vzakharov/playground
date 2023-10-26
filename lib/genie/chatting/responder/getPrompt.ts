@@ -1,8 +1,8 @@
 import dedent from "dedent-js";
-import { allPropsDefined, undefinedProps } from "~/lib/utils";
-import { AnyTool, GlobalData, GlobalState, SetFor, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage } from "../..";
+import { Flatpactable, allPropsDefined, flatpact, undefinedProps } from "~/lib/utils";
+import { StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
+import { AnyTool, GenieMessage, GlobalData, SetFor, assetDescriptions, reciteAssets, toRawMessage } from "../..";
 import { Responder } from "./responder";
-import { chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
 
 export function getPrompt<
   T extends AnyTool,
@@ -33,7 +33,8 @@ export function getPrompt<
 
   const numResponses = messagesBy.assistant(messages).length;
   const shouldGenerateAssets = numResponses >= generateAssetsAfter;
-  const rawMessages = messages.map(toRawMessage(fn));
+  const toRaw = toRawMessage(fn);
+  const rawMessages = messages.map(toRaw);
 
   // Check if there are already function calls in the messages
   const functionCalled = rawMessages.some(message => message.function_call);
@@ -41,30 +42,34 @@ export function getPrompt<
   const { username } = globalData;
 
   const { 
-    pre: preMessage, 
-    post: postMessage 
+    pre: preMessages, 
+    post: postMessages 
   } = buildCallback({ 
     functionCalled, numResponses, shouldGenerateAssets, assets: activeAssets, username
   });
 
-  return {
-    promptMessages: [
-      says.system(
-        stackUp([
-          mainSystemMessage,
-          preMessage, 
-          requires && numResponses >= reciteAssetsAfter && dedent`
-            For reference:
+  function toMessages(messages: Flatpactable<string | GenieMessage<T>>[]) {
+    return flatpact(messages).map(message => 
+      typeof message === 'string' 
+        ? says.system(message)
+        : toRaw(message)
+    );
+  };
 
-            ===
-            ${reciteAssets(activeAssets, requires)}
-            ===
-          `
-        ])
-      ),
-      ...rawMessages,
-      says.system(stackUp(postMessage))
-    ],
+  return {
+    promptMessages: toMessages([
+      mainSystemMessage,
+      preMessages, 
+      requires && numResponses >= reciteAssetsAfter && dedent`
+        For reference:
+
+        ===
+        ${reciteAssets(activeAssets, requires)}
+        ===
+      `,
+      rawMessages,
+      postMessages
+    ]),
     fn: shouldGenerateAssets ? fn : undefined
   };
   

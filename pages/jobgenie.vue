@@ -45,6 +45,7 @@ const win = window;
     v-model:sidebarMenuItemId="selectedToolId"
   >
     <template #sidebar-lower>
+      {{  profile.slugs }}
       <template v-if="profile.slugs.length > 1">
         <Dropdown label="Profiles" :options="profile.slugs"
           :modelValue="globalData.profileSlug || 'Untitled profile'"

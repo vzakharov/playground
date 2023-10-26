@@ -6,13 +6,14 @@ import {
 import { AssetSpecs, AssetValuesForSet, BoundTool, BuildCallback, BuildInput, Genie, GenieContext, SetFor, ToolFrom, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
 
 export type ToolConfig<
+  Id extends string,
   Asset extends string,
   Reqs extends Toolset
 > = {
   system: string;
   generateAssetsAfter: number;
   reciteAssetsAfter?: number;
-  build: BuildCallback<Reqs>;
+  build: BuildCallback<Id, Asset, Reqs>;
   autoQuery?: string | ( ( context: GenieContext<Reqs, any, any>) => string );
   assets: AssetSpecs<Asset>;
   requires: Reqs;
@@ -26,7 +27,7 @@ export class Tool<
 
   constructor(
     public id: Id,
-    public config: ToolConfig<A, Reqs>,
+    public config: ToolConfig<Id, A, Reqs>,
   ) { };
 
 };
