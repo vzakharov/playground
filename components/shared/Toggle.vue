@@ -6,7 +6,7 @@
         <div class="toggle__line bg-gray-400 rounded-full shadow-inner"></div>
         <div class="toggle__dot absolute bg-white rounded-full shadow inset-y-0 left-0"></div>
       </div>
-      <div class="ml-3" :title="title" v-text="label" />
+      <div class="ml-3" :title="title" v-if="label" v-text="label" />
     </label>
   </div>
 </template>

@@ -65,7 +65,7 @@ const cv = computed(() => ({
               },
               {
                 title: 'Into23 (2021–2022)',
-                text: 'At this Hong Kong-based translation agency, I utilized my unprecedented 20+ years of experience in the translation industry to manage the content strategy, ensuring consistent messaging across all platforms.',
+                text: 'At this Hong Kong-based translation agency, I utilized my 20+ years of experience in the translation industry to manage the content strategy, ensuring consistent messaging across all platforms.',
               },
             ],
           },
@@ -97,9 +97,23 @@ const cv = computed(() => ({
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <Toggle class="print:hidden"
-        v-model="mode.dev" :label="mode.dev ? 'Developer' : 'Copywriter'" 
-      />
+      <div class="flex flex-row items-center gap-2">
+        <span :class="{
+          'text-gray-300': mode.dev,
+          'text-gray-800': !mode.dev,
+        }">
+          Copywriter
+        </span> 
+        <Toggle class="print:hidden"
+          v-model="mode.dev" 
+        />
+        <span :class="{
+          'text-gray-300': !mode.dev,
+          'text-gray-800': mode.dev,
+        }">
+          Developer
+        </span> 
+      </div>
       <div>
         <div class="flex flex-row justify-between items-center text-xs">
           <h1 class="title" v-text="cv.header.title"></h1>
