@@ -85,11 +85,11 @@ const cv = ref({
 
 <style lang="postcss">
 .container {
-  @apply max-w-4xl mx-auto p-6 bg-white rounded;
+  @apply flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-800;
 }
 
 .header {
-  @apply flex items-center justify-between mb-6;
+  @apply my-10;
 }
 
 .title {
@@ -97,30 +97,34 @@ const cv = ref({
 }
 
 .subtitle {
-  @apply text-lg text-gray-600;
+  @apply text-xl text-gray-600;
 }
 
 .section {
-  @apply mb-8;
+  @apply my-8 w-full max-w-2xl mx-auto;
 }
 
 .section-title {
-  @apply text-2xl font-semibold mb-4;
+  @apply text-2xl font-semibold mb-2;
 }
 
 .section-text {
-  @apply text-lg text-gray-700;
+  @apply text-lg text-gray-700 mb-4;
 }
 
 .subsection {
-  @apply mb-4;
+  @apply pl-4 border-l-2 border-gray-300 my-4;
 }
 
 .subsection-title {
-  @apply text-xl font-bold mt-5;
+  @apply text-xl font-semibold mb-2;
+}
+
+.subsubsection {
+  @apply pl-4 border-l-2 border-gray-200 my-4;
 }
 
 .subsubsection-title {
-  @apply text-lg font-bold mt-4;
+  @apply text-lg font-semibold mb-2;
 }
 </style>
