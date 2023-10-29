@@ -26,9 +26,9 @@ function editApiKey() {
     v-model="temperatureDescriptor" 
     cycle-on-click
   />
-  <Toggle 
+  <Toggle
     v-model="useGpt4" 
-    :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
+    :label="{ on: 'GPT-4', off: 'GPT-3.5' }"
     title="This is around 10x more expensive if turned on." 
   />
   <div

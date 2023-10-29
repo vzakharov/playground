@@ -1,24 +1,29 @@
 <template>
   <div class="toggle-container">
     <label for="toggle" class="flex items-center cursor-pointer">
+      <LeftLabelDiv/>
       <div class="relative">
         <input type="checkbox" id="toggle" :checked="modelValue" @change="updateValue" class="hidden" />
-        <div class="toggle__line bg-gray-400 rounded-full shadow-inner"></div>
-        <div class="toggle__dot absolute bg-white rounded-full shadow inset-y-0 left-0"></div>
+        <div class="toggle__line bg-gray-400 rounded-full shadow-inner"/>
+        <div class="toggle__dot absolute bg-white rounded-full shadow inset-y-0 left-0"/>
       </div>
-      <div class="ml-3" :title="title" v-if="label" v-text="label" />
+      <RightLabelDiv/>
     </label>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="TwoWay extends boolean = false">
+import { $throw, is } from 'vovas-utils';
 import { targetedEventHandler } from './utils';
+import { PropType } from 'nuxt/dist/app/compat/capi';
+import { objectWithKeys } from '~/lib/utils';
 
-const props = defineProps({
-  modelValue: Boolean,
-  label: String,
-  title: String,
-});
+const props = defineProps<{
+  modelValue: boolean,
+  twoWay?: boolean & TwoWay,
+  label?: ( TwoWay extends false ? string : never ) | { on: string, off: string };
+  title?: string,
+}>();
 
 const emit = defineEmits<{
   'update:modelValue': [boolean];
@@ -27,6 +32,30 @@ const emit = defineEmits<{
 const updateValue = targetedEventHandler(HTMLInputElement, event => {
   emit('update:modelValue', event.target.checked);
 });
+
+const [ LeftLabelDiv, RightLabelDiv ] = [ true, false ].map(isLeft => computed(() => {
+
+  const { label, modelValue, twoWay, title} = props;
+
+  const labelValue = twoWay
+    ? is.string(label)
+      ? $throw("Label must be provided as an { on: string, off: string } object if `twoWay` is true")
+      : label?.[ isLeft ? 'off' : 'on' ]
+    : isLeft
+      ? undefined
+      : is.string(label)
+        ? label
+        : label?.[ modelValue ? 'on' : 'off' ];
+
+  return h('div', {
+    class: {
+      [`m${ isLeft ? 'r' : 'l' }-3`]: true,
+      'text-gray-300': twoWay && ( isLeft === modelValue ),
+    },
+    title,
+  }, labelValue);
+
+}));
 
 </script>
 

@@ -94,26 +94,15 @@ const cv = computed(() => ({
 </script>
 
 <template>
+  <div class="print:hidden flex flex-row justify-center items-center gap-2">
+    <Toggle two-way
+      v-model="mode.dev" 
+      :label="{ on: 'Developer', off: 'Copywriter' }"
+    />
+  </div>
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <div class="flex flex-row items-center gap-2">
-        <span :class="{
-          'text-gray-300': mode.dev,
-          'text-gray-800': !mode.dev,
-        }">
-          Copywriter
-        </span> 
-        <Toggle class="print:hidden"
-          v-model="mode.dev" 
-        />
-        <span :class="{
-          'text-gray-300': !mode.dev,
-          'text-gray-800': mode.dev,
-        }">
-          Developer
-        </span> 
-      </div>
       <div>
         <div class="flex flex-row justify-between items-center text-xs">
           <h1 class="title" v-text="cv.header.title"></h1>
