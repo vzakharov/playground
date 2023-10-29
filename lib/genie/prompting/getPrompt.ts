@@ -12,8 +12,6 @@ export function getPrompt<
   globalData: GlobalData<Reqs>,
 ) {
 
-  type T = Tool<any, A, Reqs>;
-
   const { 
     system: mainSystemMessage, generateAssetsAfter = 0, reciteAssetsAfter = 0,
     build: buildCallback, assets: assetSpecs, requires  
