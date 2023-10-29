@@ -1,16 +1,17 @@
 import { $throw } from 'vovas-utils';
-import { ChatFunction, ChatMessage, ChatRole } from '~/lib/vovas-openai';
-import { BuilderFunctionParameters, GenieMessage, GenieSchema, ToolName } from '..';
+import { Flatpactable, flatpact } from '~/lib/utils';
+import { ChatFunction, ChatMessage, ChatRole, says } from '~/lib/vovas-openai';
+import { GenieMessage, Tool, Toolset } from '..';
 
 
 export function toRawMessage<
-  S extends Toolset,
-  T extends ToolFrom<S>
->(fn?: ChatFunction<string, BuilderFunctionParameters<S, T>, never>) {
+  A extends string,
+  Reqs extends Toolset
+>(fn?: ChatFunction<string, A, never>) {
 
-  return <R extends ChatRole>(appChatMessage: GenieMessage<S, T, R> ) => {
+  return <R extends ChatRole>(message: GenieMessage<Tool<any, A, Reqs>, R>) => {
 
-    const { content, assets, role } = appChatMessage;
+    const { content, assets, role } = message;
 
     return {
       ...!assets
@@ -29,4 +30,18 @@ export function toRawMessage<
 
   };
 
-}
+};
+
+export function toRawMessages<
+  A extends string,
+  Reqs extends Toolset
+>(fn?: ChatFunction<string, A, never>) {
+
+  return (messages: Flatpactable<string | GenieMessage<Tool<any, A, Reqs>>>) => 
+    flatpact(messages).map(message => 
+      typeof message === 'string' 
+        ? says.system(message)
+        : toRawMessage(fn)(message)
+    );
+
+};

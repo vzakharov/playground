@@ -1,7 +1,7 @@
 import dedent from "dedent-js";
 import { Flatpactable, allPropsDefined, flatpact, undefinedProps } from "~/lib/utils";
 import { chatFunction, messagesBy, says } from "~/lib/vovas-openai";
-import { GenieMessage, GlobalData, Tool, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage } from "..";
+import { GenieMessage, GlobalData, Tool, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toRawMessages } from "..";
 
 export function getPrompt<
   A extends string,
@@ -32,11 +32,8 @@ export function getPrompt<
     ...assetDescriptions(assetSpecs)
   }) : undefined;
 
-  const toRaw = toRawMessage(fn);
-  // const rawMessages = messages.map(toRaw);
 
   // Check if there are already function calls in the messages
-  // const functionCalled = rawMessages.some(message => message.function_call);
   const functionCalled = messages.some(message => !!message.assets);
 
   const { username } = globalData;
@@ -48,16 +45,8 @@ export function getPrompt<
     functionCalled, numResponses, shouldGenerateAssets, assets: activeAssets, username
   });
 
-  function toMessages(messages: Flatpactable<string | GenieMessage<T>>[]) {
-    return flatpact(messages).map(message => 
-      typeof message === 'string' 
-        ? says.system(message)
-        : toRaw(message)
-    );
-  };
-
   return {
-    promptMessages: toMessages([
+    promptMessages: toRawMessages(fn)([
       mainSystemMessage,
       preMessages, 
       requires && numResponses >= reciteAssetsAfter && dedent`
