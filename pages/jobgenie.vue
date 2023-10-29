@@ -1,31 +1,32 @@
 <script setup lang="ts">
 
-import Chat from '~/components/jobgenie/Chat/Chat.vue';
-import { Credentials } from '~/components/jobgenie/Credentials';
-import Login from '~/components/jobgenie/Login.vue';
-import { data } from '~/components/jobgenie/data';
-import { exportData, stringifiedData, stringifyData } from '~/components/jobgenie/exportImport';
-import { useProfiles } from '~/components/jobgenie/profiles';
-import { dataLastLoaded } from '~/components/jobgenie/refs';
-import { getChatType, sections } from '~/components/jobgenie/sections';
-import { globalState, initSelectedSectionId } from '~/components/jobgenie/state';
-import Button from '~/components/shared/Button.vue';
+import Chat from '~/components/genie/Chat.vue';
+import Login from '~/components/genie/Login.vue';
 import ButtonGroup from '~/components/shared/ButtonGroup.vue';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
 import TextModal from '~/components/shared/TextModal.vue';
-import Toggle from '~/components/shared/Toggle.vue';
+import Settings from '~/components/genie/Settings.vue';
 import { refForInstance } from '~/components/shared/utils';
 import { useHashRoute } from '~/composables/useHashRoute';
-import { ChatType, allTrue, defaultData } from '~/lib/jobgenie';
-import { temperatureDescriptors } from '~/lib/genie';
+import { Credentials, DataInputOutput } from '~/lib/genie-vue';
+import { jobGenie as genie, sections } from '~/lib/jobgenie-vue';
+import { allTrue, bound } from '~/lib/utils';
 
-const { usdSpent, useGpt4, selectedSectionId, temperatureDescriptor, openaiKey } = toRefs(globalState);
+const { 
+  config: {globalData, globalState },
+  initSelectedToolId,
+  profile
+} = genie;
 
-useHashRoute(selectedSectionId, initSelectedSectionId);
+const io = bound(genie.io);
+
+const { selectedToolId, openaiKey } = toRefs(globalState);
+
+useHashRoute(selectedToolId, initSelectedToolId);
 
 function login(c: Credentials) {
-  data.username = c.username;
+  globalData.username = c.username;
   openaiKey.value = c.apiKey;
 }
 
@@ -34,9 +35,6 @@ const importModal = refForInstance(TextModal);
 const win = window;
 // A hack to use window methods in template
 
-const profiles = useProfiles();
-const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = profiles;
-
 </script>
 
 <template>
@@ -44,50 +42,50 @@ const { slugs: profileSlugs, newProfile, loadProfile, deleteCurrentProfile } = p
     :sidebar-menu="{
       items: sections,
     }"
-    v-model:sidebarMenuItemId="selectedSectionId"
+    v-model:sidebarMenuItemId="selectedToolId"
   >
     <template #sidebar-lower>
-      <template v-if="profileSlugs.length > 1">
-        <Dropdown label="Profiles" :options="profileSlugs"
-          :modelValue="data.profileSlug || 'Untitled profile'"
-          @update:modelValue="loadProfile($event)"
+      <template v-if="profile.slugs.length > 1">
+        <Dropdown label="Profiles" :options="profile.slugs"
+          :modelValue="globalData.profileSlug || 'Untitled profile'"
+          @update:modelValue="profile.load($event)"
         />
       </template>
       <ButtonGroup :defaultProps="allTrue('rounded', 'small', 'outline')"
         :buttons="[
           {
             caption: 'New',
-            onClick: () => newProfile(win.prompt('Enter a name for your new profile (optional):'))
+            onClick: () => profile.new(win.prompt('Enter a name for your new profile (optional):'))
           },
           {
             caption: 'Edit',
             onClick: () => importModal!.show()
           },
-          profileSlugs.length > 1 && {
+          profile.slugs.length > 1 && {
             caption: 'Delete',
-            onClick: () => win.confirm('Are you sure you want to delete this profile?') && deleteCurrentProfile()
+            onClick: () => win.confirm('Are you sure you want to delete this profile?') && profile.delete()
           },
         ]"
       />
-      <GenieSettings appId="jobgenie" />
+      <Settings :="{ genie }"/>
     </template>
-    <Login v-if="!data.username || !openaiKey" @="{ login }" />
+    <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>
       <Chat
-        :key="`${selectedSectionId}-${dataLastLoaded}`"
-        :type="getChatType(selectedSectionId)"
+        :key="`${selectedToolId}-${globalState.dataLastLoaded}`"
+        :="{ tool: genie.bound[selectedToolId] }"
       />
     </template>
     <TextModal monospace
       ref="importModal"
-      v-model="stringifiedData"
+      v-model="io.stringifiedData"
       title="Import data"
       description="Here is the YAML for your existing data — useful for making small changes, backing up, or sharing with others."
       updateButtonText="Update"
       :extraButtons="[
-        { caption: '⤓ Download', outline: true, onClick: exportData },
+        { caption: '⤓ Download', outline: true, onClick: io.download },
         { caption: 'Reset', outline: true, danger: true,
-          onClick: () => importModal!.text = stringifyData(defaultData)
+          onClick: () => importModal!.text = DataInputOutput.stringify(genie.defaultData)
         }
       ]"
     />

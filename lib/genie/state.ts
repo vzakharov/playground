@@ -1,11 +1,24 @@
-import { InferDefaultTypes } from "lib/jobgenie";
-import { TemperatureDescriptor, temperatureDescriptors } from ".";
+import { is } from "vovas-utils";
+import { Initializer, Initializee, ensured } from "~/lib/utils";
+import { AnyTool, ChatId, Leftovers, ToolIdFrom, ToolWithId, Toolset, temperatureDescriptors } from ".";
 
-export const defaultGenieState = {
-  usdSpent: 0,
-  useGpt4: false,
-  temperatureDescriptor: () => temperatureDescriptors[0] as TemperatureDescriptor,
-  apiKey: ''
+export type ToolLeftoversStore<T extends AnyTool> = {
+  [CId in ChatId]?: Leftovers<T>;
 };
 
-export type GenieState = InferDefaultTypes<typeof defaultGenieState>;
+export type LeftoversStore<S extends Toolset> = {
+  [TId in ToolIdFrom<S>]?: ToolLeftoversStore<ToolWithId<S, TId>>;
+};
+
+export const globalStateInitializer = {
+  openaiKey: '',
+  usdSpent: 0,
+  useGpt4: true,
+  savedMsPerPromptJsonChar: {
+    'gpt-3.5-turbo': 5,
+    'gpt-4': 15,
+  },
+  temperatureDescriptor: (value: any) => ensured(value, is.among(temperatureDescriptors)).else('normal'),
+} satisfies Initializer<any>;
+
+export type GlobalState = Initializee<typeof globalStateInitializer>;

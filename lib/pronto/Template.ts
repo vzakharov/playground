@@ -1,7 +1,6 @@
-import { AnyChatMessage } from "~/lib/vovas-openai";
-
+import { AnyTool, GenieMessage } from "lib/genie";
 
 export type Template = {
   id: string;
-  messages: AnyChatMessage<true>[];
+  messages: GenieMessage<AnyTool>[];
 };

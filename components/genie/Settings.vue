@@ -1,28 +1,21 @@
 <script setup lang="ts">
 
-import { GenieState, TemperatureDescriptor, defaultGenieState, temperatureDescriptors } from '~/lib/genie';
+import { VueGenie } from '~/lib/genie-vue';
+import { $throw } from 'vovas-utils';
 import Dropdown from '~/components/shared/Dropdown.vue';
 import Toggle from '~/components/shared/Toggle.vue';
-import { $throw } from 'vovas-utils';
+import { Genie, Toolset, temperatureDescriptors } from '~/lib/genie';
 
-const props = defineProps<{
-  appId: string;
-}>();
-
-const emit = defineEmits<{
-  'update': [value: GenieState]
+const { genie  } = defineProps<{
+  genie: VueGenie<Toolset>;
 }>();
 
 const win = window;
 
-const state = useLocalReactive(props.appId+'-genie-state', defaultGenieState);
-
-watch(state, () => emit('update', state), { immediate: true });
-
-const { usdSpent, useGpt4, temperatureDescriptor, apiKey } = toRefs(state);
+const { usdSpent, useGpt4, temperatureDescriptor, openaiKey } = toRefs(genie.config.globalState);
 
 function editApiKey() {
-  apiKey.value = prompt('Enter your OpenAI API key:') ?? $throw('No API key entered');
+  openaiKey.value = prompt('Enter your OpenAI API key:') ?? $throw('No API key entered');
 }
 
 </script>
@@ -33,9 +26,9 @@ function editApiKey() {
     v-model="temperatureDescriptor" 
     cycle-on-click
   />
-  <Toggle 
+  <Toggle
     v-model="useGpt4" 
-    :label="useGpt4 ? 'GPT-4' : 'GPT-3.5'"
+    :label="{ on: 'GPT-4', off: 'GPT-3.5' }"
     title="This is around 10x more expensive if turned on." 
   />
   <div
@@ -45,11 +38,11 @@ function editApiKey() {
     Total spent: ${{ Math.round(usdSpent * 100) / 100 }}
   </div>
   <span
-    v-text="apiKey ? apiKey.slice(0, 7) + '...' : 'Click to set API key'"
+    v-text="openaiKey ? openaiKey.slice(0, 7) + '...' : 'Click to set API key'"
     @click="editApiKey"
     :class="{
       'cursor-pointer': true,
-      'text-red-500': !apiKey,
+      'text-red-500': !openaiKey,
     }"
   />
 </template>

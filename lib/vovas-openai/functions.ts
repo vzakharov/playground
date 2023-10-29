@@ -1,3 +1,4 @@
+import { IsAny } from "~/lib/utils";
 import _ from "lodash";
 
 export type ChatFunction<Name extends string, Props extends string, Optional extends Props> = {
@@ -12,15 +13,19 @@ export type ChatFunction<Name extends string, Props extends string, Optional ext
   }
 };
 
-export type AnyChatFunction = ChatFunction<string, string, never>;
+export type AnyChatFunction = ChatFunction<any, any, never>;
 
 export type SimplifiedChatFunction<Name extends string, Props extends string, Optional extends Props> = [
+  ...SimplifiedChatFunctionWithAllProps<Name, Props, Optional>,
+  optional: Optional[]
+];
+
+export type SimplifiedChatFunctionWithAllProps<Name extends string, Props extends string, Optional extends Props> = [
   name: Name,
   description: string,
   parameters: {
     [K in Props]: string
   },
-  optional?: Optional[]
 ];
 
 export type SimplifiedChatFunctionFor<F extends AnyChatFunction> =
@@ -28,8 +33,21 @@ export type SimplifiedChatFunctionFor<F extends AnyChatFunction> =
     ? SimplifiedChatFunction<Name, Props, Optional> 
     : never;
 
+export type UnsimplifiedChatFunctionFor<F extends SimplifiedChatFunction<any, any, any>> =
+  F extends SimplifiedChatFunction<infer Name, infer Props, infer Optional> 
+    ? ChatFunction<Name, Props, Optional> 
+    : never;
+
 export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
   ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional>
+): ChatFunction<Name, Props, Optional>;
+
+export function chatFunction<Name extends string, Props extends string>(
+  ...[ name, description, parameters ]: SimplifiedChatFunctionWithAllProps<Name, Props, never>
+): ChatFunction<Name, Props, never>;
+
+export function chatFunction<Name extends string, Props extends string, Optional extends Props>(
+  ...[ name, description, parameters, optional ]: SimplifiedChatFunction<Name, Props, Optional> | SimplifiedChatFunctionWithAllProps<Name, Props, Optional>
 ) {
 
   return {
@@ -50,15 +68,15 @@ export type ChatFunctionProp = {
 };
 
 export type ChatFunctionReturns<F extends AnyChatFunction> =
-  F extends ChatFunction<any, infer Props, infer Optional> ? {
-    [K in Props]:
-      [Optional] extends [never]
-        ? string
+  F extends ChatFunction<any, infer Props, infer Optional> 
+    ? {
+      [K in Props]:
+        [Optional] extends [never]
+          ? string
         : K extends Optional
           ? string | undefined
-          : string
-
-  } : never;
+        : string
+    } : never;
 
 
 const exampleChatFunction = chatFunction(
@@ -75,6 +93,7 @@ const exampleChatFunction = chatFunction(
 type ExampleChatFunction = typeof exampleChatFunction;
 
 type SimpleExampleChatFunction = SimplifiedChatFunctionFor<ExampleChatFunction>;
+type UnsimplifiedExampleChatFunction = UnsimplifiedChatFunctionFor<SimpleExampleChatFunction>;
 
 type ExampleChatFunctionReturns = ChatFunctionReturns<ExampleChatFunction>;
 

@@ -1,15 +1,18 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "../PromptBuilder"
+import { Tool } from "~/lib/genie";
 import { mainSystemMessage } from "../mainSystemMessage";
+import { dna } from "./dna";
+import { job } from "./job";
+import { resume } from "./resume";
 
-export const challengePromptBuilder = new PromptBuilder('challenge', {
+export const challenge = new Tool('challenge', {
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 1,
-  addAssetsAfter: 1,
-  requiredAssets: ['dna', 'resumé', 'job'],
+  system: mainSystemMessage,
+  generateAssetsAfter: 1,
+  reciteAssetsAfter: 1,
+  requires: [dna, resume, job],
 
-  buildSystemMessages({ numResponses, requestFunctionCall, functionCalled, username }) { return {
+  build: ({ numResponses, functionCalled, username }) => ({
 
     pre: `In this specific flow, you help ${username || 'the user'} come up with ideas for how potential employers could challenge them during the interview process.`,
 
@@ -29,16 +32,11 @@ export const challengePromptBuilder = new PromptBuilder('challenge', {
 
       : 'From here on, respond to user’s feedback and adapt the Q&A generation to the user’s needs.'
 
-  } },
+  }),
 
-  fnArgs: [
-    'addQA',
-    'Adds the Q&A to the user data',
-    {
-      content: 'Some short comment introducing the Q&A, in the same tone as your previous messages.',
-      question: 'The question to add, rephrased in a way to be as concise and reusable as possible',
-      answer: 'The answer to add, in first person and future tense, as if the user is answering the question during the interview',
-    }
-  ]
+  assets: {
+    question: 'The question to add, rephrased in a way to be as concise and reusable as possible',
+    answer: 'The answer to add, in first person and future tense, as if the user is answering the question during the interview',
+  }
 
 });

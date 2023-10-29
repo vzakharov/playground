@@ -9,7 +9,13 @@ export const stringKeyed = <T extends object>(obj: T) => obj as { [K in StringKe
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
-export type UnionToIntersection<U> = 
+/**
+ * Returns the intersection of all types in the union `U`.
+ * 
+ * @template U The union of types to intersect.
+ * @returns The intersection of all types in the union `U`.
+ */
+export type AllOf<U> = 
   ( 
     U extends any 
       ? (k: U) => void 
@@ -20,7 +26,7 @@ export type UnionToIntersection<U> =
     ? I 
     : never;
 
-export type IntersectMapValues<Map, Key extends keyof Map> = UnionToIntersection<Map[Key]>;
+export type IntersectMapValues<Map, Key extends keyof Map> = AllOf<Map[Key]>;
 
 export type MapToGeneric<Map, Key extends keyof Map> = {
   [K in keyof IntersectMapValues<Map, keyof Map>]: K extends keyof Map[Key] ? IntersectMapValues<Map, keyof Map>[K] : never;
@@ -29,10 +35,6 @@ export type MapToGeneric<Map, Key extends keyof Map> = {
 export type Unfilter<Filter extends Record<string, any>> = {
   [K in keyof Filter]: any
 };
-
-export function findBy<T extends object, Filter extends Partial<T>>(filter: Filter, arr: T[] | readonly T[]) {
-  return arr.find(item => _.isMatch(item, filter)) as T & Filter | undefined;
-}
 
 export function isAmong<T>(arr: readonly T[]) {
   return (item: any): item is T => arr.includes(item);
@@ -44,15 +46,6 @@ export function debugAnd<Args, Result>(fn: (...args: Args[]) => Result) {
     return fn(...args);
   }
 };
-
-export type WithId = { id: string };
-
-export function withUniqueId() {
-  return {
-    id: _.uniqueId(`${new Date().toISOString()}_`)
-  } as WithId;
-};
-
 
 export function create<C extends new (...args: any[]) => any>(Class: C) {
   
@@ -83,14 +76,14 @@ export function setValue<T>(ref: RefLike<T>, value: T) {
   return ref.value = value;
 };
 
-export function toReactive<T extends Record<string, Ref<any>>>(refObject: T) {
+export function refsToReactive<T extends Record<string, Ref<any>>>(refsObject: T) {
   const reactiveObject = {};
 
-  for (const key in refObject) {
-    if (refObject.hasOwnProperty(key)) {
+  for (const key in refsObject) {
+    if (refsObject.hasOwnProperty(key)) {
       Object.defineProperty(reactiveObject, key, {
-        get: () => refObject[key].value,
-        set: (newValue) => { refObject[key].value = newValue; },
+        get: () => refsObject[key].value,
+        set: (newValue) => { refsObject[key].value = newValue; },
       });
     }
   }
