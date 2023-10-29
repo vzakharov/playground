@@ -3,14 +3,14 @@ import { WritableComputedRef } from 'vue';
 
 export function useModelWrapper<U, K extends string>(
   props: {
-    [Key in K]: U
+    [Key in K]?: U
   }, 
   emit: (event: `update:${K}`, value: U) => void, 
   name: K
 ): WritableComputedRef<U>
 
 export function useModelWrapper<U>(
-  props: { modelValue: U }, 
+  props: { modelValue?: U }, 
   emit: (event: 'update:modelValue', value: U) => void
 ): WritableComputedRef<U>;
 

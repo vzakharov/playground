@@ -5,16 +5,32 @@ import { ReifyInterface, objectWithKeys } from "vovas-utils";
 
 export const chatRoles = ['user', 'assistant', 'system'] as const;
 
+export function switchRole(role?: ChatRole) {
+  return ({
+      user: 'assistant',
+      assistant: 'user',
+      system: 'user',
+      '': 'user'
+    } as const)[role ?? ''];
+};
+
 export type ChatRole = typeof chatRoles[number];
 
 export type WithRole<R extends ChatRole = any> = { role: R };
 
-export type ChatMessage<R extends ChatRole = ChatRole> = 
+export type ChatMessage<R extends ChatRole = ChatRole, RequireContent extends boolean = false> =
   WithRole<R>
   & {
-    content: R extends 'assistant' ? string | null : string;
+    content: 
+      RequireContent extends true 
+        ? string 
+      : R extends 'assistant' 
+        ? string | null 
+      : string;
   }
   & ReifyInterface<Omit<ChatCompletionMessageParam, 'role' | 'content'>>;
+
+export type AnyChatMessage<RequireContent extends boolean = false> = ChatMessage<ChatRole, RequireContent>;
 
 export function chatMessage<R extends ChatRole>(role: R, content: string): ChatMessage<R> {
   return {
@@ -28,14 +44,15 @@ export const says = objectWithKeys(chatRoles, role =>
   [K in ChatRole]: (content: string) => ChatMessage<K>;
 };
 
-export const isBy = objectWithKeys(chatRoles, role => 
-  (message: WithRole) => message.role === role
+export const isBy = objectWithKeys(chatRoles, function isBy(role) {
+    return (message: WithRole) => message.role === role;
+  }
 ) as {
-  [R in ChatRole]: <M extends WithRole>(message: M) => message is M & WithRole<R>;
+  [R in ChatRole]: <M extends WithRole>(message: M) => message is WithRole<R> & M;
 };
 
 export const messagesBy = objectWithKeys(chatRoles, role => 
   (messages: WithRole[]) => messages.filter(isBy[role])
 ) as {
-  [R in ChatRole]: <M extends WithRole>(messages: M[]) => (M & WithRole<R>)[];
+  [R in ChatRole]: <M extends WithRole>(messages: M[]) => (WithRole<R> & M)[];
 };

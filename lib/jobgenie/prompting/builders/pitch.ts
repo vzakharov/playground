@@ -1,14 +1,14 @@
 import dedent from "dedent-js";
-import { PromptBuilder } from "../PromptBuilder";
-import { mainSystemMessage } from "../mainSystemMessage";
+import { Tool } from "~/lib/genie";
+import { dna, mainSystemMessage, schema } from "../..";
 
-export const pitchPromptBuilder = new PromptBuilder('pitch', {
+export const pitch = new Tool('pitch', {
 
-  mainSystemMessage,
-  requestFunctionCallAfter: 0,
-  requiredAssets: ['dna'],
+  system: mainSystemMessage,
+  generateAssetsAfter: 0,
+  requires: [dna],
 
-  buildSystemMessages({ numResponses, functionCalled }) { return {
+  build: ({ numResponses, functionCalled }) => ({
 
     pre: 'In this specific flow, you help the user come up with a way to “pitch” themselves to a potential employer, based on their “DNA” — a summary description that you prepared during initial interview, — and a specific company they’re interested in.',
 
@@ -32,16 +32,11 @@ export const pitchPromptBuilder = new PromptBuilder('pitch', {
 
         : 'Once you’ve already generated the pitch, use the user’s feedback to improve it as needed.'
 
-  } },
+  }),
 
-  fnArgs: [
-    'addPitch',
-    'Adds the pitch to the user data',
-    {
-      content: 'Accompanying comment for the user to introduce the pitch and your reasoning behind it',
-      headline: 'Headline for the pitch (e.g. subject line of an email)',
-      pitch: 'The body of the pitch, in Markdown format'
-    }
-  ]
+  assets: {
+    headline: 'Headline for the pitch (e.g. subject line of an email)',
+    pitch: 'The body of the pitch, in Markdown format'
+  }
 
 });

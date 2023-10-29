@@ -7,7 +7,8 @@
       'btn-disabled': disabled,
       'btn-rounded': rounded,
       'px-2 py-1': small,
-      'px-4 py-2': !small
+      'px-4 py-2': !small,
+      [props.class ?? '']: true,
     }"
     :type="type ?? 'button'"
     :title="tooltip"
@@ -26,14 +27,35 @@
 
   const emit = defineEmits(['click'])
 
-  const variantClass = computed(() => _.compact([
+  const variantClass = computed(() => _([
     'btn',
-    props.outline && 'outline',
-    props.primary ? 'primary' : props.danger ? 'danger' : 'secondary',
-  ]).join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
+    props.ghost
+      ? 'ghost'
+    : [
+      props.outline && 'outline',
+      props.primary ? 'primary' : props.danger ? 'danger' : 'secondary',
+    ]
+  ]).flatten().compact().join('-') as `btn-${'' | 'outline-'}${'primary' | 'secondary' | 'danger'}`)
 
   const onClick = () => {
-    if ( !props.disabled ) {
+    let { confirmPrompt } = props;
+    const { confirmInput , disabled} = props;
+    if ( !disabled ) {
+      if ( confirmPrompt || confirmInput ) {
+        confirmPrompt ||= (
+          `Are you sure you want to ${props.caption.toLowerCase()}?`
+          + ( confirmInput ? ` Type "${confirmInput}" to confirm.` : '' )
+        );
+        if ( confirmInput ) {
+          const input = prompt(confirmPrompt);
+          if ( input !== confirmInput ) {
+            if ( input ) alert('Incorrect input; action cancelled.');
+            return;
+          }
+        } else {
+          if ( !confirm(confirmPrompt) ) return;
+        };
+      };
       emit('click')
     }
   }
@@ -42,7 +64,7 @@
 
 <style scoped lang="postcss">
 .btn {
-  @apply text-white font-bold rounded;
+  @apply text-white rounded;
 }
 
 .btn-primary {
@@ -55,6 +77,10 @@
 
 .btn-danger {
   @apply bg-red-500 hover:bg-red-700;
+}
+
+.btn-ghost {
+  @apply border-0 text-gray-300 hover:text-gray-700;
 }
 
 .btn-disabled {

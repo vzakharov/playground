@@ -4,9 +4,9 @@ import { AnyChatFunction } from "./functions";
 import _ from "lodash";
 
 export const shortestFirst = {
-  evaluate: ( result: string ) => result.length,
+  evaluate: ( result: unknown ) => JSON.stringify(result).length,
   betterIf: ( evaluation: number, bestEvaluation: number ) => evaluation < bestEvaluation,
-};
+} as const;
 
 export function itselfOrIts<K extends string>(key: K) {
   return <T>(result: T | {

@@ -1,3 +1,20 @@
+<script setup lang="ts" generic="MenuItemId extends string = string">
+
+import { SidebarMenu } from './SidebarStuff';
+
+defineProps<{
+  menu?: SidebarMenu<MenuItemId>,
+  menuItemId?: MenuItemId,
+}>();
+
+defineEmits<{
+  'update:menuItemId': [value: MenuItemId],
+}>();
+
+const isVisible = ref(false);
+
+</script>
+
 <template>
   <button class="hamburger" @click="isVisible = !isVisible">
     <span class="hamburger-line"></span>
@@ -10,13 +27,16 @@
         <li v-for="item in menu.items" :key="item.id" 
           :class="{
             'menu-item': true,
-            selected: item.id === menu.selectedId,
+            selected: item.id === menuItemId,
             disabled: item.disabled
           }"
           :title="item.disabled ? item.disabledTooltip : ''"
-          @click="!item.disabled && ( menu.onSelect(item.id), isVisible = false )"
+          @click="
+            !item.disabled && ( $emit('update:menuItemId', item.id), isVisible = false )
+          "
         >
-          <span v-text="`${item.emoji} ${item.caption}`" />
+          <span v-if="item.emoji" v-text="item.emoji"/>
+          <span v-text="item.caption ?? item.id"/>
         </li>
       </ul>
       <slot name="upper"/>
@@ -27,31 +47,10 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="Id extends string = string">
-
-defineProps<{
-  menu?: {
-    items: { 
-      id: Id,
-      emoji: string,
-      caption: string,
-      disabled?: boolean,
-      disabledTooltip?: string
-    }[],
-    selectedId: Id,
-    onSelect: (id: Id) => void
-  }
-}>();
-
-
-const isVisible = ref(false);
-
-</script>
-
 <style scoped lang="postcss">
 
 .hamburger {
-  @apply lg:hidden fixed left-2 top-2 bg-white p-1 shadow rounded;
+  @apply lg:hidden fixed left-2 top-2 bg-white p-1;
 }
 
 .hamburger-line {
@@ -61,6 +60,10 @@ const isVisible = ref(false);
 .sidebar {
   @apply shadow rounded md:mr-6 min-w-max fixed lg:top-0 top-10 left-0 h-screen overflow-auto bg-white lg:block p-2;
   width: 12rem;
+}
+
+.upper {
+  @apply flex flex-col gap-y-2.5;
 }
 
 .lower {

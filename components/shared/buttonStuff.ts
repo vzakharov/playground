@@ -10,8 +10,12 @@ export const buttonProps = {
   rounded: Boolean,
   small: Boolean,
   outline: Boolean,
+  ghost: Boolean,
   checkmarkAfterCallback: Boolean,
   tooltip: String,
+  class: String,
+  confirmPrompt: String,
+  confirmInput: String,
 } as const;
 
 export type MakeBooleanKeysOptional<T> = {
