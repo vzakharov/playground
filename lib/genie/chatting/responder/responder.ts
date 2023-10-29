@@ -1,11 +1,11 @@
 import _ from 'lodash';
 import { inferIfFunction, pushedTo, undefinedProps } from "~/lib/utils";
 import { isBy } from '~/lib/vovas-openai';
-import { AnyTool, BaseChatConfig, GlobalData, GlobalState, SetFor, countIrrelevantMessages, generateResponse, getActiveAssetsForSet, getPrompt, handleResponseGeneration, says } from '../..';
+import { AnyTool, BaseChatConfig, GlobalData, GlobalState, SetFor, Tool, Toolset, countIrrelevantMessages, generateResponse, getActiveAssetsForSet, getPrompt, handleResponseGeneration, says } from '../..';
 import { LeftoversController } from '../leftovers';
 
 export class Responder<
-  T extends AnyTool,
+  T extends Tool<any, any, Toolset>,
   GD extends GlobalData<SetFor<T>>,
   GS extends GlobalState
 > extends LeftoversController<T, boolean, GD, GS> {
@@ -34,7 +34,10 @@ export class Responder<
 
   } };
 
-  getPrompt = getPrompt;
+  getPrompt() {
+    const { messages, config: { globalData, tool } } = this;
+    return getPrompt(tool, messages, globalData);
+  }
 
   get prompt(): ReturnType<typeof getPrompt> { return this.getPrompt() }
 

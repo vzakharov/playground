@@ -1,9 +1,4 @@
-import dedent from "dedent-js";
-import { allPropsDefined, undefinedProps } from "~/lib/utils";
-import {
-  chatFunction, messagesBy, says, stackUp
-} from "~/lib/vovas-openai";
-import { AssetSpecs, AssetValuesForSet, BoundTool, BuildCallback, BuildInput, Genie, GenieContext, SetFor, ToolFrom, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage, toolWithId } from "..";
+import { AssetSpecs, BuildCallback, GenieContext, Toolset } from "..";
 
 export type ToolConfig<
   Id extends string,

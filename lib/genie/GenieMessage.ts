@@ -5,10 +5,10 @@ const $messageId = Symbol('messageId');
 export type $MessageId = typeof $messageId;
 export type MessageId = Branded<string, $MessageId>;
 
-export type GenieMessage<T extends AnyTool | undefined, R extends ChatRole = ChatRole> =
-  ChatMessage<R> & {
+export type GenieMessage<T extends AnyTool, R extends ChatRole = ChatRole> =
+  Omit<ChatMessage<R>, 'function_call'> & {
     id: MessageId;
     content: string;
-    assets?: T extends AnyTool ? AssetValues<T> : never;
+    assets?: AssetValues<T>;
     assetsPickedAt?: number;
   };

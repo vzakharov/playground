@@ -1,27 +1,25 @@
 import dedent from "dedent-js";
 import { Flatpactable, allPropsDefined, flatpact, undefinedProps } from "~/lib/utils";
-import { StackUpable, chatFunction, messagesBy, says, stackUp } from "~/lib/vovas-openai";
-import { AnyTool, GenieMessage, GlobalData, SetFor, assetDescriptions, reciteAssets, toRawMessage } from "../..";
-import { Responder } from "./responder";
+import { chatFunction, messagesBy, says } from "~/lib/vovas-openai";
+import { GenieMessage, GlobalData, Tool, Toolset, assetDescriptions, getActiveAssetsForSet, reciteAssets, toRawMessage } from "..";
 
 export function getPrompt<
-  T extends AnyTool,
-  GD extends GlobalData<SetFor<T>>
+  A extends string,
+  Reqs extends Toolset
 >(
-  this: Responder<T, GD, any>,
-  messages = this.data.messages
+  tool: Tool<any, A, Reqs>,
+  messages: GenieMessage<Tool<any, A, Reqs>>[],
+  globalData: GlobalData<Reqs>,
 ) {
 
+  type T = Tool<any, A, Reqs>;
+
   const { 
-    config: { 
-      globalData, 
-      tool: { config: {
-        system: mainSystemMessage, generateAssetsAfter = 0, reciteAssetsAfter = 0,
-        build: buildCallback, assets: assetSpecs, requires  
-      } } 
-    },
-    activeAssets
-  } = this;
+    system: mainSystemMessage, generateAssetsAfter = 0, reciteAssetsAfter = 0,
+    build: buildCallback, assets: assetSpecs, requires  
+  } = tool.config;
+
+  const activeAssets = getActiveAssetsForSet(globalData, requires);
 
   if ( !allPropsDefined(activeAssets) )
     throw new Error(`The following assets are missing: ${undefinedProps(activeAssets).join(', ')}`);
@@ -35,10 +33,11 @@ export function getPrompt<
   }) : undefined;
 
   const toRaw = toRawMessage(fn);
-  const rawMessages = messages.map(toRaw);
+  // const rawMessages = messages.map(toRaw);
 
   // Check if there are already function calls in the messages
-  const functionCalled = rawMessages.some(message => message.function_call);
+  // const functionCalled = rawMessages.some(message => message.function_call);
+  const functionCalled = messages.some(message => !!message.assets);
 
   const { username } = globalData;
 
@@ -68,7 +67,7 @@ export function getPrompt<
         ${reciteAssets(activeAssets, requires)}
         ===
       `,
-      rawMessages,
+      messages,
       postMessages
     ]),
     fn
