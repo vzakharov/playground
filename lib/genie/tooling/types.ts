@@ -74,6 +74,6 @@ export type BuildCallback<
   assets: AssetValuesForSet<Reqs>;
   username: Falsible<string>;
 }) => {
-  pre: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
-  post: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
+  pre?: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
+  post?: Flatpactable<string | GenieMessage<Tool<Id, Asset, Reqs>>>;
 };

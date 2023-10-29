@@ -1,13 +1,13 @@
 import { is } from 'vovas-utils';
 import { flatpact } from '~/lib/utils';
 import { UsageContainer, generate, globalUsageContainer, reduceChatMessages, shortestFirst } from '~/lib/vovas-openai';
-import { GenieMessage, Responder, Tool, temperatureForDescriptor, withUniqueId } from '../..';
+import { GenieMessage, GlobalData, GlobalState, Responder, Tool, temperatureForDescriptor, withUniqueId } from '../..';
 
 export async function generateResponse<
   T extends Tool<any, A, any>,
   A extends string
 >(
-  this: Responder<T>
+  this: Responder<T, any, GlobalState>
 ): Promise<GenieMessage<T, 'assistant'>> {
   const { 
     config: { tool, globalData, globalState, state }, 

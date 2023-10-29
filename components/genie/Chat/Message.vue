@@ -51,7 +51,7 @@ function copyToClipboard(content: string) {
         <Card 
           v-for="(content, assetId) in messageAssets" :key="assetId"
           :="{ 
-            title: assetCaptions(toolConfig.assets)[assetId],
+            title: assetCaptions(toolConfig.assets!)[assetId],
             modelValue: content,
             editOnDoubleClick: true
           }"

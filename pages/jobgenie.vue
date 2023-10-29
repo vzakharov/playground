@@ -45,7 +45,6 @@ const win = window;
     v-model:sidebarMenuItemId="selectedToolId"
   >
     <template #sidebar-lower>
-      {{  profile.slugs }}
       <template v-if="profile.slugs.length > 1">
         <Dropdown label="Profiles" :options="profile.slugs"
           :modelValue="globalData.profileSlug || 'Untitled profile'"
@@ -68,7 +67,7 @@ const win = window;
           },
         ]"
       />
-      <Settings appId="jobgenie" :="{ genie }"/>
+      <Settings :="{ genie }"/>
     </template>
     <Login v-if="!globalData.username || !openaiKey" @="{ login }" />
     <template v-else>

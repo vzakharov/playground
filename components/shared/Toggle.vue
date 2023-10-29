@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts" generic="TwoWay extends boolean = false">
+
 import { $throw, is } from 'vovas-utils';
 import { targetedEventHandler } from './utils';
 import { PropType } from 'nuxt/dist/app/compat/capi';

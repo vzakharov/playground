@@ -10,12 +10,12 @@ export type ToolConfig<
   Asset extends string,
   Reqs extends Toolset
 > = {
-  system: string;
-  generateAssetsAfter: number;
+  system?: string;
+  generateAssetsAfter?: number;
   reciteAssetsAfter?: number;
   build: BuildCallback<Id, Asset, Reqs>;
   autoQuery?: string | ( ( context: GenieContext<Reqs, any, any>) => string );
-  assets: AssetSpecs<Asset>;
+  assets?: AssetSpecs<Asset>;
   requires: Reqs;
 };
 

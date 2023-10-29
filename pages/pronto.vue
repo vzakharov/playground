@@ -7,18 +7,21 @@ import Dropdown from '~/components/shared/Dropdown.vue';
 import TextInput from '~/components/shared/Input.vue';
 import Textarea from '~/components/shared/Textarea.vue';
 import Sidebarred from '~/components/shared/Sidebarred.vue';
-import { defaultProntoData, parseInputs, Input } from '~/lib/pronto';
-import { switchRole, chatRoles, says, chatCompletion } from '~/lib/vovas-openai';
+import { defaultProntoData, parseInputs, Input, toTool } from '~/lib/pronto';
+import { switchRole, chatRoles, chatCompletion } from '~/lib/vovas-openai';
 import { initialize, uniqueId } from '~/lib/utils';
-import { $throw } from 'vovas-utils';
+import { $throw, assign } from 'vovas-utils';
 import { useLocalReactive } from '~/lib/utils-vue';
 import { VueGenie } from '~/lib/genie-vue';
+import { says } from '~/lib/genie';
 
 const tab = ref('compose');
 
-const genie = new VueGenie('pronto-genie', []);
-
 const { templates } = useLocalReactive('pronto-data', defaultProntoData);
+
+const genie = computed(() => new VueGenie('pronto-genie', templates.map(toTool)));
+
+assign(window, { genie, templates, toTool });
 
 const { selectedTemplateId } = toRefs(useLocalReactive('pronto-state', {
   selectedTemplateId: templates[0].id,
@@ -47,26 +50,27 @@ const messages = computed(() => selectedTemplate.value?.messages ?? []);
 const output = ref('');
 
 const addMessage = () => {
-  messages.value.push({ content: '', role: switchRole(_.last(messages.value)?.role) });
+  messages.value.push(says[switchRole(_.last(messages.value)?.role)](''));
 };
 
 const inputs = computed(() => parseInputs(messages.value));
 
 async function run() {
-  const promptMessages = messages.value.map(m => {
-  const content = insertInputs(m.content, inputs.value);
-  return says[m.role](content);
-  });
-  const {
-    openaiKey,
-    temperatureDescriptor,
-    useGpt4
-  } = initialize(genie.value, genieStateInitializer);
-  ([output.value] = await chatCompletion(promptMessages, {
-    apiKey: openaiKey,
-    temperature: temperatureForDescriptor[temperatureDescriptor],
-    model: useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo',
-  }));
+  // const promptMessages = messages.value.map(m => {
+  // const content = insertInputs(m.content, inputs.value);
+  // return says[m.role](content);
+  // });
+  // const {
+  //   openaiKey,
+  //   temperatureDescriptor,
+  //   useGpt4
+  // } = initialize(genie.value, genieStateInitializer);
+  // ([output.value] = await chatCompletion(promptMessages, {
+  //   apiKey: openaiKey,
+  //   temperature: temperatureForDescriptor[temperatureDescriptor],
+  //   model: useGpt4 ? 'gpt-4' : 'gpt-3.5-turbo',
+  // }));
+  throw new Error('Not yet implemented');
 };
 
 function insertInputs(content: string, inputs: Input[]) {
@@ -143,7 +147,10 @@ function insertInputs(content: string, inputs: Input[]) {
     </div>
 
     <div v-else class="run-container">
-      <Textarea v-for="(input, index) in inputs" :key="index" :label="_.startCase(input.name)" v-model="input.value" />
+      <Textarea v-for="(input, index) in inputs" :key="index" 
+        :label="_.startCase(input.name)" 
+        v-model="input.value" 
+      />
       <Button primary
         caption="Run"
         @click="run"

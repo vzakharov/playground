@@ -16,7 +16,7 @@ export function getPrompt<
     config: { 
       globalData, 
       tool: { config: {
-        system: mainSystemMessage, generateAssetsAfter, reciteAssetsAfter = 0,
+        system: mainSystemMessage, generateAssetsAfter = 0, reciteAssetsAfter = 0,
         build: buildCallback, assets: assetSpecs, requires  
       } } 
     },
@@ -26,13 +26,14 @@ export function getPrompt<
   if ( !allPropsDefined(activeAssets) )
     throw new Error(`The following assets are missing: ${undefinedProps(activeAssets).join(', ')}`);
 
-  const fn = chatFunction('reply', 'Replies to the user with structured data', {
+  const numResponses = messagesBy.assistant(messages).length;
+  const shouldGenerateAssets = !!assetSpecs && numResponses >= generateAssetsAfter;
+
+  const fn = shouldGenerateAssets ? chatFunction('reply', 'Replies to the user with structured data', {
     replyMessage: 'Accompanying text to go before the structured data, narratively continuing the conversation',
     ...assetDescriptions(assetSpecs)
-  });
+  }) : undefined;
 
-  const numResponses = messagesBy.assistant(messages).length;
-  const shouldGenerateAssets = numResponses >= generateAssetsAfter;
   const toRaw = toRawMessage(fn);
   const rawMessages = messages.map(toRaw);
 
@@ -70,7 +71,7 @@ export function getPrompt<
       rawMessages,
       postMessages
     ]),
-    fn: shouldGenerateAssets ? fn : undefined
+    fn
   };
   
 };

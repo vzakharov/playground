@@ -1,6 +1,6 @@
-import { ChatRole, chatRoles, says as rawSays } from "~/lib/vovas-openai";
 import { objectWithKeys } from "vovas-utils";
-import { AnyTool, GenieMessage, GenieSchema, ToolName, withUniqueId } from ".";
+import { ChatRole, chatRoles, says as rawSays } from "~/lib/vovas-openai";
+import { AnyTool, GenieMessage, withUniqueId } from ".";
 
 export const says = objectWithKeys(
   chatRoles, 

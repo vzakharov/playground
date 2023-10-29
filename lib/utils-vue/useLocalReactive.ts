@@ -1,6 +1,6 @@
-import { Initializer, assert, findIndex, initialize } from "~/lib/utils";
+import { $if, Initializer, assert, findIndex, initialize } from "~/lib/utils";
 import _ from "lodash";
-import { $if, $try, JsonableObject, either, give, give$, is } from "vovas-utils"
+import { $try, JsonableObject, either, give, give$, is } from "vovas-utils"
 
 export function useLocalReactive<T extends object>(
   key: string, 
@@ -12,11 +12,11 @@ export function useLocalReactive<T extends object>(
     $if(
       $try( () => JSON.parse(localStorage.getItem(key) ?? 'null') ),
       is.jsonableObject,
-      give.itself
-    )
-    .else( give$({} as JsonableObject) );
+      give.itself,
+      give.null
+    );
   
-  if ( migrators ) {
+  if ( localValue && migrators ) {
     const { version } = localValue;
     assert( version, either( is.undefined, is.string ) );
     if ( version != migrators.at(-1)?.version ) {
@@ -25,7 +25,7 @@ export function useLocalReactive<T extends object>(
   };
 
   const value = reactive(
-    initialize( localValue, initializer )
+    initialize( localValue ?? {}, initializer )
   );
 
   watch( value, () => localStorage.setItem(key, JSON.stringify(value)), { immediate: true } );
