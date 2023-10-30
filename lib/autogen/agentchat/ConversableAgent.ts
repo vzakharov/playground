@@ -1,4 +1,5 @@
-import { DEFAULT_MODEL, clear, ensure, pick } from "..";
+import dedent from "dedent-js";
+import { DEFAULT_MODEL, clear, colored, ensure, pick } from "..";
 import { Agent } from "./Agent";
 import { Message } from "./Message";
 
@@ -6,13 +7,19 @@ import { Message } from "./Message";
 export type IsTerminationMsg = (message: Message) => boolean;
 
 
+export type LlmConfig = {
+  model?: 'gpt-4',
+  allowFormatStrTemplate?: boolean;
+};
+// TODO: Complete as we figure out what the options are & doc after that
+
 /** Optional parameters for constructing an {@link ConversableAgent}. */
 export type ConversableAgentOptions = {
   /** System message for the ChatCompletion inference. */
   systemMessage?: string;
 
   /** LLM inference configuration. Please refer to [Completion.create](/docs/reference/oai/completion#create) for available options. */
-  llmConfig?: Record<string, any> | false;
+  llmConfig?: LlmConfig | false;
   // TODO: Correct type for llmConfig
 
   /** A function used to determine if a message is a termination message, see {@link IsTerminationMsg} for details. */
@@ -299,6 +306,55 @@ export class ConversableAgent extends Agent {
     }
   };
 
+
+  /**
+   * Print the message received.
+   * @param message - The message received. NOTE: Original python doc allows message to be string, but the code doesn't seem to be able to handle that, so we're overriding the original doc by requiring message to be a Message object.
+   * @param sender - The sender of the message.
+   */
+  private printReceivedMessage(message: Message, sender: Agent) {
+    console.log(
+      `${colored.yellow(sender.name)} (to ${this.name}):\n`
+    );
+    if ( message.role === 'function' ) {
+      const funcPrint = `***** Response from calling function "${message.name}" *****`;
+      console.log(
+        dedent`
+          ${colored.green(funcPrint)}
+          ${message.content}
+          ${colored.green("*".repeat(funcPrint.length))}
+        `
+      );
+    } else {
+      let { content } = message;
+      const { llmConfig } = this.options;
+      if ( content !== null ) {
+        if ( message.context ) {
+          content = oai.ChatCompletion.instantiate(
+            content,
+            message.context,
+            llmConfig && llmConfig.allowFormatStrTemplate
+          );
+        };
+        console.log(content);
+      };
+      if ( message.function_call ) {
+        const funcPrint = `***** Suggested function Call: ${message.function_call.name ?? '(No function name found)'} *****`;
+        console.log(
+          dedent`
+            ${colored.green(funcPrint)}
+            Arguments: 
+            ${message.function_call.arguments ?? '(No arguments found)'}
+            ${colored.green("*".repeat(funcPrint.length))}
+          `
+        );
+      };
+    };
+    console.log(
+      `\n${"-".repeat(80)}`
+    );
+  };
+
   /**
    * Processes a received message from a sender.
    * @param message - The message to process, either a string or a Message object.
@@ -307,7 +363,7 @@ export class ConversableAgent extends Agent {
    * @param options.silent - If true, the received message will not be printed to the console.
    * @throws An error if the received message cannot be converted into a valid ChatCompletion message.
    */
-  processReceivedMessage(
+  private processReceivedMessage(
     message: string | Message,
     sender: Agent,
     { silent = false }: { silent?: boolean } = {}

@@ -9,6 +9,7 @@ export type Message = {
   /** A dictionary containing the function name and arguments */
   function_call?: Record<string, any>;
   // TODO: Provide complete typing;
+  // TODO: Think if we need to convert to camelCase. Pros: consistent with js/ts. Cons: inconsistent with OpenAI API.
 
   /** Name of the function to be called */
   name?: string;
