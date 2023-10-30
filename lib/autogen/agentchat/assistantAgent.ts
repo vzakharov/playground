@@ -3,7 +3,7 @@ import { ConversableAgent, ConversableAgentOptions } from './ConversableAgent';
 /**
  * (In preview) Assistant agent, designed to solve a task with LLM.
  * 
- * AssistantAgent is a subclass of {@link ConversableAgent} configured with a default system message.
+ * `AssistantAgent` is a subclass of {@link ConversableAgent} configured with a default system message.
  * The default system message is designed to solve a task with LLM,
  * including suggesting python code blocks and debugging.
  * `humanInputMode` is default to `"NEVER"`,
