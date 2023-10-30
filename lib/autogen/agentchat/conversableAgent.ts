@@ -1,5 +1,6 @@
 import { DEFAULT_MODEL, clear } from "..";
-import { Agent, Message } from "./Agent";
+import { Agent } from "./Agent";
+import { Message } from "./Message";
 
 /** A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call". */
 export type IsTerminationMsg = (message: Message) => boolean;
@@ -151,14 +152,6 @@ export class ConversableAgent extends Agent {
    */
   constructor(
     public readonly name: string,
-    // {
-    //   systemMessage = 'You are a helpful AI Assistant.',
-    //   humanInputMode = 'TERMINATE',
-    //   defaultAutoReply = '',
-    //   isTerminationMsg = message => message.content === 'TERMINATE',
-    //   llmConfig = {...ConversableAgent.DEFAULT_CONFIG},
-    //   ...options
-    // }: ConversableAgentOptions = {}
     options: ConversableAgentOptions = {}
   ) {
     super(name);
@@ -250,8 +243,6 @@ export class ConversableAgent extends Agent {
     }
   };
 
-  async send(...args: Parameters<Agent['send']>) { throw new Error('Not implemented'); };
-
   async receive(...args: Parameters<Agent['receive']>) { throw new Error('Not implemented'); };
   reset() { throw new Error('Not implemented'); };
 
@@ -303,5 +294,36 @@ export class ConversableAgent extends Agent {
     };
   };
 
+  /**
+   * Send a message to another agent.
+   * 
+   * @param message - message to be sent. See {@link Message} for details. Any role that is not `"function"` will be modified to `"assistant"`.
+   * @param recipient - the recipient of the message.
+   * @param requestReply - whether to request a reply from the recipient.
+   * @param silent - (Experimental) whether to print the message sent.
+   * 
+   * @throws {Error} if the message can't be converted into a valid ChatCompletion message.
+   */
+  async send(
+    message: string | Message,
+    recipient: Agent, {
+      requestReply = false,
+      silent = false
+    }: {
+      requestReply?: boolean;
+      silent?: boolean;
+    } = {}
+  ) {
+    // When the agent composes and sends the message, the role of the message is "assistant"
+    // unless it's "function".
+    const valid = this.appendOaiMessage(message, "assistant", recipient);
+    if ( valid ) {
+      await recipient.receive(message, this, { requestReply, silent });
+    } else {
+      throw new Error(
+        "Message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
+      );
+    };
+  };
 
 };

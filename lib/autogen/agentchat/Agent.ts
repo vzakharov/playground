@@ -1,6 +1,4 @@
-import { ChatCompletionMessage } from "openai/resources/chat";
-
-export type Message = ChatCompletionMessage;
+import { Message } from "./Message";
 
 /**
  * (In preview) An abstract class for AI agent.
@@ -26,7 +24,7 @@ export abstract class Agent {
    * @param recipient - The recipient agent.
    * @param requestReply - Whether to request a reply from the recipient.
    */
-  abstract send(message: string | Message, recipient: Agent, requestReply?: boolean): Promise<void>;
+  abstract send(message: string | Message, recipient: Agent, { requestReply }: { requestReply?: boolean }): Promise<void>;
 
   /**
    * Receive a message from another agent.
@@ -35,7 +33,7 @@ export abstract class Agent {
    * @param sender - The sender agent.
    * @param requestReply - Whether to request a reply from the sender.
    */
-  abstract receive(message: string | Message, sender: Agent, requestReply?: boolean): Promise<void>;
+  abstract receive(message: string | Message, sender: Agent, { requestReply }: { requestReply?: boolean }): Promise<void>;
 
   /**
    * Reset the agent.
