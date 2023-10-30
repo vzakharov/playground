@@ -181,14 +181,14 @@ export class ConversableAgent extends Agent {
    * If only `function_call` is provided, `content` will be set to `null` if not provided, and the role of the message will be forced `"assistant"`.
    * 
    * @param message - The message to be appended to the {@link ChatCompletion} conversation.
-   * @param role - The role of the message, can be `"assistant"` or `"function"`.
+   * @param role - The role of the message. (NOTE: The original python doc says this can be either "assistant" or "function", but there are instances in this very code when this is called with "user", so we're overriding the original doc.)
    * @param conversationId - The id of the conversation, should be the recipient or sender.
    * 
    * @returns Whether the message is appended to the {@link ChatCompletion} conversation.
    */
   private appendOaiMessage(
     message: string | Message,
-    role: 'assistant' | 'function',
+    role: 'assistant' | 'function' | 'user',
     conversationId: Agent
   ) {
     const messageDict = this.messageToDict(message);
@@ -297,6 +297,31 @@ export class ConversableAgent extends Agent {
       this.clearHistory(recipient);
       recipient.clearHistory(this);
     }
+  };
+
+  /**
+   * Processes a received message from a sender.
+   * @param message - The message to process, either a string or a Message object.
+   * @param sender - The sender of the message.
+   * @param options - Optional parameters for processing the message.
+   * @param options.silent - If true, the received message will not be printed to the console.
+   * @throws An error if the received message cannot be converted into a valid ChatCompletion message.
+   */
+  processReceivedMessage(
+    message: string | Message,
+    sender: Agent,
+    { silent = false }: { silent?: boolean } = {}
+  ) {
+    const messageDict = this.messageToDict(message);
+    const valid = this.appendOaiMessage(messageDict, "user", sender);
+    if ( !valid ) {
+      throw new Error(
+        "Received message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
+      );
+    };
+    if ( !silent ) {
+      this.printReceivedMessage(messageDict, sender);
+    };
   };
 
   /**
