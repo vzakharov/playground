@@ -48,6 +48,6 @@ export abstract class Agent {
    * 
    * @returns The generated reply. If `null`, no reply is generated.
    */
-  abstract generateReply(messages?: Message[], sender?: Agent): Promise<string | Message | null>;
+  abstract generateReply({ messages, sender }: { messages?: Message[], sender?: Agent }): Promise<string | Message | null>;
 
 };

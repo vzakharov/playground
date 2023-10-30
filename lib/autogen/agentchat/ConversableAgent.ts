@@ -299,8 +299,39 @@ export class ConversableAgent extends Agent {
     }
   };
 
-  async receive(...args: Parameters<Agent['receive']>) { throw new Error('Not implemented'); };
-  reset() { throw new Error('Not implemented'); };
+  /**
+   * Receive a message from another agent.
+   * 
+   * Once a message is received, this function sends a reply to the sender or stop.
+   * The reply can be generated automatically or entered manually by a human.
+   * 
+   * @param message - message from the sender. If object, see {@link Message} for details.
+   * @param sender - sender of an {@link Agent} instance.
+   * @param requestReply - whether a reply is requested from the sender. If undefined, the value is determined by {@link ConversableAgent.replyAtReceive} keyed by the sender.
+   * @param silent - (Experimental) whether to print the message received.
+   * 
+   * @throws {Error} if the message can't be converted into a valid {@link ChatCompletion} message.
+   */
+  async receive(
+    message: string | Message,
+    sender: Agent,
+    {
+      requestReply,
+      silent = false
+    }: {
+      requestReply?: boolean;
+      silent?: boolean;
+    } = {}
+  ) {
+    this.processReceivedMessage(message, sender, { silent });
+    if ( requestReply === false || requestReply === undefined && this.replyAtReceive[sender.name] === false ) {
+      return;
+    };
+    const reply = await this.generateReply({ sender });
+    if ( reply !== null ) {
+      await this.send(reply, sender, { silent });
+    };
+  };
 
   /**
    * Register a reply function.

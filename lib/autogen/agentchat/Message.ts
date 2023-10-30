@@ -6,12 +6,13 @@ export type Message = {
   /** Content of the message, can be `null`. */
   content: string | null;
 
-  /** Name of the function to be called. */
-  function_call?: string;
-  // TODO: Why is this `string`? Should be JSON schema.
+  /** A dictionary containing the function name and arguments */
+  function_call?: Record<string, any>;
+  // TODO: Provide complete typing;
 
-  /** Name of the function to be called (TODO: check if this is a mistake). */
+  /** Name of the function to be called */
   name?: string;
+  // TODO: Check if this is a mistake.
 
   /** Role of the message. */
   role: 'assistant' | 'user' | 'function' | 'system';
