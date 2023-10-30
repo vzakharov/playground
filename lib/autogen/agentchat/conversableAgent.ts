@@ -1,4 +1,7 @@
 /** A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call". */
+
+import { Agent } from "./Agent";
+
 // export type IsTerminationMsg = (message: Record<'content' | 'role' | 'name' | 'function_call', any>) => boolean;
 export type IsTerminationMsg = (message: {
   content: string;
@@ -68,11 +71,10 @@ export type CodeExecutionConfig = {
  * configured with different default settings.
  * 
  * To modify auto reply, override {@link generateReply} method.
- * To disable/enable human response in every turn, set {@link humanInputMode} to "NEVER" or "ALWAYS".
- * To modify the way to get human input, override {@link getHumanInput} method.
- * To modify the way to execute code blocks, single code block, or function call, override {@link executeCodeBlocks},
- * {@link runCode}, and {@link executeFunction} methods respectively.
- * To customize the initial message when a conversation starts, override {@link generateInitMessage} method.
+ * To disable/enable human response in every turn, set {@link humanInputMode} to `"NEVER"` or `"ALWAYS"`.
+ * To modify the way to get human input, override {@link ConversableAgent.getHumanInput} method.
+ * To modify the way to execute code blocks, single code block, or function call, override {@link ConversableAgent.executeCodeBlocks}, {@link ConversableAgent.runCode}, and {@link ConversableAgent.executeFunction} methods respectively.
+ * To customize the initial message when a conversation starts, override {@link ConversableAgent.generateInitMessage} method.
  */
 export class ConversableAgent extends Agent {
 
@@ -110,7 +112,7 @@ export class ConversableAgent extends Agent {
    * @param options - Optional constructor parameters (see {@link ConversableAgentOptions}).
    */
   constructor(
-    name: string,
+    public readonly name: string,
     // {
     //   systemMessage = 'You are a helpful AI Assistant.',
     //   humanInputMode = 'TERMINATE',
@@ -174,9 +176,29 @@ export class ConversableAgent extends Agent {
     
   };
 
+  async send(...args: Parameters<Agent['send']>) { throw new Error('Not implemented'); };
+  async receive(...args: Parameters<Agent['receive']>) { throw new Error('Not implemented'); };
+  reset() { throw new Error('Not implemented'); };
+  async generateReply(...args: Parameters<Agent['generateReply']>) { throw new Error('Not implemented'); };
+
 };
 
-export type RegisterReplyTrigger = Agent | string | null | ((agent: Agent) => boolean) | RegisterReplyTrigger[];
+/**
+ * Trigger for {@link ConversableAgent.registerReply}:
+ * - If a class is provided, the reply function will be called when the sender is an instance of the class.
+ * - If a string is provided, the reply function will be called when the sender's name matches the string.
+ * - If an agent instance is provided, the reply function will be called when the sender is the agent instance.
+ * - If a callable is provided, the reply function will be called when the callable returns `true`.
+ * - If a list is provided, the reply function will be called when any of the triggers in the list is activated.
+ * - If `null` is provided, the reply function will be called only when the sender is `null`.
+ */
+export type RegisterReplyTrigger = 
+  ( new (...args: any[]) => Agent ) 
+  | string 
+  | Agent
+  | null 
+  | ((agent: Agent) => boolean) 
+  | RegisterReplyTrigger[];
 
 /**
  * Options for {@link ConversableAgent.registerReply}:

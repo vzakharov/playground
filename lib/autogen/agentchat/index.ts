@@ -1,2 +1,3 @@
-export * from './assistantAgent';
-export * from './conversableAgent';
+export * from './Agent';
+export * from './AssistantAgent';
+export * from './ConversableAgent';

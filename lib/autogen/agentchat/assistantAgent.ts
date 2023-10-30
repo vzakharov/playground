@@ -1,4 +1,4 @@
-import { ConversableAgent, ConversableAgentOptions } from './conversableAgent';
+import { ConversableAgent, ConversableAgentOptions } from './ConversableAgent';
 
 /**
  * (In preview) Assistant agent, designed to solve a task with LLM.
