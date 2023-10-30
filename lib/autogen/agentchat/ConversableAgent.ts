@@ -1,4 +1,4 @@
-import { DEFAULT_MODEL, clear } from "..";
+import { DEFAULT_MODEL, clear, ensure, pick } from "..";
 import { Agent } from "./Agent";
 import { Message } from "./Message";
 
@@ -173,6 +173,49 @@ export class ConversableAgent extends Agent {
   };
 
   /**
+   * Append a message to the {@link ChatCompletion} conversation.
+   * 
+   * If the message received is a string, it will be put in the `content` field of the new dictionary.
+   * If the message received is a dictionary but does not have any of the two fields `content` or `function_call`,
+   * this message is not a valid {@link ChatCompletion} message.
+   * If only `function_call` is provided, `content` will be set to `null` if not provided, and the role of the message will be forced `"assistant"`.
+   * 
+   * @param message - The message to be appended to the {@link ChatCompletion} conversation.
+   * @param role - The role of the message, can be `"assistant"` or `"function"`.
+   * @param conversationId - The id of the conversation, should be the recipient or sender.
+   * 
+   * @returns Whether the message is appended to the {@link ChatCompletion} conversation.
+   */
+  private appendOaiMessage(
+    message: string | Message,
+    role: 'assistant' | 'function',
+    conversationId: Agent
+  ) {
+    const messageDict = this.messageToDict(message);
+    // create oai message to be appended to the oai conversation that can be passed to oai directly.
+    const oaiMessage = pick(messageDict, [
+      "content", "function_call", "name", "context"
+    ]) as Message;
+    if ( oaiMessage.content === undefined ) {
+      if ( 'function_call' in oaiMessage ) {
+        oaiMessage.content = null; // if only function_call is provided, content will be set to `null`.
+      } else {
+        return false;
+      };
+    };
+    oaiMessage.role = messageDict.role === 'function' ? 'function' : role;
+    if ( oaiMessage.function_call !== undefined ) {
+      oaiMessage.role = 'assistant'; // only messages with role 'assistant' can have a function call.
+    };
+    ensure(
+      this.oaiMessages[conversationId.name],
+      `Conversation with ${conversationId.name} not found in oaiMessages for ${this.name}.`
+    ).push(oaiMessage);
+    return true;
+  };
+
+
+  /**
    * Clear the chat history of the agent.
    * 
    * @param agent - The agent with whom the chat history to clear. If `undefined`, clear the chat history with all agents.
@@ -227,6 +270,19 @@ export class ConversableAgent extends Agent {
       { silent }
     );
   };
+
+  /**
+   * Convert a message to a dictionary.
+   * 
+   * The message can be a string or am object. The string will be put in the `content` field of the new object.
+   */
+  private messageToDict(message: string | Message) {
+    if ( typeof message === 'string' ) {
+      return { content: message } as Message;
+    } else {
+      return message;
+    };
+  }
 
   /**
    * Prepares the chat between this agent and the given recipient.
