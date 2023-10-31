@@ -124,6 +124,8 @@ export type GenerateOptions<Config> = {
   config?: Config;
 };
 
+export const NONE_AGENT = Symbol();
+
 /**
  * (In preview) A class for generic conversable agents which can be configured as assistant or user proxy.
  * 
@@ -152,7 +154,7 @@ export class ConversableAgent extends Agent {
   /**
    * A dictionary of conversations.
    */
-  private oaiMessages = {} as Record<string, Message[] | undefined>;
+  private oaiMessages = {} as Record<symbol, Message[] | undefined>;
 
   private oaiSystemMessage = [] as {
     content: string;
@@ -170,7 +172,7 @@ export class ConversableAgent extends Agent {
   }[];
   // TODO: Correct type for replyFuncList
 
-  replyAtReceive = {} as Record<string, boolean>;
+  replyAtReceive = {} as Record<symbol, boolean>;
 
   /**
    * Construct a {@link ConversableAgent}.
@@ -237,7 +239,7 @@ export class ConversableAgent extends Agent {
       oaiMessage.role = 'assistant'; // only messages with role 'assistant' can have a function call.
     };
     ensure(
-      this.oaiMessages[conversationId.name],
+      this.oaiMessages[conversationId.id],
       `Conversation with ${conversationId.name} not found in oaiMessages for ${this.name}.`
     ).push(oaiMessage);
     return true;
@@ -253,7 +255,7 @@ export class ConversableAgent extends Agent {
     if ( agent === undefined ) {
       clear(this.oaiMessages);
     } else {
-      this.oaiMessages[agent.name] = [];
+      this.oaiMessages[agent.id] = [];
     };
   };
 
@@ -268,7 +270,7 @@ export class ConversableAgent extends Agent {
       return [ false, null ] as const;
     };
     if ( !messages ) {
-      messages = this.oaiMessages[sender?.name ?? ''] ?? [];
+      messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
     };
     const lastNMessages = codeExecutionConfig.lastNMessages ?? 1;
 
@@ -319,13 +321,13 @@ export class ConversableAgent extends Agent {
    * 
    * @param options: see {@link GenerateOptions}.
    */
-  generateOaiReply({ messages, sender, config }: GenerateOptions = {}) {
+  generateOaiReply({ messages, sender, config }: GenerateOptions<LlmConfig> = {}) {
     const llmConfig = config ?? this.options.llmConfig;
     if ( !llmConfig ) {
       return null;
     };
     if ( !messages ) {
-      messages = this.oaiMessages[sender?.name ?? ''] ?? [];
+      messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
     };
     // TODO: (original #1143) handle token limit exceed error
     const response = oai.ChatCompletion.create({
@@ -389,7 +391,7 @@ export class ConversableAgent extends Agent {
   private prepareChat(recipient: ConversableAgent, clearHistory: boolean) {
     this.resetConsecutiveAutoReplyCounter(recipient);
     recipient.resetConsecutiveAutoReplyCounter(this);
-    this.replyAtReceive[recipient.name] = recipient.replyAtReceive[this.name] = true;
+    this.replyAtReceive[recipient.id] = recipient.replyAtReceive[this.id] = true;
     if ( clearHistory ) {
       this.clearHistory(recipient);
       recipient.clearHistory(this);
@@ -492,7 +494,7 @@ export class ConversableAgent extends Agent {
     }: SendReceiveOptions = {}
   ) {
     this.processReceivedMessage(message, sender, { silent });
-    if ( requestReply === false || requestReply === undefined && this.replyAtReceive[sender.name] === false ) {
+    if ( requestReply === false || requestReply === undefined && this.replyAtReceive[sender.id] === false ) {
       return;
     };
     const reply = await this.generateReply({ sender });
@@ -598,7 +600,7 @@ export class ConversableAgent extends Agent {
     if ( sender === undefined ) {
       clear(this.replyAtReceive);
     } else {
-      this.replyAtReceive[sender.name] = false;
+      this.replyAtReceive[sender.id] = false;
     };
   };
 
