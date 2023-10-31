@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, pick } from "..";
+import { DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
