@@ -38,3 +38,22 @@ export function pick<T extends Record<string, any>, K extends keyof T>(object: T
   }
   return result;
 };
+
+/**
+ * Throws an error with the given message.
+ * @param message The error message to throw.
+ * @throws An error with the given message.
+ */
+export function $throw(message: string): never {
+  throw new Error(message);
+};
+
+/**
+ * Throws an error with a message indicating that the provided value should not exist.
+ * This function is typically used in switch statements to ensure that all possible cases are handled.
+ * @param neverItem - The value that should not exist.
+ * @returns This function does not return a value; it always throws an error.
+ */
+export function shouldNotBe(neverItem: never): never {
+  throw new Error(`This should not exist: ${neverItem}`);
+};

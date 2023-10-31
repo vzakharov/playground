@@ -276,7 +276,7 @@ export class ConversableAgent extends Agent {
         `)
       );
       const { exitCode, logs, image } = (() => {
-        
+
         if ( lang !== UNKNOWN ) {
           if ( ['bash', 'shell', 'sh'].includes(lang) ) {
             return this.runCode(code, { lang });
@@ -611,6 +611,13 @@ export class ConversableAgent extends Agent {
     } else {
       this.consecutiveAutoReplyCounter[sender.name] = 0;
     };
+  };
+
+  /**
+   * Run the code and return the result. Same parameters and return values as {@link executeCode}.
+   */
+  async runCode(code: string, options: ExecuteCodeOptions) {
+    return executeCode(code, options);
   };
 
   /**
