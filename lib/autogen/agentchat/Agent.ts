@@ -1,6 +1,16 @@
 import { Message } from "./Message";
 
 /**
+ * Options for sending and receiving messages.
+ */
+export type SendReceiveOptions = {
+  /** Whether to request a reply from the recipient. */
+  requestReply?: boolean;
+  /** Whether to suppress the message. Porting note: This option is not implemented in the Python version for the abstract `Agent` class, but is for {@link ConversableAgent}, leading to a type discrepancy, which is why this option is added here. */
+  silent?: boolean;
+};
+
+/**
  * (In preview) An abstract class for AI agent.
  * 
  * An agent can communicate with other agents and perform actions.
@@ -22,18 +32,18 @@ export abstract class Agent {
    * 
    * @param message - The message.
    * @param recipient - The recipient agent.
-   * @param requestReply - Whether to request a reply from the recipient.
+   * @param options - see {@link SendReceiveOptions}
    */
-  abstract send(message: string | Message, recipient: Agent, { requestReply }: { requestReply?: boolean }): Promise<void>;
+  abstract send(message: string | Message, recipient: Agent, options: SendReceiveOptions): Promise<void>;
 
   /**
    * Receive a message from another agent.
    * 
    * @param message - The message.
    * @param sender - The sender agent.
-   * @param requestReply - Whether to request a reply from the sender.
+   * @param options - see {@link SendReceiveOptions}
    */
-  abstract receive(message: string | Message, sender: Agent, { requestReply }: { requestReply?: boolean }): Promise<void>;
+  abstract receive(message: string | Message, sender: Agent, options: SendReceiveOptions): Promise<void>;
 
   /**
    * Reset the agent.

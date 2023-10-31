@@ -1,6 +1,6 @@
 import dedent from "dedent-js";
 import { DEFAULT_MODEL, clear, colored, ensure, pick } from "..";
-import { Agent } from "./Agent";
+import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
 /** A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call". */
@@ -82,6 +82,11 @@ export type RegisterReplyTrigger =
   | RegisterReplyTrigger[];
 
 /**
+ * Config for a reply function /tba/
+ */
+export type ReplyConfig = { };
+
+/**
  * Options for {@link ConversableAgent.registerReply}:
  */
 export type RegisterReplyOptions = {
@@ -90,7 +95,7 @@ export type RegisterReplyOptions = {
   position?: number;
 
   /** The config to be passed to the reply function. When an agent is reset, the config will be reset to the original value. */
-  config?: any;
+  config?: ReplyConfig;
   // TODO: Correct type for config
 
   /** The function to reset the config. */
@@ -146,7 +151,13 @@ export class ConversableAgent extends Agent {
 
   private options: Required<ConversableAgentOptions>;
   
-  private replyFuncList = [] as any[];
+  private replyFuncList = [] as {
+    trigger: RegisterReplyTrigger;
+    replyFunc: ReplyFunc;
+    config: ReplyConfig;
+    initConfig: ReplyConfig;
+    resetConfig: ((config: ReplyConfig) => void) | null;
+  }[];
   // TODO: Correct type for replyFuncList
 
   replyAtReceive = {} as Record<string, boolean>;
@@ -389,7 +400,7 @@ export class ConversableAgent extends Agent {
    * @param message - message from the sender. If object, see {@link Message} for details.
    * @param sender - sender of an {@link Agent} instance.
    * @param requestReply - whether a reply is requested from the sender. If undefined, the value is determined by {@link ConversableAgent.replyAtReceive} keyed by the sender.
-   * @param silent - (Experimental) whether to print the message received.
+   * @param silent - (Experimental) whether to supress the message received.
    * 
    * @throws {Error} if the message can't be converted into a valid {@link ChatCompletion} message.
    */
@@ -399,10 +410,7 @@ export class ConversableAgent extends Agent {
     {
       requestReply,
       silent = false
-    }: {
-      requestReply?: boolean;
-      silent?: boolean;
-    } = {}
+    }: SendReceiveOptions = {}
   ) {
     this.processReceivedMessage(message, sender, { silent });
     if ( requestReply === false || requestReply === undefined && this.replyAtReceive[sender.name] === false ) {
@@ -449,6 +457,19 @@ export class ConversableAgent extends Agent {
     
   };
 
+  reset() {
+    this.clearHistory();
+    this.resetConsecutiveAutoReplyCounter();
+    this.stopReplyAtReceive();
+    for ( const replyFuncTuple of this.replyFuncList ) {
+      if ( replyFuncTuple.resetConfig ) {
+        replyFuncTuple.resetConfig(replyFuncTuple.config);
+      } else {
+        replyFuncTuple.config = {...replyFuncTuple.initConfig};
+      };
+    };
+  };
+
   private consecutiveAutoReplyCounter = {} as Record<string, number | undefined>;
 
   /**
@@ -477,10 +498,7 @@ export class ConversableAgent extends Agent {
     recipient: Agent, {
       requestReply = false,
       silent = false
-    }: {
-      requestReply?: boolean;
-      silent?: boolean;
-    } = {}
+    }: SendReceiveOptions = {}
   ) {
     // When the agent composes and sends the message, the role of the message is "assistant"
     // unless it's "function".
