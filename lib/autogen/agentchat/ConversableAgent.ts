@@ -39,7 +39,7 @@ export type ConversableAgentOptions = {
   humanInputMode?: 'ALWAYS' | 'NEVER' | 'TERMINATE';
 
   /** Mapping function names (passed to openai) to callable functions. */
-  functionMap?: Record<string, (...args: any[]) => any>;
+  functionMap?: Record<string, ((args: {}) => any) | undefined>;
 
   /** Config for the code execution, see {@link CodeExecutionConfig} for details. */
   codeExecutionConfig?: CodeExecutionConfig | false;
@@ -307,6 +307,63 @@ export class ConversableAgent extends Agent {
   };
 
   /**
+   * Execute a function call and return the result.
+   * 
+   * Override this function to modify the way to execute a function call.
+   * 
+   * @param functionCall - A dictionary extracted from openai message at key `function_call` with keys `name` and `arguments`.
+   * 
+   * @returns a tuple of (`isExecSuccess`, `message`).
+   * - `isExecSuccess` (boolean): whether the execution is successful.
+   * - `message`: a dictionary with keys `name`, `role`, and `content`. Value of `role` is `"function"`.
+   */
+  executeFunction(functionCall: Message['function_call']) {
+    const functionName = functionCall?.name ?? '';
+    const func = this.options.functionMap?.[functionName];
+    let isExecSuccess = false;
+    let content: any;
+    if ( func ) {
+      // Extract arguments from a json-like string and put it into a dict.
+      const inputString = this.formatJsonStr(functionCall?.arguments ?? '{}');
+      let args: Record<string, any> | null;
+      try {
+        args = JSON.parse(inputString);
+      } catch (e) {
+        args = null;
+        content = `Error: ${e}\n You argument should follow json format.`;
+      };
+
+      // Try to execute the function
+      if ( args ) {
+        console.log(
+          colored.magenta( dedent`
+            >>>>>>>> EXECUTING FUNCTION ${functionName}...
+          `)
+        );
+        try {
+          content = func(args);
+          isExecSuccess = true;
+        } catch (e) {
+          content = `Error: ${e}`;
+        };
+      } else {
+        content = `Error: Function ${functionName} not found.`;
+      };
+
+    } else {
+      content = `Error: Function ${functionName} not found.`;
+    };
+
+    return [ isExecSuccess, {
+      name: functionName,
+      role: 'function',
+      content: String(content)
+    } ] as const;
+  };
+
+
+
+  /**
    * Generate a reply using code execution.
    * 
    * @param options - see {@link GenerateOptions}.
@@ -351,6 +408,20 @@ export class ConversableAgent extends Agent {
   };
       
 
+  /**
+   * Generate a reply using function call.
+   * 
+   * @param options - see {@link GenerateOptions}.
+   */
+  generateFunctionCallReply({ messages, sender, config }: GenerateOptions<ConversableAgent> = {}) {
+    messages ??= this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
+    const message = messages.at(-1);
+    if ( message?.function_call ) {
+      const [ , funcReturn ] = this.executeFunction(message.function_call);
+      return [ true, funcReturn ] as const;
+    };
+    return [ false, null ] as const;
+  };
 
   /**
    * Generate the initial message for the agent.
@@ -420,7 +491,7 @@ export class ConversableAgent extends Agent {
   /**
    * Convert a message to a dictionary.
    * 
-   * The message can be a string or am object. The string will be put in the `content` field of the new object.
+   * @param message can be a string or an object. The string will be put in the `content` field of the new object.
    */
   private messageToDict(message: string | Message) {
     if ( typeof message === 'string' ) {

@@ -6,20 +6,17 @@ import fs from "fs";
  * Mimics Python's `compile` function.
  * 
  * @param code - The code to compile.
- * @param filename - The filename to use for run-time error messages.
- * @param mode - The mode to use for compilation, only `"exec"` is supported.
+ * @param _filename - Only present for API compatibility with Python.
+ * @param _mode - Only present for API compatibility with Python.
  * 
- * Implementation details: The function effectively creates a new (temporary) .py file that has runs `compile('''<code>''', "<filename>", "<mode>")` and returns the stdout of the command, heuristically parsing it to extract the error message if any.
+ * Implementation details: The function effectively creates a new (temporary) .py file and runs `python -m py_compile` on it.
  */
-export function compile(code: string, filename: string, mode: 'exec') {
+export function compile(code: string, _filename: string, _mode: 'exec') {
   const tmpFile = tmp.fileSync({ postfix: ".py" });
-  fs.writeFileSync(tmpFile.name, `print(compile('''${code}''', "${filename}", "${mode}"))`);
-  const output = cp.execSync(`python ${tmpFile.name}`);
-  // TODO: Run in a docker container to avoid security issues
+  const output = cp.execSync(`python -m py_compile ${tmpFile.name}`, { input: code });
   tmpFile.removeCallback();
-  const outputStr = output.toString();
-  if ( !outputStr ) return;
-  const match = outputStr.match(/File "<string>", line \d+\n(.*)/);
-  if ( !match ) return;
-  return match[1];
+  // If there is a .pyc file, it means the compilation succeeded.
+  if (!fs.existsSync(tmpFile.name + "c")) {
+    throw new Error(`Failed to compile code: ${output}`);
+  }
 };
