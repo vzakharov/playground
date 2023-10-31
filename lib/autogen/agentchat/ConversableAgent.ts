@@ -154,9 +154,9 @@ export class ConversableAgent extends Agent {
   private replyFuncList = [] as {
     trigger: RegisterReplyTrigger;
     replyFunc: ReplyFunc;
-    config: ReplyConfig;
-    initConfig: ReplyConfig;
-    resetConfig: ((config: ReplyConfig) => void) | null;
+    config?: ReplyConfig;
+    initConfig?: ReplyConfig;
+    resetConfig?: ((config: ReplyConfig) => void);
   }[];
   // TODO: Correct type for replyFuncList
 
@@ -441,8 +441,8 @@ export class ConversableAgent extends Agent {
 
     const {
       position = 0,
-      config = null,
-      resetConfig = null
+      config,
+      resetConfig
     } = options;
 
     // TODO: Implement runtime type checking (?)
@@ -462,10 +462,12 @@ export class ConversableAgent extends Agent {
     this.resetConsecutiveAutoReplyCounter();
     this.stopReplyAtReceive();
     for ( const replyFuncTuple of this.replyFuncList ) {
-      if ( replyFuncTuple.resetConfig ) {
-        replyFuncTuple.resetConfig(replyFuncTuple.config);
+      const { config, initConfig } = replyFuncTuple;
+      if ( replyFuncTuple.resetConfig && config ) {
+        // Porting note: Original Python code doesn't check for `config` to exist here.
+        replyFuncTuple.resetConfig(config);
       } else {
-        replyFuncTuple.config = {...replyFuncTuple.initConfig};
+        replyFuncTuple.config = initConfig && {...initConfig};
       };
     };
   };
@@ -509,6 +511,15 @@ export class ConversableAgent extends Agent {
       throw new Error(
         "Message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
       );
+    };
+  };
+
+  /** Reset the replyAtReceive for the sender. If no sender is provided, reset the `replyAtReceive` for all senders. */
+  stopReplyAtReceive(sender?: Agent) {
+    if ( sender === undefined ) {
+      clear(this.replyAtReceive);
+    } else {
+      this.replyAtReceive[sender.name] = false;
     };
   };
 
