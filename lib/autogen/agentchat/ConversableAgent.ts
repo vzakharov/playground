@@ -18,8 +18,8 @@ export type ConversableAgentOptions = {
   /** System message for the ChatCompletion inference. */
   systemMessage?: string;
 
-  /** LLM inference configuration. Please refer to [Completion.create](/docs/reference/oai/completion#create) for available options. */
-  llmConfig?: LlmConfig | false;
+  /** LLM inference configuration. Please refer to [Completion.create](/docs/reference/oai/completion#create) for available options. Porting note: The original Python code allowed `false` as a value. We'll just use undefined for this. */
+  llmConfig?: LlmConfig;
   // TODO: Correct type for llmConfig
 
   /** A function used to determine if a message is a termination message, see {@link IsTerminationMsg} for details. */
@@ -184,10 +184,11 @@ export class ConversableAgent extends Agent {
       functionMap: {},
       ...options
     };
-    this.registerReply([ Agent , null], ConversableAgent.generateOaiReply);
-    this.registerReply([ Agent , null], ConversableAgent.generateCodeExecutionReply);
-    this.registerReply([ Agent , null], ConversableAgent.generateFunctionCallReply);
-    this.registerReply([ Agent , null], ConversableAgent.checkTerminationAndHumanReply);
+    this.registerReply([ Agent , null], this.generateOaiReply);
+    // TODO: Do we need to bind this?
+    this.registerReply([ Agent , null], this.generateCodeExecutionReply);
+    this.registerReply([ Agent , null], this.generateFunctionCallReply);
+    this.registerReply([ Agent , null], this.checkTerminationAndHumanReply);
   };
 
   /**
@@ -255,6 +256,34 @@ export class ConversableAgent extends Agent {
   generateInitMessage({ message }: { message: Message } & Record<string, any>) {
     return message;
     // TODO: Find a better way to do this
+  };
+
+  /**
+   * Generate a reply using {@link oai}.
+   * 
+   * @param messages - A list of messages received.
+   * @param sender - The sender agent.
+   * @param config - LLM inference configuration.
+   */
+  generateOaiReply({ messages, sender, config }: {
+    messages?: Message[];
+    sender?: Agent;
+    config?: LlmConfig;
+  } = {}) {
+    const llmConfig = config ?? this.options.llmConfig;
+    if ( !llmConfig ) {
+      return null;
+    };
+    if ( !messages ) {
+      messages = this.oaiMessages[sender?.name ?? ''] ?? [];
+    };
+    // TODO: (original #1143) handle token limit exceed error
+    const response = oai.ChatCompletion.create({
+      context: messages[messages.length - 1]?.context,
+      messages: [ ...this.oaiSystemMessage, ...messages ],
+      ...llmConfig
+    });
+    return oai.ChatCompletion.extractTextOrFunctionCall(response)[0];
   };
 
   async generateReply(...args: Parameters<Agent['generateReply']>): ReturnType<Agent['generateReply']> {
