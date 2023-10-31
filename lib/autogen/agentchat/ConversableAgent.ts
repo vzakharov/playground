@@ -14,21 +14,33 @@ export type LlmConfig = {
 // TODO: Complete as we figure out what the options are & doc after that
 
 /** Optional parameters for constructing an {@link ConversableAgent}. */
+/**
+ * Options for creating a ConversableAgent.
+ */
 export type ConversableAgentOptions = {
-  /** System message for the ChatCompletion inference. */
+  /**
+   * System message for the ChatCompletion inference.
+   */
   systemMessage?: string;
 
-  /** LLM inference configuration. Please refer to [Completion.create](/docs/reference/oai/completion#create) for available options. Porting note: The original Python code allowed `false` as a value. We'll just use undefined for this. */
+  /**
+   * LLM inference configuration. Please refer to [Completion.create](/docs/reference/oai/completion#create) for available options. Porting note: The original Python code allowed `false` as a value. We'll just use undefined for this.
+   */
   llmConfig?: LlmConfig;
   // TODO: Correct type for llmConfig
 
-  /** A function used to determine if a message is a termination message, see {@link IsTerminationMsg} for details. */
+  /**
+   * A function used to determine if a message is a termination message, see {@link IsTerminationMsg} for details.
+   */
   isTerminationMsg?: IsTerminationMsg;
 
-  /** The maximum number of consecutive auto replies. Default to 100 (subject to future change). If not provided, static property {@link MAX_CONSECUTIVE_AUTO_REPLY} will be used. */
+  /**
+   * The maximum number of consecutive auto replies. Default to 100 (subject to future change). If not provided, static property {@link MAX_CONSECUTIVE_AUTO_REPLY} will be used.
+   */
   maxConsecutiveAutoReply?: number;
 
-  /** Whether to ask for human inputs every time a message is received. Possible values are `"ALWAYS"`, `"TERMINATE"`, `"NEVER"`:
+  /**
+   * Whether to ask for human inputs every time a message is received. Possible values are `"ALWAYS"`, `"TERMINATE"`, `"NEVER"`:
    * 
    * (1) When `"ALWAYS"`, the agent prompts for human input every time a message is received. Under this mode, the conversation stops when the human input is `"exit"`, or when {@link isTerminationMsg} is `true` and there is no human input.
    * 
@@ -38,13 +50,19 @@ export type ConversableAgentOptions = {
    */
   humanInputMode?: 'ALWAYS' | 'NEVER' | 'TERMINATE';
 
-  /** Mapping function names (passed to openai) to callable functions. */
+  /**
+   * Mapping function names (passed to openai) to callable functions.
+   */
   functionMap?: Record<string, ((args: {}) => any) | undefined>;
 
-  /** Config for the code execution, see {@link CodeExecutionConfig} for details. */
+  /**
+   * Config for the code execution, see {@link CodeExecutionConfig} for details.
+   */
   codeExecutionConfig?: CodeExecutionConfig | false;
 
-  /** Default auto reply when no code execution or LLM-based reply is generated. */
+  /**
+   * Default auto reply when no code execution or LLM-based reply is generated.
+   */
   defaultAutoReply?: string | Record<string, any>;
 };
 
@@ -152,6 +170,14 @@ export class ConversableAgent extends Agent {
   static MAX_CONSECUTIVE_AUTO_REPLY = 100 as const;
 
   /**
+   * A dictionary that maps agents to the maximum number of consecutive auto replies for that agent.
+   * 
+   * Porting note: Javascript does not provide a counterpart to Python's `defaultdict`, so we're using a regular object here. Whenever a key is not found, we'll need to manually initialize it to `this.options.maxConsecutiveAutoReply`.
+   */
+  maxConsecutiveAutoReplyDict?: Record<symbol, number | undefined>;
+
+
+  /**
    * A dictionary of conversations.
    */
   private oaiMessages = {} as Record<symbol, Message[] | undefined>;
@@ -244,6 +270,90 @@ export class ConversableAgent extends Agent {
     ).push(oaiMessage);
     return true;
   };
+
+  /**
+   * Check if the conversation should be terminated, and if human reply is provided.
+   * 
+   * @param options - see {@link GenerateOptions}.
+   */
+  checkTerminationAndHumanReply({ 
+    sender, 
+    messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [], config = this
+  }: GenerateOptions<ConversableAgent> = {}) {
+    const message = messages.at(-1);
+    let reply = "";
+    let noHumanInputMsg = "";
+    const senderId = sender?.id ?? NONE_AGENT;
+    if ( this.options.humanInputMode === 'ALWAYS' ) {
+      reply = this.getHumanInput(
+        `Provide feedback to ${sender?.name}. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: `
+      );
+      noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
+      reply = reply || (this.options.isTerminationMsg?.(message) ? "exit" : "");
+    } else {
+      if ( this.consecutiveAutoReplyCounter[senderId] ?? 0 >= this.options.maxConsecutiveAutoReply ?? ) {
+        if ( this.options.humanInputMode === 'NEVER' ) {
+          reply = "exit";
+        } else {
+          // this.humanInputMode == "TERMINATE":
+          const terminate = this.options.isTerminationMsg?.(message);
+          reply = this.getHumanInput(
+            `Please give feedback to ${sender?.name}. Press enter or type 'exit' to stop the conversation: `
+            + (terminate ? '' : `Please give feedback to ${sender?.name}. Press enter to skip and use auto-reply, or type 'exit' to stop the conversation: `)
+          );
+          noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
+          reply = reply || (terminate ? "exit" : "");
+        };
+      } else if ( this.options.isTerminationMsg?.(message) ) {
+        if ( this.options.humanInputMode === 'NEVER' ) {
+          reply = "exit";
+        } else {
+          // this.humanInputMode == "TERMINATE":
+          reply = this.getHumanInput(
+            `Please give feedback to ${sender?.name}. Press enter or type 'exit' to stop the conversation: `
+          );
+          noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
+          reply = reply || "exit";
+        };
+      };
+    };
+
+    // print the noHumanInputMsg
+    if ( noHumanInputMsg ) {
+      console.log(
+        colored.red( dedent`
+          >>>>>>>> ${noHumanInputMsg}
+        `)
+      );
+    };
+
+    // stop the conversation
+    if ( reply === "exit" ) {
+      // reset the consecutiveAutoReplyCounter
+      this.consecutiveAutoReplyCounter[senderId] = 0;
+      return [ true, null ] as const;
+    };
+
+    // send the human reply
+    if ( reply || ( this.maxConsecutiveAutoReplyDict?.[senderId] ?? 0 === 0 ) ) {
+      // reset the consecutiveAutoReplyCounter
+      this.consecutiveAutoReplyCounter[senderId] = 0;
+      return [ true, reply ] as const;
+    };
+
+    // increment the consecutiveAutoReplyCounter
+    this.consecutiveAutoReplyCounter[senderId] = (this.consecutiveAutoReplyCounter[senderId] ?? 0) + 1;
+    if ( this.options.humanInputMode !== 'NEVER' ) {
+      console.log(
+        colored.red( dedent`
+          >>>>>>>> USING AUTO REPLY...
+        `)
+      );
+    };
+
+    return [ false, null ] as const;
+  };
+
 
 
   /**
@@ -420,8 +530,11 @@ export class ConversableAgent extends Agent {
    * 
    * @param options - see {@link GenerateOptions}.
    */
-  generateFunctionCallReply({ messages, sender, config }: GenerateOptions<ConversableAgent> = {}) {
-    messages ??= this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
+  generateFunctionCallReply({ 
+    sender, 
+    messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [], config = this
+    // Porting note: `config` seems to be unused.
+  }: GenerateOptions<ConversableAgent> = {}) {
     const message = messages.at(-1);
     if ( message?.function_call ) {
       const [ , funcReturn ] = this.executeFunction(message.function_call);
@@ -678,7 +791,7 @@ export class ConversableAgent extends Agent {
     };
   };
 
-  private consecutiveAutoReplyCounter = {} as Record<string, number | undefined>;
+  private consecutiveAutoReplyCounter = {} as Record<symbol, number | undefined>;
 
   /**
    * Reset the consecutive auto reply counter of the sender.
@@ -687,7 +800,7 @@ export class ConversableAgent extends Agent {
     if ( sender === undefined ) {
       clear(this.consecutiveAutoReplyCounter);
     } else {
-      this.consecutiveAutoReplyCounter[sender.name] = 0;
+      this.consecutiveAutoReplyCounter[sender.id] = 0;
     };
   };
 
