@@ -1,5 +1,5 @@
 import path from "path";
-import { colored, compile, ensure, shouldNotBe } from ".";
+import { $throw, colored, compile, ensure, shouldNotBe } from ".";
 import tmp from "tmp";
 import fs from "fs";
 import cp from 'child_process';
@@ -19,6 +19,21 @@ export const PATH_SEPARATOR = WIN32 ? "\\" : "/";
 
 export type CodeBlock = [string | typeof UNKNOWN, string];
 
+/**
+ * Returns the command to execute code based on the language.
+ * @param lang The language of the code.
+ * @returns The command to execute the code.
+ * @throws an error if the language is not recognized.
+ */
+function getCmd(lang: string) {
+  return lang.startsWith("python") || ["bash", "sh", "powershell"].includes(lang)
+    ? lang
+  : lang === "shell"
+    ? "sh"
+  : lang === "ps1"
+    ? "powershell"
+  : $throw(`${lang} not recognized in code execution`);
+};
 
 /**
  * Execute code in a docker container.
