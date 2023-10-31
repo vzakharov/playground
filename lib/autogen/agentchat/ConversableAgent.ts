@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { CodeBlock, DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, pick } from "..";
+import { CodeBlock, DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, inferLang, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
