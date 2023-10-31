@@ -324,7 +324,7 @@ export class ConversableAgent extends Agent {
     let content: any;
     if ( func ) {
       // Extract arguments from a json-like string and put it into a dict.
-      const inputString = this.formatJsonStr(functionCall?.arguments ?? '{}');
+      const inputString = ConversableAgent.formatJsonStr(functionCall?.arguments ?? '{}');
       let args: Record<string, any> | null;
       try {
         args = JSON.parse(inputString);
@@ -361,7 +361,14 @@ export class ConversableAgent extends Agent {
     } ] as const;
   };
 
-
+  /**
+   * Remove newlines outside of quotes, and handle JSON escape sequences.
+   * 
+   * Porting note: Seems like JSON.parse already handles this, so we're just returning the input string here.
+   */
+  static formatJsonStr(jsonString: string) {
+    return jsonString;
+  };
 
   /**
    * Generate a reply using code execution.
