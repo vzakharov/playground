@@ -269,25 +269,28 @@ export class ConversableAgent extends Agent {
     for ( let i = 0; i < codeBlocks.length; i++ ) {
       const block = codeBlocks[i];
       const [ , code] = block;
-      const lang = ( block[0] || inferLang(code) ).toLowerCase();
+      const lang = block[0] || inferLang(code);
       console.log(
         colored.red( dedent`
           >>>>>>>> EXECUTING CODE BLOCK ${i} (inferred language is ${lang})...
         `)
       );
       const { exitCode, logs, image } = (() => {
-        if ( ['bash', 'shell', 'sh'].includes(lang) ) {
-          return this.runCode(code, { lang });
-        } else if ( lang === 'python' ) {
-          const filename = code.startsWith('# filename: ') ? code.slice(11, code.indexOf('\n')).trim() : undefined;
-          // TODO: Make less hacky
-          return this.runCode(code, { lang, filename });
-        } else {
-          // In case the language is not supported, we return an error message.
-          return { exitCode: 1, logs: `unknown language ${lang}`, image: undefined };
-          // throw new Error(`Language ${lang} not supported`);
-          // TODO: Why was this commented out?
+        
+        if ( lang !== UNKNOWN ) {
+          if ( ['bash', 'shell', 'sh'].includes(lang) ) {
+            return this.runCode(code, { lang });
+          } else if ( lang.toLowerCase() === 'python' ) {
+            const filename = code.startsWith('# filename: ') ? code.slice(11, code.indexOf('\n')).trim() : undefined;
+            // TODO: Make less hacky
+            return this.runCode(code, { lang, filename });
+          }
         };
+        
+        // In case the language is not supported, we return an error message.
+        return { exitCode: 1, logs: `unknown language: ${String(lang)}`, image: undefined };
+        // throw new Error(`Language ${lang} not supported`);
+        // TODO: Why was this commented out?
       })();
       if ( image ) {
         this.options.codeExecutionConfig ||= {};
