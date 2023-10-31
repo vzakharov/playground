@@ -11,6 +11,8 @@ export const DEFAULT_TIMEOUT = 600;
 export const WIN32 = process.platform == "win32";
 export const PATH_SEPARATOR = WIN32 ? "\\" : "/";
 
+export type CodeBlock = [string | typeof UNKNOWN, string];
+
 /**
  * Extract code from a text.
  * 
@@ -33,7 +35,7 @@ export function extractCode<DetectSingle extends boolean>(
     pattern?: DetectSingle extends true ? never : string;
     detectSingleLineCode?: DetectSingle;
   } = {}
-): [ string | typeof UNKNOWN, string ][] {
+): CodeBlock[] {
   if ( !detectSingleLineCode ) {
     const matches = Array.from(text.matchAll(new RegExp(pattern, "gms")));
     if ( !matches.length ) return [[UNKNOWN, text]];

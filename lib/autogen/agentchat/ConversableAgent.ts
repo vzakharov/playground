@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, pick } from "..";
+import { CodeBlock, DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
@@ -257,6 +257,50 @@ export class ConversableAgent extends Agent {
     } else {
       this.oaiMessages[agent.id] = [];
     };
+  };
+
+  /**
+   * Execute the code blocks and return the result.
+   * 
+   * @param codeBlocks - A list of tuples, each containing the language and the code.
+   */
+  executeCodeBlocks(codeBlocks: CodeBlock[]) {
+    let logsAll = "";
+    for ( let i = 0; i < codeBlocks.length; i++ ) {
+      const block = codeBlocks[i];
+      const [ , code] = block;
+      const lang = ( block[0] || inferLang(code) ).toLowerCase();
+      console.log(
+        colored.red( dedent`
+          >>>>>>>> EXECUTING CODE BLOCK ${i} (inferred language is ${lang})...
+        `)
+      );
+      const { exitCode, logs, image } = (() => {
+        if ( ['bash', 'shell', 'sh'].includes(lang) ) {
+          return this.runCode(code, { lang });
+        } else if ( lang === 'python' ) {
+          const filename = code.startsWith('# filename: ') ? code.slice(11, code.indexOf('\n')).trim() : undefined;
+          // TODO: Make less hacky
+          return this.runCode(code, { lang, filename });
+        } else {
+          // In case the language is not supported, we return an error message.
+          return { exitCode: 1, logs: `unknown language ${lang}`, image: undefined };
+          // throw new Error(`Language ${lang} not supported`);
+          // TODO: Why was this commented out?
+        };
+      })();
+      if ( image ) {
+        this.options.codeExecutionConfig ||= {};
+        // Porting note: Original Python code doesn't check for `codeExecutionConfig` to be an object here.
+        this.options.codeExecutionConfig.useDocker = image;
+      };
+      logsAll += '\n' + logs;
+      if ( exitCode ) {
+        return [ exitCode, logsAll ] as const;
+      };
+    };
+    return [ 0, logsAll ] as const;
+    // Porting note: Original Python code returns the latest `exitCode` here, but we already know it's 0 (because otherwise the function would have returned earlier), so we're just returning 0 here.
   };
 
   /**
