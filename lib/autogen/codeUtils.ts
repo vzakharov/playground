@@ -1,4 +1,5 @@
 import path from "path";
+import { compile } from ".";
 
 export const DEFAULT_MODEL = "gpt-4";
 export const FAST_MODEL = "gpt-3.5-turbo";
@@ -60,4 +61,25 @@ export function extractCode<DetectSingle extends boolean>(
     throw new Error(`Unexpected match: ${match}`);
   });
 
+};
+
+/**
+ * Infer the language for the code.
+ * 
+ * @param code - The code to infer the language for.
+ * 
+ * NOTE: The current implementation is not robust and just checks whether it's Python or a shell script using simple heuristics.
+ */
+export function inferLang(code: string) {
+  // TODO: (original) Make it robust.
+  if ( ["python", "pip", "python3"].some(prefix => code.startsWith(prefix)) ) return "sh";
+
+  // Check if code is a valid python code
+  try {
+    compile(code, "test", "exec");
+    return "python";
+  } catch {
+    // Not a valid python code
+    return UNKNOWN;
+  }
 };

@@ -13,6 +13,7 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18.17.3",
+    "@types/tmp": "^0.2.5",
     "nuxt": "^3.6.5"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "openai": "^4.6.0",
+    "tmp": "^0.2.1",
     "use-vova": "^0.2.0",
     "vovas-utils": "^0.6.3"
   }
