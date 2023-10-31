@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { DEFAULT_MODEL, clear, colored, ensure, pick } from "..";
+import { DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
@@ -65,7 +65,7 @@ export type CodeExecutionConfig = {
 
 
 /**
- * Trigger for {@link ConversableAgent.registerReply}:
+ * Trigger for {@link ConversableAgent#registerReply}:
  * - If a class is provided, the reply function will be called when the sender is an instance of the class.
  * - If a string is provided, the reply function will be called when the sender's name matches the string.
  * - If an agent instance is provided, the reply function will be called when the sender is the agent instance.
@@ -87,7 +87,7 @@ export type RegisterReplyTrigger =
 export type ReplyConfig = { };
 
 /**
- * Options for {@link ConversableAgent.registerReply}:
+ * Options for {@link ConversableAgent#registerReply}:
  */
 export type RegisterReplyOptions = {
   
@@ -114,6 +114,16 @@ export type ReplyFunc = (
   config?: any
 ) => string | Message | null;
 
+/** Options for {@link ConversableAgent#generateReply} */
+export type GenerateOptions<Config> = {
+  /** Messages to include in the prompt, if any. */
+  messages?: Message[];
+  /** The sender of the message. */
+  sender?: Agent;
+  /** Config for the reply function. */
+  config?: Config;
+};
+
 /**
  * (In preview) A class for generic conversable agents which can be configured as assistant or user proxy.
  * 
@@ -123,9 +133,9 @@ export type ReplyFunc = (
  * 
  * To modify auto reply, override {@link generateReply} method.
  * To disable/enable human response in every turn, set {@link humanInputMode} to `"NEVER"` or `"ALWAYS"`.
- * To modify the way to get human input, override {@link ConversableAgent.getHumanInput} method.
- * To modify the way to execute code blocks, single code block, or function call, override {@link ConversableAgent.executeCodeBlocks}, {@link ConversableAgent.runCode}, and {@link ConversableAgent.executeFunction} methods respectively.
- * To customize the initial message when a conversation starts, override {@link ConversableAgent.generateInitMessage} method.
+ * To modify the way to get human input, override {@link ConversableAgent#getHumanInput} method.
+ * To modify the way to execute code blocks, single code block, or function call, override {@link ConversableAgent#executeCodeBlocks}, {@link ConversableAgent#runCode}, and {@link ConversableAgent#executeFunction} methods respectively.
+ * To customize the initial message when a conversation starts, override {@link ConversableAgent#generateInitMessage} method.
  */
 export class ConversableAgent extends Agent {
 
@@ -248,6 +258,52 @@ export class ConversableAgent extends Agent {
   };
 
   /**
+   * Generate a reply using code execution.
+   * 
+   * @param options - see {@link GenerateOptions}.
+   */
+  generateCodeExecutionReply({ messages, sender, config }: GenerateOptions<CodeExecutionConfig> = {}) {
+    const codeExecutionConfig = config ?? this.options.codeExecutionConfig;
+    if ( codeExecutionConfig === false ) {
+      return [ false, null ] as const;
+    };
+    if ( !messages ) {
+      messages = this.oaiMessages[sender?.name ?? ''] ?? [];
+    };
+    const lastNMessages = codeExecutionConfig.lastNMessages ?? 1;
+
+    // iterate through the last n messages in reverse
+    // if code blocks are found, execute the code blocks and return the output
+    // if no code blocks are found, continue
+    for ( let i = 0; i < Math.min(messages.length, lastNMessages); i++ ) {
+      const message = messages.at(-(i + 1));
+      if ( !message?.content ) {
+        continue;
+      };
+      const codeBlocks = extractCode(message.content);
+      if ( codeBlocks.length === 1 && codeBlocks[0][0] === UNKNOWN ) {
+        continue;
+      }
+
+      // found code blocks, execute code and push `lastNMessages` back
+      const [ exitCode, logs ] = this.executeCodeBlocks(codeBlocks);
+      Object.assign(codeExecutionConfig, { lastNMessages });
+      const exitCode2Str = exitCode === 0 ? 'execution succeeded' : 'execution failed';
+      return [ true, dedent`
+        exitcode: ${exitCode} (${exitCode2Str})
+        Code output: ${logs}
+      ` ] as const;
+
+    };
+
+    // no code blocks are found, push lastNMessages back and return.
+    Object.assign(codeExecutionConfig, { lastNMessages });
+    return [ false, null ] as const;
+  };
+      
+
+
+  /**
    * Generate the initial message for the agent.
    * 
    * Override this function to customize the initial message based on user's request.
@@ -261,15 +317,9 @@ export class ConversableAgent extends Agent {
   /**
    * Generate a reply using {@link oai}.
    * 
-   * @param messages - A list of messages received.
-   * @param sender - The sender agent.
-   * @param config - LLM inference configuration.
+   * @param options: see {@link GenerateOptions}.
    */
-  generateOaiReply({ messages, sender, config }: {
-    messages?: Message[];
-    sender?: Agent;
-    config?: LlmConfig;
-  } = {}) {
+  generateOaiReply({ messages, sender, config }: GenerateOptions = {}) {
     const llmConfig = config ?? this.options.llmConfig;
     if ( !llmConfig ) {
       return null;
@@ -291,12 +341,12 @@ export class ConversableAgent extends Agent {
   };
 
   /**
-   * Initiate a chat with the recipient agent. Resets the consecutive auto reply counter. {@link ConversableAgent.generateInitMessage} is called to generate the initial message for the agent.
+   * Initiate a chat with the recipient agent. Resets the consecutive auto reply counter. {@link ConversableAgent#generateInitMessage} is called to generate the initial message for the agent.
    * 
    * @param recipient - The recipient agent.
    * @param clearHistory - Whether to clear the chat history with the agent. If `true`, the chat history with the agent will be cleared. Default to `true`.
    * @param silent - (Experimental) Whether to print the messages for this conversation. Default to `false`.
-   * @param message - Must be provided if the {@link ConversableAgent.generateInitMessage} method is not overridden.
+   * @param message - Must be provided if the {@link ConversableAgent#generateInitMessage} method is not overridden.
    * @param context - Any context information.
    */
   async initiateChat(recipient: ConversableAgent, {
@@ -428,7 +478,7 @@ export class ConversableAgent extends Agent {
    * 
    * @param message - message from the sender. If object, see {@link Message} for details.
    * @param sender - sender of an {@link Agent} instance.
-   * @param requestReply - whether a reply is requested from the sender. If undefined, the value is determined by {@link ConversableAgent.replyAtReceive} keyed by the sender.
+   * @param requestReply - whether a reply is requested from the sender. If undefined, the value is determined by {@link ConversableAgent#replyAtReceive} keyed by the sender.
    * @param silent - (Experimental) whether to supress the message received.
    * 
    * @throws {Error} if the message can't be converted into a valid {@link ChatCompletion} message.
