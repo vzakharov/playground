@@ -2,6 +2,7 @@ import dedent from "dedent-js";
 import { CodeBlock, CodeSource, DEFAULT_MODEL, DefaultMap, ExecuteCodeParams, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
+import readline from 'readline';
 
 /** A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call". */
 export type IsTerminationMsg = (message: Message) => boolean;
@@ -579,6 +580,25 @@ export class ConversableAgent extends Agent {
   async generateReply(...args: Parameters<Agent['generateReply']>): ReturnType<Agent['generateReply']> {
    throw new Error('Not implemented'); 
   };
+
+  /**
+   * Get human input.
+   * 
+   * Override this method to customize the way to get human input.
+   * Porting note: The JavaScript implementation uses the readline module to get human input.
+   */
+  async getHumanInput(prompt: string) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    const reply = await new Promise<string>(resolve => {
+      rl.question(prompt, resolve);
+    });
+    rl.close();
+    return reply;
+  };
+    
 
   /**
    * Initiate a chat with the recipient agent. Resets the consecutive auto reply counter. {@link ConversableAgent#generateInitMessage} is called to generate the initial message for the agent.
