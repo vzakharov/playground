@@ -35,11 +35,37 @@ function getCmd(lang: string) {
   : $throw(`${lang} not recognized in code execution`);
 };
 
-export type ExecuteCodeOptions = {
-  timeout: number;
+export type CodeSource = 'code' | 'filename';
+
+/**
+ * Represents an object with code is provided. (In this case the filename is optional. If provided, it is used for writing the code to a file.)
+ */
+export type CodeProvided = {
+  code: string;
+  filename?: string;
+};
+
+/**
+ * Represents an object with no code provided. (In this case the filename is required. It is used for reading the code from the file.)
+ */
+export type NoCodeProvided = {
+  code?: undefined;
+  filename: string;
+};
+
+export type ExecuteCodeParams= (
+  CodeProvided | NoCodeProvided
+) & {
+  timeout?: number;
   workDir?: string;
-  useDocker: boolean | string | string[];
-  lang: string;
+  useDocker?: boolean | string | string[];
+  lang?: string;
+};
+
+export function validateCodeSource(
+  options: { code?: string; filename?: string; }
+): asserts options is CodeProvided | NoCodeProvided {
+  if ( !options.code && !options.filename ) throw new Error(`Filename must be provided when code is not provided.`);
 };
 
 /**
@@ -73,25 +99,15 @@ export type ExecuteCodeOptions = {
  * 
  * @returns {@link ExecuteCodeResult}
  */
-export async function executeCode<CodeOrFilename extends 'code' | 'filename'>({ 
+export async function executeCode({ 
   code, 
   timeout = DEFAULT_TIMEOUT,
   workDir = WORKING_DIR,
   useDocker = true, 
   lang = 'python',
   filename,
-}: (
-  CodeOrFilename extends 'code' ? {
-    code: string;
-    filename?: never
-  } : {
-    code?: never;
-    filename: string;
-  }
-) & ExecuteCodeOptions) {
-// }): ExecuteCodeResult {
-  if ( !code && !filename ) throw new Error(`Either code or filename must be provided.`);
-  if ( code && filename ) throw new Error(`Only one of code and filename can be provided.`);
+}: ExecuteCodeParams) {
+  validateCodeSource({ code, filename });
 
   if ( useDocker === false ) {
     if ( process.env.ALLOW_CODE_EXECUTION_WITHOUT_DOCKER !== "true" )

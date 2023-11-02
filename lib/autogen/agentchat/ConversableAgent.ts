@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { CodeBlock, DEFAULT_MODEL, DefaultMap, ExecuteCodeOptions, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
+import { CodeBlock, CodeSource, DEFAULT_MODEL, DefaultMap, ExecuteCodeParams, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
@@ -372,7 +372,7 @@ export class ConversableAgent extends Agent {
    * 
    * @param codeBlocks - A list of tuples, each containing the language and the code.
    */
-  executeCodeBlocks(codeBlocks: CodeBlock[]) {
+  async executeCodeBlocks(codeBlocks: CodeBlock[]) {
     let logsAll = "";
     for ( let i = 0; i < codeBlocks.length; i++ ) {
       const block = codeBlocks[i];
@@ -384,15 +384,15 @@ export class ConversableAgent extends Agent {
         `)
       );
 
-      const { exitCode, logs, image } = (() => {
+      const { exitCode, logs, image } = await (async () => {
 
         if ( lang !== UNKNOWN ) {
           if ( ['bash', 'shell', 'sh'].includes(lang) ) {
-            return this.runCode(code, { lang });
+            return this.runCode({ code, lang });
           } else if ( lang.toLowerCase() === 'python' ) {
             const filename = code.startsWith('# filename: ') ? code.slice(11, code.indexOf('\n')).trim() : undefined;
             // TODO: Make less hacky
-            return this.runCode(code, { lang, filename });
+            return this.runCode({ code, lang, filename });
           }
         };
         
@@ -484,7 +484,7 @@ export class ConversableAgent extends Agent {
    * 
    * @param options - see {@link GenerateOptions}.
    */
-  generateCodeExecutionReply({ messages, sender, config }: GenerateOptions<CodeExecutionConfig> = {}) {
+  async generateCodeExecutionReply({ messages, sender, config }: GenerateOptions<CodeExecutionConfig> = {}) {
     const codeExecutionConfig = config ?? this.options.codeExecutionConfig;
     if ( codeExecutionConfig === false ) {
       return [ false, null ] as const;
@@ -508,7 +508,7 @@ export class ConversableAgent extends Agent {
       }
 
       // found code blocks, execute code and push `lastNMessages` back
-      const [ exitCode, logs ] = this.executeCodeBlocks(codeBlocks);
+      const [ exitCode, logs ] = await this.executeCodeBlocks(codeBlocks);
       Object.assign(codeExecutionConfig, { lastNMessages });
       const exitCode2Str = exitCode === 0 ? 'execution succeeded' : 'execution failed';
       return [ true, dedent`
@@ -806,8 +806,8 @@ export class ConversableAgent extends Agent {
   /**
    * Run the code and return the result. Same parameters and return values as {@link executeCode}.
    */
-  async runCode(code: string, options: ExecuteCodeOptions) {
-    return executeCode<'code'>({ code, ...options });
+  runCode(params: ExecuteCodeParams) {
+    return executeCode(params);
   };
 
   /**
