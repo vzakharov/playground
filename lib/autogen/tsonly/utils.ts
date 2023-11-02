@@ -13,6 +13,16 @@ export function ensure<T>(value: T | undefined, message: string): T {
 };
 
 /**
+ * Checks if a value is among a list of possible values.
+ * @param values - The list of possible values.
+ * @param value - The value to check.
+ * @returns `true` if the value is among the possible values, `false` otherwise, as a type guard.
+ */
+export function isAmong<Ts extends T, T>(values: readonly Ts[], value: T): value is Ts {
+  return values.includes(value as Ts);
+}
+
+/**
  * Creates a new object composed of the specified keys from the input object.
  *
  * @template T - The type of the input object.
