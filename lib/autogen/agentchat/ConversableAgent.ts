@@ -284,6 +284,9 @@ export class ConversableAgent extends Agent {
     let reply = "";
     let noHumanInputMsg = "";
     const senderId = sender?.id ?? NONE_AGENT;
+
+    const maxConsecutiveAutoReplyForSender = this.maxConsecutiveAutoReplyDict?.[senderId] ?? this.options.maxConsecutiveAutoReply;
+
     if ( this.options.humanInputMode === 'ALWAYS' ) {
       reply = this.getHumanInput(
         `Provide feedback to ${sender?.name}. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: `
@@ -291,7 +294,7 @@ export class ConversableAgent extends Agent {
       noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
       reply = reply || (this.options.isTerminationMsg?.(message) ? "exit" : "");
     } else {
-      if ( this.consecutiveAutoReplyCounter[senderId] ?? 0 >= this.options.maxConsecutiveAutoReply ?? ) {
+      if ( this.consecutiveAutoReplyCounter[senderId] ?? 0 >= maxConsecutiveAutoReplyForSender ) {
         if ( this.options.humanInputMode === 'NEVER' ) {
           reply = "exit";
         } else {
@@ -335,7 +338,7 @@ export class ConversableAgent extends Agent {
     };
 
     // send the human reply
-    if ( reply || ( this.maxConsecutiveAutoReplyDict?.[senderId] ?? 0 === 0 ) ) {
+    if ( reply || maxConsecutiveAutoReplyForSender === 0 ) {
       // reset the consecutiveAutoReplyCounter
       this.consecutiveAutoReplyCounter[senderId] = 0;
       return [ true, reply ] as const;
