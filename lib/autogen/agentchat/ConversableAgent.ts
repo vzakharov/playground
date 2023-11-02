@@ -4,10 +4,6 @@ import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 import readline from 'readline';
 
-/** A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call". */
-export type IsTerminationMsg = (message: Message) => boolean;
-
-
 export type LlmConfig = {
   model?: 'gpt-4',
   allowFormatStrTemplate?: boolean;
@@ -31,9 +27,9 @@ export type ConversableAgentOptions = {
   // TODO: Correct type for llmConfig
 
   /**
-   * A function used to determine if a message is a termination message, see {@link IsTerminationMsg} for details.
+   * A function that takes a message in the form of a dictionary and returns a boolean value indicating if this received message is a termination message. The dict can contain the following keys: "content", "role", "name", "function_call".
    */
-  isTerminationMsg?: IsTerminationMsg;
+  isTerminationMsg?: (message: Message) => boolean;
 
   /**
    * The maximum number of consecutive auto replies. Default to 100 (subject to future change). If not provided, static property {@link MAX_CONSECUTIVE_AUTO_REPLY} will be used.
@@ -274,7 +270,7 @@ export class ConversableAgent extends Agent {
    * 
    * @param options - see {@link GenerateOptions}.
    */
-  checkTerminationAndHumanReply({ 
+  async checkTerminationAndHumanReply({ 
     sender, 
     messages = this.oaiMessages.get(sender), 
     config = this
@@ -284,31 +280,31 @@ export class ConversableAgent extends Agent {
     let noHumanInputMsg = "";
 
     if ( this.options.humanInputMode === 'ALWAYS' ) {
-      reply = this.getHumanInput(
+      reply = await this.getHumanInput(
         `Provide feedback to ${sender?.name}. Press enter to skip and use auto-reply, or type 'exit' to end the conversation: `
       );
       noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
-      reply = reply || (this.options.isTerminationMsg?.(message) ? "exit" : "");
+      reply ||= this.isTerminationMessage(message) ? "exit" : "";
     } else {
       if ( this.consecutiveAutoReplyCounter.get(sender) ?? 0 >= this.maxConsecutiveAutoReplyDict.get(sender) ) {
         if ( this.options.humanInputMode === 'NEVER' ) {
           reply = "exit";
         } else {
           // this.humanInputMode == "TERMINATE":
-          const terminate = this.options.isTerminationMsg?.(message);
-          reply = this.getHumanInput(
+          const terminate = this.isTerminationMessage(message);
+          reply = await this.getHumanInput(
             `Please give feedback to ${sender?.name}. Press enter or type 'exit' to stop the conversation: `
             + (terminate ? '' : `Please give feedback to ${sender?.name}. Press enter to skip and use auto-reply, or type 'exit' to stop the conversation: `)
           );
           noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
           reply = reply || (terminate ? "exit" : "");
         };
-      } else if ( this.options.isTerminationMsg?.(message) ) {
+      } else if ( this.isTerminationMessage(message) ) {
         if ( this.options.humanInputMode === 'NEVER' ) {
           reply = "exit";
         } else {
           // this.humanInputMode == "TERMINATE":
-          reply = this.getHumanInput(
+          reply = await this.getHumanInput(
             `Please give feedback to ${sender?.name}. Press enter or type 'exit' to stop the conversation: `
           );
           noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
@@ -626,6 +622,10 @@ export class ConversableAgent extends Agent {
       recipient, 
       { silent }
     );
+  };
+
+  isTerminationMessage(message?: Message) {
+    return message && this.options.isTerminationMsg?.(message);
   };
 
   /**
