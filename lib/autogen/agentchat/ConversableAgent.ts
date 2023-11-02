@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { CodeBlock, DEFAULT_MODEL, UNKNOWN, clear, colored, ensure, extractCode, inferLang, pick } from "..";
+import { CodeBlock, DEFAULT_MODEL, DefaultMap, ExecuteCodeOptions, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 
@@ -142,8 +142,6 @@ export type GenerateOptions<Config> = {
   config?: Config;
 };
 
-export const NONE_AGENT = Symbol();
-
 /**
  * (In preview) A class for generic conversable agents which can be configured as assistant or user proxy.
  * 
@@ -169,18 +167,16 @@ export class ConversableAgent extends Agent {
    */
   static MAX_CONSECUTIVE_AUTO_REPLY = 100 as const;
 
-  /**
-   * A dictionary that maps agents to the maximum number of consecutive auto replies for that agent.
-   * 
-   * Porting note: Javascript does not provide a counterpart to Python's `defaultdict`, so we're using a regular object here. Whenever a key is not found, we'll need to manually initialize it to `this.options.maxConsecutiveAutoReply`.
-   */
-  maxConsecutiveAutoReplyDict?: Record<symbol, number | undefined>;
+
+  private consecutiveAutoReplyCounter = new DefaultMap<Maybe<Agent>, number>(Number);
+
+  private maxConsecutiveAutoReplyDict = new DefaultMap<Maybe<Agent>, number>(Number);
 
 
   /**
    * A dictionary of conversations.
    */
-  private oaiMessages = {} as Record<symbol, Message[] | undefined>;
+  private oaiMessages = new DefaultMap<Maybe<Agent>, Message[]>(Array);
 
   private oaiSystemMessage = [] as {
     content: string;
@@ -198,7 +194,8 @@ export class ConversableAgent extends Agent {
   }[];
   // TODO: Correct type for replyFuncList
 
-  replyAtReceive = {} as Record<symbol, boolean>;
+  // replyAtReceive = {} as Record<symbol, boolean>;
+  replyAtReceive = new DefaultMap<Maybe<Agent>, boolean>(Boolean);
 
   /**
    * Construct a {@link ConversableAgent}.
@@ -265,7 +262,7 @@ export class ConversableAgent extends Agent {
       oaiMessage.role = 'assistant'; // only messages with role 'assistant' can have a function call.
     };
     ensure(
-      this.oaiMessages[conversationId.id],
+      this.oaiMessages.get(conversationId),
       `Conversation with ${conversationId.name} not found in oaiMessages for ${this.name}.`
     ).push(oaiMessage);
     return true;
@@ -278,14 +275,12 @@ export class ConversableAgent extends Agent {
    */
   checkTerminationAndHumanReply({ 
     sender, 
-    messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [], config = this
+    messages = this.oaiMessages.get(sender), 
+    config = this
   }: GenerateOptions<ConversableAgent> = {}) {
     const message = messages.at(-1);
     let reply = "";
     let noHumanInputMsg = "";
-    const senderId = sender?.id ?? NONE_AGENT;
-
-    const maxConsecutiveAutoReplyForSender = this.maxConsecutiveAutoReplyDict?.[senderId] ?? this.options.maxConsecutiveAutoReply;
 
     if ( this.options.humanInputMode === 'ALWAYS' ) {
       reply = this.getHumanInput(
@@ -294,7 +289,7 @@ export class ConversableAgent extends Agent {
       noHumanInputMsg = !reply ? "NO HUMAN INPUT RECEIVED." : "";
       reply = reply || (this.options.isTerminationMsg?.(message) ? "exit" : "");
     } else {
-      if ( this.consecutiveAutoReplyCounter[senderId] ?? 0 >= maxConsecutiveAutoReplyForSender ) {
+      if ( this.consecutiveAutoReplyCounter.get(sender) ?? 0 >= this.maxConsecutiveAutoReplyDict.get(sender) ) {
         if ( this.options.humanInputMode === 'NEVER' ) {
           reply = "exit";
         } else {
@@ -333,19 +328,19 @@ export class ConversableAgent extends Agent {
     // stop the conversation
     if ( reply === "exit" ) {
       // reset the consecutiveAutoReplyCounter
-      this.consecutiveAutoReplyCounter[senderId] = 0;
+      this.consecutiveAutoReplyCounter.set(sender, 0);
       return [ true, null ] as const;
     };
 
     // send the human reply
-    if ( reply || maxConsecutiveAutoReplyForSender === 0 ) {
+    if ( reply || this.maxConsecutiveAutoReplyDict.get(sender) === 0 ) {
       // reset the consecutiveAutoReplyCounter
-      this.consecutiveAutoReplyCounter[senderId] = 0;
+      this.maxConsecutiveAutoReplyDict.set(sender, 0);
       return [ true, reply ] as const;
     };
 
     // increment the consecutiveAutoReplyCounter
-    this.consecutiveAutoReplyCounter[senderId] = (this.consecutiveAutoReplyCounter[senderId] ?? 0) + 1;
+    this.consecutiveAutoReplyCounter.set(sender, (this.consecutiveAutoReplyCounter.get(sender) ?? 0) + 1);
     if ( this.options.humanInputMode !== 'NEVER' ) {
       console.log(
         colored.red( dedent`
@@ -366,9 +361,9 @@ export class ConversableAgent extends Agent {
    */
   clearHistory(agent?: Agent) {
     if ( agent === undefined ) {
-      clear(this.oaiMessages);
+      this.oaiMessages.clear();
     } else {
-      this.oaiMessages[agent.id] = [];
+      this.oaiMessages.delete(agent);
     };
   };
 
@@ -388,6 +383,7 @@ export class ConversableAgent extends Agent {
           >>>>>>>> EXECUTING CODE BLOCK ${i} (inferred language is ${lang})...
         `)
       );
+
       const { exitCode, logs, image } = (() => {
 
         if ( lang !== UNKNOWN ) {
@@ -494,7 +490,7 @@ export class ConversableAgent extends Agent {
       return [ false, null ] as const;
     };
     if ( !messages ) {
-      messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
+      messages = this.oaiMessages.get(sender);
     };
     const lastNMessages = codeExecutionConfig.lastNMessages ?? 1;
 
@@ -535,7 +531,8 @@ export class ConversableAgent extends Agent {
    */
   generateFunctionCallReply({ 
     sender, 
-    messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [], config = this
+    messages = this.oaiMessages.get(sender),
+    config = this
     // Porting note: `config` seems to be unused.
   }: GenerateOptions<ConversableAgent> = {}) {
     const message = messages.at(-1);
@@ -562,13 +559,13 @@ export class ConversableAgent extends Agent {
    * 
    * @param options: see {@link GenerateOptions}.
    */
-  generateOaiReply({ messages, sender, config }: GenerateOptions<LlmConfig> = {}) {
-    const llmConfig = config ?? this.options.llmConfig;
+  generateOaiReply({ 
+    sender, 
+    messages = this.oaiMessages.get(sender),
+    config: llmConfig = this.options.llmConfig
+  }: GenerateOptions<LlmConfig> = {}) {
     if ( !llmConfig ) {
       return null;
-    };
-    if ( !messages ) {
-      messages = this.oaiMessages[sender?.id ?? NONE_AGENT] ?? [];
     };
     // TODO: (original #1143) handle token limit exceed error
     const response = oai.ChatCompletion.create({
@@ -632,7 +629,8 @@ export class ConversableAgent extends Agent {
   private prepareChat(recipient: ConversableAgent, clearHistory: boolean) {
     this.resetConsecutiveAutoReplyCounter(recipient);
     recipient.resetConsecutiveAutoReplyCounter(this);
-    this.replyAtReceive[recipient.id] = recipient.replyAtReceive[this.id] = true;
+    this.replyAtReceive.set(recipient, true);
+    recipient.replyAtReceive.set(this, true);
     if ( clearHistory ) {
       this.clearHistory(recipient);
       recipient.clearHistory(this);
@@ -735,7 +733,7 @@ export class ConversableAgent extends Agent {
     }: SendReceiveOptions = {}
   ) {
     this.processReceivedMessage(message, sender, { silent });
-    if ( requestReply === false || requestReply === undefined && this.replyAtReceive[sender.id] === false ) {
+    if ( requestReply === false || requestReply === undefined && this.replyAtReceive.get(sender) === false ){
       return;
     };
     const reply = await this.generateReply({ sender });
@@ -794,16 +792,14 @@ export class ConversableAgent extends Agent {
     };
   };
 
-  private consecutiveAutoReplyCounter = {} as Record<symbol, number | undefined>;
-
   /**
    * Reset the consecutive auto reply counter of the sender.
    */
   resetConsecutiveAutoReplyCounter(sender?: Agent) {
-    if ( sender === undefined ) {
-      clear(this.consecutiveAutoReplyCounter);
+    if ( !sender  ) {
+      this.consecutiveAutoReplyCounter.clear();
     } else {
-      this.consecutiveAutoReplyCounter[sender.id] = 0;
+      this.consecutiveAutoReplyCounter.set(sender, 0);
     };
   };
 
@@ -811,7 +807,7 @@ export class ConversableAgent extends Agent {
    * Run the code and return the result. Same parameters and return values as {@link executeCode}.
    */
   async runCode(code: string, options: ExecuteCodeOptions) {
-    return executeCode(code, options);
+    return executeCode<'code'>({ code, ...options });
   };
 
   /**
@@ -846,9 +842,9 @@ export class ConversableAgent extends Agent {
   /** Reset the replyAtReceive for the sender. If no sender is provided, reset the `replyAtReceive` for all senders. */
   stopReplyAtReceive(sender?: Agent) {
     if ( sender === undefined ) {
-      clear(this.replyAtReceive);
+      this.replyAtReceive.clear();
     } else {
-      this.replyAtReceive[sender.id] = false;
+      this.replyAtReceive.set(sender, false);
     };
   };
 

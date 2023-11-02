@@ -35,6 +35,13 @@ function getCmd(lang: string) {
   : $throw(`${lang} not recognized in code execution`);
 };
 
+export type ExecuteCodeOptions = {
+  timeout: number;
+  workDir?: string;
+  useDocker: boolean | string | string[];
+  lang: string;
+};
+
 /**
  * Execute code in a docker container.
  * 
@@ -81,12 +88,7 @@ export async function executeCode<CodeOrFilename extends 'code' | 'filename'>({
     code?: never;
     filename: string;
   }
-) & {
-  timeout: number;
-  workDir?: string;
-  useDocker: boolean | string | string[];
-  lang: string;
-}) {
+) & ExecuteCodeOptions) {
 // }): ExecuteCodeResult {
   if ( !code && !filename ) throw new Error(`Either code or filename must be provided.`);
   if ( code && filename ) throw new Error(`Only one of code and filename can be provided.`);

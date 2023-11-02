@@ -1,14 +1,4 @@
 /**
- * Removes all properties from the given object.
- * @param object - The object to clear.
- */
-export function clear<T extends Record<string, any>>(object: T): asserts object is T & Record<string, undefined> {
-  for (const key in object) {
-    delete object[key];
-  }
-};
-
-/**
  * Ensures that a value is not undefined. If the value is undefined, an error is thrown with the specified message.
  * @param value - The value to ensure is not undefined.
  * @param message - The error message to throw if the value is undefined.

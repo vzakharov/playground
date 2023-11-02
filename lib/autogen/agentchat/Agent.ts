@@ -18,11 +18,6 @@ export type SendReceiveOptions = {
  */
 export abstract class Agent {
 
-  /** 
-   * The agent id, created from the agent name. Used to create various maps between agents, such as {@link ConversableAgent#oaiMessages} and {@link ConversableAgent#replyAtReceive}. This is a js-only feature, as, unlike Python, javascript doesn't allow mapping keys to be objects themselves.
-   */
-  id: symbol;
-
   /**
    * Construct an {@link Agent}.
    * 
@@ -30,9 +25,7 @@ export abstract class Agent {
    */
   constructor(
     public name: string,
-  ) { 
-    this.id = Symbol(name);
-  }
+  ) { }
   
   /**
    * Send a message to another agent.
