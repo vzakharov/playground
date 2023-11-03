@@ -1,13 +1,23 @@
 <script setup lang="ts" generic="T extends string">
 
-  import { useModelWrapper } from '~/composables/useModelWrapper';
+import { sentenceCase } from '~/lib/utils';
+import { useModelWrapper } from '~/composables/useModelWrapper';
+import _ from 'lodash';
 
   const props = defineProps<{ 
     label?: string | false,
-    options: readonly T[], 
+    options: readonly T[],
+    inferCaption?: (option: T) => string,
+    sentencify?: boolean,
     modelValue: T,
     cycleOnClick?: boolean,
   }>()
+
+  const inferCaption = 
+    props.inferCaption
+      ?? props.sentencify
+        ? sentenceCase
+        : _.identity;
 
   const emits = defineEmits<{
     'update:modelValue': [T]
@@ -26,23 +36,22 @@
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <label v-if="label" class="label" v-text="label" />
     <select v-if="!cycleOnClick" class="dropdown" v-model="input">
-      <option v-for="option in options" :value="option" v-text="option" />
+      <option v-for="option in options" 
+        :value="option" 
+        v-text="inferCaption(option)"
+      />
     </select>
     <button v-else class="dropdown text-left cursor-auto"
-      v-text="input" 
+      v-text="inferCaption(input)"
       @click="cycle($event.metaKey || $event.ctrlKey || $event.shiftKey)"
     />
   </div>
 </template>
 
 <style scoped lang="postcss">
-
-.container {
-  @apply flex flex-col;
-}
 
 .label {
   @apply text-gray-400 text-sm mb-2;

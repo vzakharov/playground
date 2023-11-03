@@ -50,7 +50,7 @@ const [ LeftLabelDiv, RightLabelDiv ] = [ true, false ].map(isLeft => computed((
 
   return h('div', {
     class: {
-      [`m${ isLeft ? 'r' : 'l' }-3`]: true,
+      [isLeft ? 'mr-3' : 'ml-3']: true,
       'text-gray-300': 
         twoWay 
           ? ( isLeft === modelValue )
