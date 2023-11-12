@@ -1,5 +1,5 @@
 import dedent from "dedent-js";
-import { CodeBlock, CodeSource, DEFAULT_MODEL, DefaultMap, ExecuteCodeParams, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
+import { ChatCompletion, CodeBlock, CodeSource, DEFAULT_MODEL, DefaultMap, ExecuteCodeParams, Maybe, UNKNOWN, colored, ensure, executeCode, extractCode, inferLang, pick } from "..";
 import { Agent, SendReceiveOptions } from "./Agent";
 import { Message } from "./Message";
 import readline from 'readline';
@@ -565,12 +565,12 @@ export class ConversableAgent extends Agent {
       return null;
     };
     // TODO: (original #1143) handle token limit exceed error
-    const response = oai.ChatCompletion.create({
+    const response = ChatCompletion.create({
       context: messages[messages.length - 1]?.context,
-      messages: [ ...this.oaiSystemMessage, ...messages ],
+      config: { messages: [ ...this.oaiSystemMessage, ...messages ] },
       ...llmConfig
     });
-    return oai.ChatCompletion.extractTextOrFunctionCall(response)[0];
+    return ChatCompletion.extractTextOrFunctionCall(response)[0];
   };
 
   async generateReply(...args: Parameters<Agent['generateReply']>): ReturnType<Agent['generateReply']> {
@@ -677,14 +677,16 @@ export class ConversableAgent extends Agent {
         `
       );
     } else {
-      let { content } = message;
+      let { content, context } = message;
       const { llmConfig } = this.options;
+      const { allowFormatStrTemplate } = llmConfig;
       if ( content !== null ) {
-        if ( message.context ) {
-          content = oai.ChatCompletion.instantiate(
-            content,
-            message.context,
-            llmConfig && llmConfig.allowFormatStrTemplate
+        if ( context ) {
+          content = ChatCompletion.instantiate(
+            content, {
+              context,
+              allowFormatStrTemplate
+            }
           );
         };
         console.log(content);

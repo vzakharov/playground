@@ -4,6 +4,7 @@ import * as Magic from 'almostmagic';
 import { addProperties } from 'vovas-utils';
 import { useLocalRef } from 'use-vova';
 import yaml from 'js-yaml';
+import { chatFunction } from '~/lib/vovas-openai';
 
 const openaiApiKey = useLocalRef('openaiApiKey', '');
 
@@ -17,7 +18,7 @@ watch(openaiApiKey, (value) => {
   });
 }, { immediate: true });
 
-addProperties(window, { ...Magic, yaml });
+addProperties(window, { ...Magic, yaml, chatFunction });
 
 </script>
 

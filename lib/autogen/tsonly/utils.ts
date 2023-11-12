@@ -13,6 +13,19 @@ export function ensure<T>(value: T | undefined, message: string): T {
 };
 
 /**
+ * Returns the value at a specific key and deletes it from the object.
+ * 
+ * @param object - The object to pop a value from.
+ * @param key - The key of the value to pop.
+ * @param defaultValue - The default value to return if the key does not exist in the object.
+ */
+export function pop<T extends Record<string, any>, K extends keyof T>(object: T, key: K) {
+  const value = object[key];
+  delete object[key];
+  return value;
+};
+
+/**
  * Checks if a value is among a list of possible values.
  * @param values - The list of possible values.
  * @param value - The value to check.

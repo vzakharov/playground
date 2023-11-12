@@ -81,3 +81,24 @@ export function filterConfig(
   };
   return configList;
 };
+
+export const NON_CACHE_KEY = ["api_key", "api_base", "api_type", "api_version"]
+
+/**
+ * Get a unique identifier of a configuration.
+ * 
+ * @param config - A configuration.
+ * 
+ * @returns A unique identifier which can be used as a key for a dict.
+ */
+export function getKey(config: Record<string, any>) {
+  let copied = false;
+  for (const key of NON_CACHE_KEY) {
+    if (key in config) {
+      config = copied ? config : { ...config };
+      delete config[key];
+      copied = true;
+    };
+  };
+  return JSON.stringify(config, Object.keys(config).sort());
+};
