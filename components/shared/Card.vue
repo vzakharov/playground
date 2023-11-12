@@ -1,8 +1,8 @@
 <template>
-  <div class="card-container">
+  <div class="container">
     <div class="card">
-      <div class="card-header">
-        <img v-if="thumbnail" :src="thumbnail" class="card-thumbnail" />
+      <div class="header">
+        <img v-if="thumbnail" :src="thumbnail" class="thumbnail" />
         <div class="flex flex-col">
           <div>
             <a v-if="url" :href="url" target="_blank" rel="noopener noreferrer"
@@ -11,12 +11,12 @@
             />
             <span v-else v-text="title" />
           </div>
-          <div class="card-subtitle" v-if="subtitle">
+          <div class="subtitle" v-if="subtitle">
             {{ subtitle }}
           </div>
         </div>
       </div>
-      <div class="card-content" 
+      <div class="content" 
         v-html="Marked.parse(content)" 
         @dblclick="editOnDoubleClick && editModal!.show()"
       />
@@ -27,7 +27,7 @@
         title="Edit content"
         description="You can edit the content here."
       />
-      <div v-if="$slots.footer" class="card-footer">
+      <div v-if="$slots.footer" class="footer">
         <slot name="footer" />
       </div>
     </div>
@@ -64,7 +64,7 @@
 </script>
 
 <style scoped lang="postcss">
-  .card-container {
+  .container {
     @apply w-full mt-6 mb-3;
   }
 
@@ -72,23 +72,23 @@
     @apply bg-white rounded-lg shadow-lg overflow-hidden;
   }
 
-  .card-header {
+  .header {
     @apply flex flex-row items-center gap-3 text-lg text-gray-800 p-4 py-2 border-b border-gray-200;
   }
 
-  .card-subtitle {
+  .subtitle {
     @apply text-gray-400 text-sm;
   }
 
-  .card-thumbnail {
+  .thumbnail {
     @apply w-16 h-16 rounded-full object-cover;
   }
 
-  .card-content {
+  .content {
     @apply text-gray-700 p-4 pt-2;
   }
 
-  .card-footer {
+  .footer {
     @apply p-4 pt-2 border-t border-gray-200;
   }
 </style>
