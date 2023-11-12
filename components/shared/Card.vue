@@ -2,7 +2,9 @@
   <div class="container">
     <div class="card">
       <div class="header">
-        <img v-if="thumbnail" :src="thumbnail" class="thumbnail" />
+        <a v-if="url" :href="url" target="_blank" rel="noopener noreferrer">
+          <img v-if="thumbnail" :src="thumbnail" class="thumbnail" />
+        </a>
         <div class="flex flex-col">
           <div>
             <a v-if="url" :href="url" target="_blank" rel="noopener noreferrer"
@@ -16,10 +18,15 @@
           </div>
         </div>
       </div>
-      <div class="content" 
-        v-html="Marked.parse(content)" 
-        @dblclick="editOnDoubleClick && editModal!.show()"
-      />
+      <div class="content">
+        <div
+          v-html="Marked.parse(content)"
+          @dblclick="editOnDoubleClick && editModal!.show()"
+        />
+        <div v-if="$slots.content" class="mt-3">
+          <slot name="content"/>
+        </div>
+      </div>
       <TextModal
         v-if="editOnDoubleClick"
         ref="editModal"
@@ -59,6 +66,7 @@
   const editModal = refForInstance(TextModal);
 
   defineSlots<{
+    content: void;
     footer: void;
   }>();
 </script>
